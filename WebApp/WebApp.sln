@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{01FECEEC-A005-478F-82CE-C8FB9C0C35D2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{CFC6376F-E563-4688-8E1E-06F0AE515AEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain.App", "Domain.App\Domain.App.csproj", "{5DEFFBCB-F460-4338-926A-0CB0A8AD7AD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +16,13 @@ Global
 		{01FECEEC-A005-478F-82CE-C8FB9C0C35D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01FECEEC-A005-478F-82CE-C8FB9C0C35D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01FECEEC-A005-478F-82CE-C8FB9C0C35D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DEFFBCB-F460-4338-926A-0CB0A8AD7AD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DEFFBCB-F460-4338-926A-0CB0A8AD7AD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DEFFBCB-F460-4338-926A-0CB0A8AD7AD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DEFFBCB-F460-4338-926A-0CB0A8AD7AD8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{01FECEEC-A005-478F-82CE-C8FB9C0C35D2} = {CFC6376F-E563-4688-8E1E-06F0AE515AEA}
+		{5DEFFBCB-F460-4338-926A-0CB0A8AD7AD8} = {CFC6376F-E563-4688-8E1E-06F0AE515AEA}
 	EndGlobalSection
 EndGlobal
