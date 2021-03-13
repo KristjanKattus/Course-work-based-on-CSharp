@@ -1,9 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Domain.Base;
 
 namespace Domain.App
 {
-    public class Person
+    public class Person : DomainEntityId
     {
         
         
