@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210312123142_InitalDb")]
-    partial class InitalDb
+    [Migration("20210324191519_ChangedDb")]
+    partial class ChangedDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -499,7 +499,7 @@ namespace DAL.App.EF.Migrations
                     b.ToTable("TeamPersons");
                 });
 
-            modelBuilder.Entity("Domain.App.Type", b =>
+            modelBuilder.Entity("Domain.App.Game_Part_Type", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -792,7 +792,7 @@ namespace DAL.App.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.App.Type", "Type")
+                    b.HasOne("Domain.App.Game_Part_Type", "Game_Part_Type")
                         .WithMany()
                         .HasForeignKey("TypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -800,7 +800,7 @@ namespace DAL.App.EF.Migrations
 
                     b.Navigation("Game");
 
-                    b.Navigation("Type");
+                    b.Navigation("Game_Part_Type");
                 });
 
             modelBuilder.Entity("Domain.App.Game_Personnel", b =>

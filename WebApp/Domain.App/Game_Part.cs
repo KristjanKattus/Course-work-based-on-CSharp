@@ -6,7 +6,7 @@ namespace Domain.App
     public class Game_Part : DomainEntityId
     {
         public Guid TypeId { get; set; }
-        public Type Type { get; set; } = default!;
+        public Game_Part_Type GamePartType { get; set; } = default!;
         
         public Guid GameId { get; set; }
         public Game Game { get; set; } = default!;

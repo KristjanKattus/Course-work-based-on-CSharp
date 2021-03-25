@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class InitalDb : Migration
+    public partial class ChangedDb : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

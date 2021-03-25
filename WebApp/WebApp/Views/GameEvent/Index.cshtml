@@ -1,0 +1,71 @@
+@model IEnumerable<Domain.App.Game_Event>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Game)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GamePersonnel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GamePart)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EventType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GameTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberInOrder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Game.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GamePersonnel!.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GamePart.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GameTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumberInOrder)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -24,7 +24,7 @@ namespace DAL.App.EF
         public DbSet<Stadium> Stadiums { get; set; } = default!;
         public DbSet<Team> Teams { get; set; } = default!;
         public DbSet<Team_Person> TeamPersons { get; set; } = default!;
-        public DbSet<Type> Types { get; set; } = default!;
+        public DbSet<Game_Part_Type> Types { get; set; } = default!;
         
         
         public AppDbContext(DbContextOptions<AppDbContext> options)

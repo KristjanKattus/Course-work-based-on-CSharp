@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DAL.App.EF;
+using DAL.App.EF.AppDataInit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.EntityFrameworkCore;
 
 using Microsoft.Extensions.Configuration;
@@ -41,6 +36,7 @@ namespace WebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            SetupAppData(app, Configuration);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -68,6 +64,36 @@ namespace WebApp
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+        }
+
+        private static void SetupAppData(IApplicationBuilder app, IConfiguration configuration
+        )
+        {
+            using var serviceScope =
+                app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            using var ctx = serviceScope.ServiceProvider.GetService<AppDbContext>();
+            if (ctx != null)
+            {
+                if (configuration.GetValue<bool>("AppData:DropDataBase"))
+                {
+                    DataInit.DropDataBase(ctx);
+                }
+                if (configuration.GetValue<bool>("AppData:Migrate"))
+                {
+                    DataInit.MigrateDataBase(ctx);
+                }
+                if (configuration.GetValue<bool>("AppData:SeedIdentity"))
+                {
+                    //TODO
+                }
+                if (configuration.GetValue<bool>("AppData:SeedData"))
+                {
+                    DataInit.SeedAppData(ctx);
+                }
+                
+                ctx.Database.EnsureDeleted();
+                ctx.Database.Migrate();
+            }
         }
     }
 }

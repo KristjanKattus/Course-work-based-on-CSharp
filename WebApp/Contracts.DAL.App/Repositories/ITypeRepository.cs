@@ -3,7 +3,7 @@ using Domain.App;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface ITypeRepository : IBaseRepository<Type>
+    public interface ITypeRepository : IBaseRepository<Game_Part_Type>
     {
         
     }
