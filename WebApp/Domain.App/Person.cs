@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Contracts.Domain.Base;
+using Domain.App.Identity;
 using Domain.Base;
 
 namespace Domain.App
 {
-    public class Person : DomainEntityId
+    public class Person : DomainEntityId, IDomainAppUserId, IDomainAppUser<AppUser>
     {
         
         
@@ -15,6 +17,10 @@ namespace Domain.App
         public DateTime Date { get; set; } = default!;
 
         public Char Sex { get; set; } = default!;
+
+        
+        public Guid AppUserId { get; set; }
+        public AppUser? AppUser { get; set; }
         
         
     }

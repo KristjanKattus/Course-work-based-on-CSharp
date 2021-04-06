@@ -51,7 +51,7 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName");
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name");
             ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name");
             return View();
         }
@@ -71,7 +71,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", team_Person.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", team_Person.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", team_Person.RoleId);
             ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name", team_Person.TeamId);
             return View(team_Person);
         }
@@ -90,7 +90,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", team_Person.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", team_Person.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", team_Person.RoleId);
             ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name", team_Person.TeamId);
             return View(team_Person);
         }
@@ -128,7 +128,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", team_Person.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", team_Person.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", team_Person.RoleId);
             ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name", team_Person.TeamId);
             return View(team_Person);
         }

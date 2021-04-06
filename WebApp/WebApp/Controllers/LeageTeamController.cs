@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using WebApp.ViewModels.LeagueTeam;
 
 namespace WebApp.Controllers
 {
@@ -49,9 +50,13 @@ namespace WebApp.Controllers
         // GET: LeageTeam/Create
         public IActionResult Create()
         {
-            ViewData["LeagueId"] = new SelectList(_context.Leagues, "Id", "Name");
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name");
-            return View();
+            var vm = new LeagueTeamCreateEditViewModel
+            {
+                LeaguesSelectList = new SelectList(_context.Leagues, "Id", "Name"),
+                TeamsSelectList = new SelectList(_context.Teams, "Id", "Name")
+            };
+
+            return View(vm);
         }
 
         // POST: LeageTeam/Create
@@ -59,18 +64,18 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("LeagueId,TeamId,Since,Until,Description,Id")] League_Team league_Team)
+        public async Task<IActionResult> Create(LeagueTeamCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                league_Team.Id = Guid.NewGuid();
-                _context.Add(league_Team);
+                vm.LeagueTeam.Id = Guid.NewGuid();
+                _context.Add(vm.LeagueTeam);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["LeagueId"] = new SelectList(_context.Leagues, "Id", "Name", league_Team.LeagueId);
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name", league_Team.TeamId);
-            return View(league_Team);
+            vm.LeaguesSelectList = new SelectList(_context.Leagues, "Id", "Name", vm.LeagueTeam.LeagueId);
+            vm.LeaguesSelectList = new SelectList(_context.Teams, "Id", "Name", vm.LeagueTeam.TeamId);
+            return View(vm);
         }
 
         // GET: LeageTeam/Edit/5
@@ -86,9 +91,13 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["LeagueId"] = new SelectList(_context.Leagues, "Id", "Name", league_Team.LeagueId);
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name", league_Team.TeamId);
-            return View(league_Team);
+            var vm = new LeagueTeamCreateEditViewModel
+            {
+                LeagueTeam = league_Team,
+                LeaguesSelectList = new SelectList(_context.Leagues, "Id", "Name"),
+                TeamsSelectList = new SelectList(_context.Teams, "Id", "Name")
+            };
+            return View(vm);
         }
 
         // POST: LeageTeam/Edit/5
@@ -96,9 +105,9 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("LeagueId,TeamId,Since,Until,Description,Id")] League_Team league_Team)
+        public async Task<IActionResult> Edit(Guid id, LeagueTeamCreateEditViewModel vm)
         {
-            if (id != league_Team.Id)
+            if (id != vm.LeagueTeam.Id)
             {
                 return NotFound();
             }
@@ -107,12 +116,12 @@ namespace WebApp.Controllers
             {
                 try
                 {
-                    _context.Update(league_Team);
+                    _context.Update(vm.LeagueTeam);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!League_TeamExists(league_Team.Id))
+                    if (!League_TeamExists(vm.LeagueTeam.Id))
                     {
                         return NotFound();
                     }
@@ -123,9 +132,9 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["LeagueId"] = new SelectList(_context.Leagues, "Id", "Name", league_Team.LeagueId);
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name", league_Team.TeamId);
-            return View(league_Team);
+            vm.LeaguesSelectList = new SelectList(_context.Leagues, "Id", "Name", vm.LeagueTeam.LeagueId);
+            vm.TeamsSelectList = new SelectList(_context.Teams, "Id", "Name", vm.LeagueTeam.TeamId);
+            return View(vm);
         }
 
         // GET: LeageTeam/Delete/5

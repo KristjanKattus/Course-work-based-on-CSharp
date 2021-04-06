@@ -22,7 +22,7 @@ namespace WebApp.Controllers
         // GET: Stadium
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Stadiums.Include(s => s.Area);
+            var appDbContext = _context.Stadiums.Include(s => s.StadiumArea);
             return View(await appDbContext.ToListAsync());
         }
 
@@ -35,7 +35,7 @@ namespace WebApp.Controllers
             }
 
             var stadium = await _context.Stadiums
-                .Include(s => s.Area)
+                .Include(s => s.StadiumArea)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (stadium == null)
             {
@@ -48,7 +48,7 @@ namespace WebApp.Controllers
         // GET: Stadium/Create
         public IActionResult Create()
         {
-            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name");
+            ViewData["AreaId"] = new SelectList(_context.StadiumAreas, "Id", "Name");
             return View();
         }
 
@@ -66,7 +66,7 @@ namespace WebApp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", stadium.AreaId);
+            ViewData["AreaId"] = new SelectList(_context.StadiumAreas, "Id", "Name", stadium.AreaId);
             return View(stadium);
         }
 
@@ -83,7 +83,7 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", stadium.AreaId);
+            ViewData["AreaId"] = new SelectList(_context.StadiumAreas, "Id", "Name", stadium.AreaId);
             return View(stadium);
         }
 
@@ -119,7 +119,7 @@ namespace WebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AreaId"] = new SelectList(_context.Areas, "Id", "Name", stadium.AreaId);
+            ViewData["AreaId"] = new SelectList(_context.StadiumAreas, "Id", "Name", stadium.AreaId);
             return View(stadium);
         }
 
@@ -132,7 +132,7 @@ namespace WebApp.Controllers
             }
 
             var stadium = await _context.Stadiums
-                .Include(s => s.Area)
+                .Include(s => s.StadiumArea)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (stadium == null)
             {

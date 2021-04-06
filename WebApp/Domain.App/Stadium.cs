@@ -10,7 +10,7 @@ namespace Domain.App
     {
         public Guid AreaId { get; set; }
 
-        public Area Area { get; set; } = default!;
+        public Stadium_Area StadiumArea { get; set; } = default!;
 
         [MaxLength(32)] 
         public string Name { get; set; } = default!;

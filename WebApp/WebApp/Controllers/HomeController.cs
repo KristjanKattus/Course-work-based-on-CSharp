@@ -1,23 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
+using Contracts.DAL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
-using Microsoft.JSInterop;
+
 using WebApp.Models;
 
 namespace WebApp.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IAppUnitOfWork _uow;
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IAppUnitOfWork uow,ILogger<HomeController> logger)
         {
+            
             _logger = logger;
+            _uow = uow;
         }
 
         public class Vm
@@ -27,15 +28,17 @@ namespace WebApp.Controllers
             [BindRequired] public int Temperature { get; set; } = 489;
         }
         
-        public IActionResult Test()
-        {
-            var viewmodel = 5;
-            return View(viewmodel);
-        }
+        // public IActionResult Test()
+        // {
+        //     var viewmodel = 5;
+        //     return View(viewmodel);
+        // }
 
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            // var res = await _uow.Teams.GetAllAsync(User.GetUserId()!.Value);
+            // await _uow.SaveChangesAsync();
             return View();
         }
 

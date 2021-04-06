@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace Contracts.Domain.Base
 {
@@ -9,6 +10,7 @@ namespace Contracts.Domain.Base
 
     public interface IDomainEntity<TKey> : IDomainEntityId<TKey>, IDomainEntityMeta
         where TKey : IEquatable<TKey>
+        
     {
         
     }

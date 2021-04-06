@@ -52,7 +52,7 @@ namespace WebApp.Controllers
         {
             ViewData["GameTeamId"] = new SelectList(_context.GameTeams, "Id", "Id");
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName");
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name");
             return View();
         }
 
@@ -72,7 +72,7 @@ namespace WebApp.Controllers
             }
             ViewData["GameTeamId"] = new SelectList(_context.GameTeams, "Id", "Id", game_Team_List.GameTeamId);
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Team_List.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", game_Team_List.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Team_List.RoleId);
             return View(game_Team_List);
         }
 
@@ -91,7 +91,7 @@ namespace WebApp.Controllers
             }
             ViewData["GameTeamId"] = new SelectList(_context.GameTeams, "Id", "Id", game_Team_List.GameTeamId);
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Team_List.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", game_Team_List.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Team_List.RoleId);
             return View(game_Team_List);
         }
 
@@ -129,7 +129,7 @@ namespace WebApp.Controllers
             }
             ViewData["GameTeamId"] = new SelectList(_context.GameTeams, "Id", "Id", game_Team_List.GameTeamId);
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Team_List.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", game_Team_List.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Team_List.RoleId);
             return View(game_Team_List);
         }
 

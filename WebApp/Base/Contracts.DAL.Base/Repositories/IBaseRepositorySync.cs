@@ -9,9 +9,9 @@ namespace Contracts.DAL.Base.Repositories
         where TKey : IEquatable<TKey>
     {
         // non-async methods
-        TEntity FirstOrDefault(TKey id, bool noTracking = true);
-        IEnumerable<TEntity> GetAll(bool noTracking = true);
-        bool Exists(TKey id);
-        TEntity Remove(TKey id);
+        TEntity FirstOrDefault(TKey id,TKey? userId, bool noTracking = true);
+        IEnumerable<TEntity> GetAll(TKey? userId, bool noTracking = true);
+        bool Exists(TKey id, TKey? userId);
+        TEntity Remove(TKey id, TKey? userId);
     }
 }

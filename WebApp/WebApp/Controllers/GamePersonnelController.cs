@@ -52,7 +52,7 @@ namespace WebApp.Controllers
         {
             ViewData["GameId"] = new SelectList(_context.Games, "Id", "Id");
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName");
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name");
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name");
             return View();
         }
 
@@ -72,7 +72,7 @@ namespace WebApp.Controllers
             }
             ViewData["GameId"] = new SelectList(_context.Games, "Id", "Id", game_Personnel.GameId);
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Personnel.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", game_Personnel.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Personnel.RoleId);
             return View(game_Personnel);
         }
 
@@ -91,7 +91,7 @@ namespace WebApp.Controllers
             }
             ViewData["GameId"] = new SelectList(_context.Games, "Id", "Id", game_Personnel.GameId);
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Personnel.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", game_Personnel.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Personnel.RoleId);
             return View(game_Personnel);
         }
 
@@ -129,7 +129,7 @@ namespace WebApp.Controllers
             }
             ViewData["GameId"] = new SelectList(_context.Games, "Id", "Id", game_Personnel.GameId);
             ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Personnel.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.Roles, "Id", "Name", game_Personnel.RoleId);
+            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Personnel.RoleId);
             return View(game_Personnel);
         }
 
