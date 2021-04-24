@@ -1,0 +1,46 @@
+﻿@model PublicApi.DTO.v1.GameTeam
+
+<dl class="row">
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.Game)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.Game.Id)
+    </dd>
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.Team)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.Team.Name)
+    </dd>
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.Since)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.Since)
+    </dd>
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.Until)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.Until)
+    </dd>
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.Scored)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.Scored)
+    </dd>
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.Conceded)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.Conceded)
+    </dd>
+    <dt class = "col-sm-2">
+        @Html.DisplayNameFor(model => model.Points)
+    </dt>
+    <dd class = "col-sm-10">
+        @Html.DisplayFor(model => model.Points)
+    </dd>
+</dl>

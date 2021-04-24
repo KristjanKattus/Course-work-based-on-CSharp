@@ -5,7 +5,6 @@ namespace Contracts.Domain.Base
 {
     public interface IDomainEntityId : IDomainEntityId<Guid>
     {
-        
     }
 
     public interface IDomainEntityId<TKey>

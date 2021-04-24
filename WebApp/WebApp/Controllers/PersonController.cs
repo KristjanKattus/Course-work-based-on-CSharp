@@ -2,27 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
+using WebApp.ViewModels.Person;
 
 namespace WebApp.Controllers
 {
     public class PersonController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.PersonMapper _personMapper;
 
-        public PersonController(AppDbContext context)
+        public PersonController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _personMapper = new PersonMapper(mapper);
         }
 
         // GET: Person
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Persons.ToListAsync());
+            return View((await _bll.Persons.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _personMapper.Map(x)).ToList());
         }
 
         // GET: Person/Details/5
@@ -33,19 +41,19 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var person = await _context.Persons
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var person = await _bll.Persons.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (person == null)
             {
                 return NotFound();
             }
 
-            return View(person);
+            return View(_personMapper.Map(person));
         }
 
         // GET: Person/Create
         public IActionResult Create()
         {
+            var vm = new PersonCreateEditViewModel();
             return View();
         }
 
@@ -54,16 +62,15 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("FirstName,LastName,Date,Sex,Id")] Person person)
+        public async Task<IActionResult> Create(PersonCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                person.Id = Guid.NewGuid();
-                _context.Add(person);
-                await _context.SaveChangesAsync();
+                _bll.Persons.Add(_personMapper.Map(vm.Person)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(person);
+            return View(vm);
         }
 
         // GET: Person/Edit/5
@@ -74,12 +81,14 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var person = await _context.Persons.FindAsync(id);
+            var person = await _bll.Persons.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (person == null)
             {
                 return NotFound();
             }
-            return View(person);
+
+            var vm = new PersonCreateEditViewModel {Person = _personMapper.Map(person)!};
+            return View(vm);
         }
 
         // POST: Person/Edit/5
@@ -87,34 +96,20 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("FirstName,LastName,Date,Sex,Id")] Person person)
+        public async Task<IActionResult> Edit(Guid id, PersonCreateEditViewModel vm)
         {
-            if (id != person.Id)
+            if (id != vm.Person.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(person);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PersonExists(person.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _bll.Persons.Update(_personMapper.Map(vm.Person)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(person);
+            return View(vm);
         }
 
         // GET: Person/Delete/5
@@ -125,14 +120,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var person = await _context.Persons
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var person = await _bll.Persons.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (person == null)
             {
                 return NotFound();
             }
 
-            return View(person);
+            return View(_personMapper.Map(person));
         }
 
         // POST: Person/Delete/5
@@ -140,15 +134,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var person = await _context.Persons.FindAsync(id);
-            _context.Persons.Remove(person);
-            await _context.SaveChangesAsync();
+            await _bll.Persons.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool PersonExists(Guid id)
-        {
-            return _context.Persons.Any(e => e.Id == id);
         }
     }
 }

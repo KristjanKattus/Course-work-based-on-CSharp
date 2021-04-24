@@ -1,0 +1,27 @@
+﻿@model WebApp.ViewModels.GamePartType.GamePersonnelCreateEditViewModel
+
+<div class="form-group">
+    <label asp-for="GamePersonnel.PersonId" class="control-label"></label>
+    <select asp-for="GamePersonnel.PersonId" class="form-control" asp-items="ViewBag.PersonId"></select>
+    <span asp-validation-for="GamePersonnel.PersonId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GamePersonnel.GameId" class="control-label"></label>
+    <select asp-for="GamePersonnel.GameId" class="form-control" asp-items="ViewBag.GameId"></select>
+    <span asp-validation-for="GamePersonnel.GameId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GamePersonnel.RoleId" class="control-label"></label>
+    <select asp-for="GamePersonnel.RoleId" class="form-control" asp-items="ViewBag.RoleId"></select>
+    <span asp-validation-for="GamePersonnel.RoleId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GamePersonnel.Since" class="control-label"></label>
+    <input asp-for="GamePersonnel.Since" class="form-control" />
+    <span asp-validation-for="GamePersonnel.Since" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GamePersonnel.Until" class="control-label"></label>
+    <input asp-for="GamePersonnel.Until" class="form-control" />
+    <span asp-validation-for="GamePersonnel.Until" class="text-danger"></span>
+</div>

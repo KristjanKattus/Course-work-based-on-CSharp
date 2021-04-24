@@ -1,10 +1,14 @@
 ﻿using Contracts.DAL.Base.Repositories;
-using Domain.App;
+using DALAppDTO = DAL.App.DTO;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface IEventTypeRepository : IBaseRepository<Event_Type>
+    public interface IEventTypeRepository : IBaseRepository<DALAppDTO.EventType>, IEventTypeRepositoryCustom<DALAppDTO.EventType>
     {
         
+    }
+
+    public interface IEventTypeRepositoryCustom<TEntity>
+    {
     }
 }

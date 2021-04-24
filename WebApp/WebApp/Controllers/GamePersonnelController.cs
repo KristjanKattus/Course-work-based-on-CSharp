@@ -2,28 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
+using WebApp.ViewModels.GamePartType;
 
 namespace WebApp.Controllers
 {
     public class GamePersonnelController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.GamePersonnelMapper _gamePersonnelMapper;
 
-        public GamePersonnelController(AppDbContext context)
+        public GamePersonnelController(IAppBLL bll, IMapper mapper)
         {
-            _context = context;
+            _bll = bll;
+            _gamePersonnelMapper = new GamePersonnelMapper(mapper);
+            
         }
 
         // GET: GamePersonnel
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.GamePersonnels.Include(g => g.Game).Include(g => g.Person).Include(g => g.Role);
-            return View(await appDbContext.ToListAsync());
+            return View((await _bll.GamePersonnel.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _gamePersonnelMapper.Map(x)).ToList());
         }
 
         // GET: GamePersonnel/Details/5
@@ -34,26 +42,25 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game_Personnel = await _context.GamePersonnels
-                .Include(g => g.Game)
-                .Include(g => g.Person)
-                .Include(g => g.Role)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (game_Personnel == null)
+            var gamePersonnel = await _bll.GamePersonnel.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (gamePersonnel == null)
             {
                 return NotFound();
             }
 
-            return View(game_Personnel);
+            return View(_gamePersonnelMapper.Map(gamePersonnel));
         }
 
         // GET: GamePersonnel/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["GameId"] = new SelectList(_context.Games, "Id", "Id");
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName");
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name");
-            return View();
+            var vm = new GamePersonnelCreateEditViewModel
+            {
+                Persons = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)),
+                Roles = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value))
+            };
+            
+            return View(vm);
         }
 
         // POST: GamePersonnel/Create
@@ -61,19 +68,18 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PersonId,GameId,RoleId,Since,Until,Id")] Game_Personnel game_Personnel)
+        public async Task<IActionResult> Create(GamePersonnelCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                game_Personnel.Id = Guid.NewGuid();
-                _context.Add(game_Personnel);
-                await _context.SaveChangesAsync();
+                _bll.GamePersonnel.Add(_gamePersonnelMapper.Map(vm.GamePersonnel)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GameId"] = new SelectList(_context.Games, "Id", "Id", game_Personnel.GameId);
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Personnel.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Personnel.RoleId);
-            return View(game_Personnel);
+            // ViewData["GameId"] = new SelectList(_context.Games, "Id", "Id", game_Personnel.GameId);
+            vm.Persons = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value));
+            vm.Roles = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value));
+            return View(vm);
         }
 
         // GET: GamePersonnel/Edit/5
@@ -84,15 +90,19 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game_Personnel = await _context.GamePersonnels.FindAsync(id);
-            if (game_Personnel == null)
+            var gamePersonnel = await _bll.GamePersonnel.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (gamePersonnel == null)
             {
                 return NotFound();
             }
-            ViewData["GameId"] = new SelectList(_context.Games, "Id", "Id", game_Personnel.GameId);
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Personnel.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Personnel.RoleId);
-            return View(game_Personnel);
+            // ViewData["GameId"] = new SelectList(_context.Games, "Id", "Id", game_Personnel.GameId);
+            var vm = new GamePersonnelCreateEditViewModel
+            {
+                GamePersonnel = _gamePersonnelMapper.Map(gamePersonnel)!,
+                Persons = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)),
+                Roles = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value))
+            };
+            return View(vm);
         }
 
         // POST: GamePersonnel/Edit/5
@@ -100,37 +110,22 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("PersonId,GameId,RoleId,Since,Until,Id")] Game_Personnel game_Personnel)
+        public async Task<IActionResult> Edit(Guid id, GamePersonnelCreateEditViewModel vm)
         {
-            if (id != game_Personnel.Id)
+            if (id != vm.GamePersonnel.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(game_Personnel);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!Game_PersonnelExists(game_Personnel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _bll.GamePersonnel.Update(_gamePersonnelMapper.Map(vm.GamePersonnel)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GameId"] = new SelectList(_context.Games, "Id", "Id", game_Personnel.GameId);
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Personnel.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Personnel.RoleId);
-            return View(game_Personnel);
+            vm.Persons = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value));
+            vm.Roles = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value));
+            return View(vm);
         }
 
         // GET: GamePersonnel/Delete/5
@@ -141,17 +136,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game_Personnel = await _context.GamePersonnels
-                .Include(g => g.Game)
-                .Include(g => g.Person)
-                .Include(g => g.Role)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (game_Personnel == null)
+            var gamePersonnel = await _bll.GamePersonnel.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (gamePersonnel == null)
             {
                 return NotFound();
             }
 
-            return View(game_Personnel);
+            return View(_gamePersonnelMapper.Map(gamePersonnel));
         }
 
         // POST: GamePersonnel/Delete/5
@@ -159,15 +150,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var game_Personnel = await _context.GamePersonnels.FindAsync(id);
-            _context.GamePersonnels.Remove(game_Personnel);
-            await _context.SaveChangesAsync();
+            
+            await _bll.GamePersonnel.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool Game_PersonnelExists(Guid id)
-        {
-            return _context.GamePersonnels.Any(e => e.Id == id);
         }
     }
 }

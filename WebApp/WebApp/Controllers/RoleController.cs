@@ -2,27 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
+using WebApp.ViewModels.Role;
 
 namespace WebApp.Controllers
 {
     public class RoleController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.RoleMapper _roleMapper;
 
-        public RoleController(AppDbContext context)
+        public RoleController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _roleMapper = new RoleMapper(mapper);
         }
 
         // GET: Role
         public async Task<IActionResult> Index()
         {
-            return View(await _context.FRoles.ToListAsync());
+            return View((await _bll.Roles.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _roleMapper.Map(x)).ToList());
         }
 
         // GET: Role/Details/5
@@ -33,20 +41,20 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var role = await _context.FRoles
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var role = await _bll.Roles.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (role == null)
             {
                 return NotFound();
             }
 
-            return View(role);
+            return View(_roleMapper.Map(role));
         }
 
         // GET: Role/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new RoleCreateEditViewModel();
+            return View(vm);
         }
 
         // POST: Role/Create
@@ -54,16 +62,15 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Since,Until,Description,Id")] Role role)
+        public async Task<IActionResult> Create(RoleCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                role.Id = Guid.NewGuid();
-                _context.Add(role);
-                await _context.SaveChangesAsync();
+                _bll.Roles.Add(_roleMapper.Map(vm.Role)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(role);
+            return View(vm);
         }
 
         // GET: Role/Edit/5
@@ -74,12 +81,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var role = await _context.FRoles.FindAsync(id);
+            var role = await _bll.Roles.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (role == null)
             {
                 return NotFound();
             }
-            return View(role);
+            var vm = new RoleCreateEditViewModel{Role = _roleMapper.Map(role)!};
+            return View(vm);
         }
 
         // POST: Role/Edit/5
@@ -87,34 +95,20 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Since,Until,Description,Id")] Role role)
+        public async Task<IActionResult> Edit(Guid id, RoleCreateEditViewModel vm)
         {
-            if (id != role.Id)
+            if (id != vm.Role.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(role);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RoleExists(role.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _bll.Roles.Update(_roleMapper.Map(vm.Role)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(role);
+            return View(vm);
         }
 
         // GET: Role/Delete/5
@@ -125,14 +119,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var role = await _context.FRoles
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var role = await _bll.Roles.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (role == null)
             {
                 return NotFound();
             }
 
-            return View(role);
+            return View(_roleMapper.Map(role));
         }
 
         // POST: Role/Delete/5
@@ -140,15 +133,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var role = await _context.FRoles.FindAsync(id);
-            _context.FRoles.Remove(role);
-            await _context.SaveChangesAsync();
+            await _bll.Roles.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool RoleExists(Guid id)
-        {
-            return _context.FRoles.Any(e => e.Id == id);
         }
     }
 }

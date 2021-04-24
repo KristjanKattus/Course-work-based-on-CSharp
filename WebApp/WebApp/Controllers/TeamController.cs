@@ -2,27 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
+using WebApp.ViewModels.Team;
 
 namespace WebApp.Controllers
 {
     public class TeamController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.TeamMapper _teamMapper;
 
-        public TeamController(AppDbContext context)
+        public TeamController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _teamMapper = new TeamMapper(mapper);
         }
 
         // GET: Team
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Teams.ToListAsync());
+            return View((await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _teamMapper.Map(x)).ToList());
         }
 
         // GET: Team/Details/5
@@ -33,20 +41,20 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var team = await _bll.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (team == null)
             {
                 return NotFound();
             }
 
-            return View(team);
+            return View(_teamMapper.Map(team));
         }
 
         // GET: Team/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new TeamCreateEditViewModel();
+            return View(vm);
         }
 
         // POST: Team/Create
@@ -54,16 +62,15 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Id")] Team team)
+        public async Task<IActionResult> Create(TeamCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                team.Id = Guid.NewGuid();
-                _context.Add(team);
-                await _context.SaveChangesAsync();
+                _bll.Teams.Add(_teamMapper.Map(vm.Team)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(team);
+            return View(vm);
         }
 
         // GET: Team/Edit/5
@@ -74,12 +81,14 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams.FindAsync(id);
+            var team = await _bll.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (team == null)
             {
                 return NotFound();
             }
-            return View(team);
+
+            var vm = new TeamCreateEditViewModel{Team = _teamMapper.Map(team)!};
+            return View(vm);
         }
 
         // POST: Team/Edit/5
@@ -87,34 +96,20 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Description,Id")] Team team)
+        public async Task<IActionResult> Edit(Guid id, TeamCreateEditViewModel vm)
         {
-            if (id != team.Id)
+            if (id != vm.Team.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(team);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TeamExists(team.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _bll.Teams.Update(_teamMapper.Map(vm.Team)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(team);
+            return View(vm);
         }
 
         // GET: Team/Delete/5
@@ -125,14 +120,14 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var team = await _bll.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            
             if (team == null)
             {
                 return NotFound();
             }
 
-            return View(team);
+            return View(_teamMapper.Map(team));
         }
 
         // POST: Team/Delete/5
@@ -140,15 +135,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var team = await _context.Teams.FindAsync(id);
-            _context.Teams.Remove(team);
-            await _context.SaveChangesAsync();
+            await _bll.Teams.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool TeamExists(Guid id)
-        {
-            return _context.Teams.Any(e => e.Id == id);
         }
     }
 }

@@ -1,10 +1,14 @@
 ﻿using Contracts.DAL.Base.Repositories;
-using Domain.App;
+using DALAppDTO = DAL.App.DTO;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface IGamePersonnelRepository : IBaseRepository<Game_Personnel>
+    public interface IGamePersonnelRepository : IBaseRepository<DALAppDTO.GamePersonnel>, IGamePersonnelRepositoryCustom<DALAppDTO.GamePersonnel>
     {
         
+    }
+
+    public interface IGamePersonnelRepositoryCustom<TEntity>
+    {
     }
 }

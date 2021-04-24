@@ -1,0 +1,22 @@
+﻿@model WebApp.ViewModels.Person.PersonCreateEditViewModel
+
+<div class="form-group">
+    <label asp-for="Person.FirstName" class="control-label"></label>
+    <input asp-for="Person.FirstName" class="form-control" />
+    <span asp-validation-for="Person.FirstName" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Person.LastName" class="control-label"></label>
+    <input asp-for="Person.LastName" class="form-control" />
+    <span asp-validation-for="Person.LastName" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Person.Date" class="control-label"></label>
+    <input asp-for="Person.Date" class="form-control" />
+    <span asp-validation-for="Person.Date" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="Person.Sex" class="control-label"></label>
+    <input asp-for="Person.Sex" class="form-control" />
+    <span asp-validation-for="Person.Sex" class="text-danger"></span>
+</div>

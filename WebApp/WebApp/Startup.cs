@@ -1,6 +1,8 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using BLL.App;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
 using DAL.App.EF;
 using DAL.App.EF.AppDataInit;
@@ -8,12 +10,15 @@ using Domain.App.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace WebApp
 {
@@ -62,16 +67,32 @@ namespace WebApp
             services.AddControllersWithViews();
 
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
+            services.AddScoped<IAppBLL, AppBLL>();
+
+            // Add support for API versioning
+            services.AddApiVersioning(options => options.ReportApiVersions = true);
+
+            // Add support for m2m API documentation
+            services.AddVersionedApiExplorer(options => options.GroupNameFormat = "'v'VVV");
+            
+            // Add support to generate human readable documentation from m2m docs
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+            services.AddSwaggerGen();
+
+
+            services.AddAutoMapper(
+                typeof(DAL.App.DTO.MappingProfiles.AutoMapperProfile),
+                typeof(BLL.App.DTO.MappingProfiles.AutoMapperProfile),
+                typeof(PublicApi.DTO.v1.MappingProfiles.AutoMapperProfile)
+                );
+
         }
         
         
-        
-        
-
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider apiVersionDescriptionProvider)
         {
-            SetupAppData(app, Configuration);
+            SetupAppData(app, env, Configuration);
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -85,6 +106,23 @@ namespace WebApp
             }
 
             app.UseHttpsRedirection();
+
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                foreach (var apiVersionDescription in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                {
+                    options.SwaggerEndpoint(
+                        $"/swagger/{apiVersionDescription.GroupName}/swagger.json",
+                        apiVersionDescription.GroupName.ToUpperInvariant()
+                        );
+                }
+            }
+            );
+            
+            
+            
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -98,14 +136,17 @@ namespace WebApp
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
+                    name: "area",
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                
+                endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
         }
 
-        private static void SetupAppData(IApplicationBuilder app, IConfiguration configuration
-        )
+        private static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
             using var serviceScope =
                 app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();

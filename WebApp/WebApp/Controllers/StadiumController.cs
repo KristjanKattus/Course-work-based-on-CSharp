@@ -2,28 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
+using WebApp.ViewModels.Stadium;
 
 namespace WebApp.Controllers
 {
     public class StadiumController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.StadiumMapper _stadiumMapper;
 
-        public StadiumController(AppDbContext context)
+        public StadiumController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _stadiumMapper = new StadiumMapper(mapper);
         }
 
         // GET: Stadium
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Stadiums.Include(s => s.StadiumArea);
-            return View(await appDbContext.ToListAsync());
+            return View((await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _stadiumMapper.Map(x)).ToList());
         }
 
         // GET: Stadium/Details/5
@@ -34,22 +41,21 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var stadium = await _context.Stadiums
-                .Include(s => s.StadiumArea)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var stadium = await _bll.Stadiums.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (stadium == null)
             {
                 return NotFound();
             }
 
-            return View(stadium);
+            return View(_stadiumMapper.Map(stadium));
         }
 
         // GET: Stadium/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["AreaId"] = new SelectList(_context.StadiumAreas, "Id", "Name");
-            return View();
+            var vm = new StadiumCreateEditViewModel
+                {StadiumAreaSelectList = new SelectList(await _bll.StadiumAreas.GetAllAsync(User.GetUserId()!.Value))};
+            return View(vm);
         }
 
         // POST: Stadium/Create
@@ -57,17 +63,18 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("AreaId,Name,Since,Until,PitchType,Category,Description,Id")] Stadium stadium)
+        public async Task<IActionResult> Create(StadiumCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                stadium.Id = Guid.NewGuid();
-                _context.Add(stadium);
-                await _context.SaveChangesAsync();
+                _bll.Stadiums.Add(_stadiumMapper.Map(vm.Stadium)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AreaId"] = new SelectList(_context.StadiumAreas, "Id", "Name", stadium.AreaId);
-            return View(stadium);
+            vm.StadiumAreaSelectList = new SelectList(await _bll.StadiumAreas.GetAllAsync(User.GetUserId()!.Value));
+            
+            
+            return View(vm);
         }
 
         // GET: Stadium/Edit/5
@@ -78,13 +85,19 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var stadium = await _context.Stadiums.FindAsync(id);
+            var stadium = await _bll.Stadiums.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (stadium == null)
             {
                 return NotFound();
             }
-            ViewData["AreaId"] = new SelectList(_context.StadiumAreas, "Id", "Name", stadium.AreaId);
-            return View(stadium);
+            
+            var vm = new StadiumCreateEditViewModel
+            {
+                Stadium = _stadiumMapper.Map(stadium)!,
+                StadiumAreaSelectList = new SelectList(await _bll.StadiumAreas.GetAllAsync(User.GetUserId()!.Value))
+            };
+            
+            return View(vm);
         }
 
         // POST: Stadium/Edit/5
@@ -92,35 +105,21 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("AreaId,Name,Since,Until,PitchType,Category,Description,Id")] Stadium stadium)
+        public async Task<IActionResult> Edit(Guid id, StadiumCreateEditViewModel vm)
         {
-            if (id != stadium.Id)
+            if (id != vm.Stadium.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(stadium);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!StadiumExists(stadium.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _bll.Stadiums.Update(_stadiumMapper.Map(vm.Stadium)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AreaId"] = new SelectList(_context.StadiumAreas, "Id", "Name", stadium.AreaId);
-            return View(stadium);
+            vm.StadiumAreaSelectList = new SelectList(await _bll.StadiumAreas.GetAllAsync(User.GetUserId()!.Value));
+            return View(vm);
         }
 
         // GET: Stadium/Delete/5
@@ -131,15 +130,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var stadium = await _context.Stadiums
-                .Include(s => s.StadiumArea)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var stadium = await _bll.Stadiums.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (stadium == null)
             {
                 return NotFound();
             }
 
-            return View(stadium);
+            return View(_stadiumMapper.Map(stadium));
         }
 
         // POST: Stadium/Delete/5
@@ -147,15 +144,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var stadium = await _context.Stadiums.FindAsync(id);
-            _context.Stadiums.Remove(stadium);
-            await _context.SaveChangesAsync();
+            await _bll.Stadiums.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool StadiumExists(Guid id)
-        {
-            return _context.Stadiums.Any(e => e.Id == id);
         }
     }
 }

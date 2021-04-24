@@ -1,0 +1,37 @@
+﻿@model WebApp.ViewModels.GameTeam.GameTeamCreateEditViewModel
+
+<div class="form-group">
+    <label asp-for="GameTeam.GameId" class="control-label"></label>
+    <select asp-for="GameTeam.GameId" class="form-control" asp-items="ViewBag.GameId"></select>
+    <span asp-validation-for="GameTeam.GameId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameTeam.TeamId" class="control-label"></label>
+    <select asp-for="GameTeam.TeamId" class="form-control" asp-items="ViewBag.TeamId"></select>
+    <span asp-validation-for="GameTeam.TeamId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameTeam.Since" class="control-label"></label>
+    <input asp-for="GameTeam.Since" class="form-control" />
+    <span asp-validation-for="GameTeam.Since" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameTeam.Until" class="control-label"></label>
+    <input asp-for="GameTeam.Until" class="form-control" />
+    <span asp-validation-for="GameTeam.Until" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameTeam.Scored" class="control-label"></label>
+    <input asp-for="GameTeam.Scored" class="form-control" />
+    <span asp-validation-for="GameTeam.Scored" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameTeam.Conceded" class="control-label"></label>
+    <input asp-for="GameTeam.Conceded" class="form-control" />
+    <span asp-validation-for="GameTeam.Conceded" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameTeam.Points" class="control-label"></label>
+    <input asp-for="GameTeam.Points" class="form-control" />
+    <span asp-validation-for="GameTeam.Points" class="text-danger"></span>
+</div>

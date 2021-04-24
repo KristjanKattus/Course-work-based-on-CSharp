@@ -1,10 +1,14 @@
 ﻿using Contracts.DAL.Base.Repositories;
-using Domain.App;
+using DALAppDTO = DAL.App.DTO;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface IGameEventRepository : IBaseRepository<Game_Event>
+    public interface IGameEventRepository : IBaseRepository<DALAppDTO.GameEvent>, IGameEventRepositoryCustom<DALAppDTO.GameEvent>
     {
         
+    }
+
+    public interface IGameEventRepositoryCustom<TEntity>
+    {
     }
 }

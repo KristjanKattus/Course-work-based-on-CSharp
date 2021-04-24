@@ -110,7 +110,7 @@ namespace WebApp.ApiControllers.Identity
             }
 
             var errors = result.Errors.Select(error => error.Description).ToList();
-            return BadRequest(new DTO.App.Message() {Messages = errors});
+            return BadRequest(new DTO.App.Message() {Messages = errors}); 
         }
     }
 }

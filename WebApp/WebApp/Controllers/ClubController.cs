@@ -1,10 +1,15 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Contracts.DAL.App;
+using DAL.App.EF.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using Domain.App;
 using Extensions.Base;
 using Microsoft.AspNetCore.Authorization;
+using WebApp.ViewModels.Club;
 
 
 namespace WebApp.Controllers
@@ -13,17 +18,20 @@ namespace WebApp.Controllers
     public class ClubController : Controller
     {
         
-        private readonly IAppUnitOfWork _uow;
+        private readonly IAppBLL _bll;
+        
+        private readonly PublicApi.DTO.v1.Mappers.ClubMapper _clubMapper;
 
-        public ClubController(IAppUnitOfWork uow)
+        public ClubController(IAppBLL bll, IMapper mapper)
         {
-            _uow = uow;
+            _bll = bll;
+            _clubMapper = new PublicApi.DTO.v1.Mappers.ClubMapper(mapper);
         }
 
         // GET: Club
         public async Task<IActionResult> Index()
         {
-            return View(await _uow.Clubs.GetAllAsync(User.GetUserId()!.Value));
+            return View((await _bll.Clubs.GetAllAsync(User.GetUserId()!.Value)).Select(x => _clubMapper.Map(x)).ToList()!);
         }
 
         // GET: Club/Details/5
@@ -34,14 +42,14 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var club = await _uow.Clubs
+            var club = await _bll.Clubs
                 .FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (club == null)
             {
                 return NotFound();
             }
 
-            return View(club);
+            return View(_clubMapper.Map(club));
         }
 
         // GET: Club/Create
@@ -55,18 +63,16 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Since,Until,Description,Id")]
-            Club club)
+        public async Task<IActionResult> Create(ClubCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                club.Id = Guid.NewGuid();
-                _uow.Clubs.Add(club);
-                await _uow.SaveChangesAsync();
+                _bll.Clubs.Add(_clubMapper.Map(vm.Club)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(club);
+            return View(vm);
         }
 
         // GET: Club/Edit/5
@@ -77,13 +83,16 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var club = await _uow.Clubs.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            var club = await _bll.Clubs.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (club == null)
             {
                 return NotFound();
             }
 
-            return View(club);
+            var vm = new ClubCreateEditViewModel();
+            vm.Club = _clubMapper.Map(club)!;
+
+            return View(vm);
         }
 
         // POST: Club/Edit/5
@@ -91,19 +100,20 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Since,Until,Description,Id")]
-            Club club)
+        public async Task<IActionResult> Edit(Guid id, ClubCreateEditViewModel vm)
         {
-            if (id != club.Id)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            if (!ModelState.IsValid) return View(club);
-            _uow.Clubs.Update(club);
-            await _uow.SaveChangesAsync();
-            
-            return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid)
+            {
+                _bll.Clubs.Update(_clubMapper.Map(vm.Club)!);
+                await _bll.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(vm);
         }
 
         // GET: Club/Delete/5
@@ -114,14 +124,14 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var club = await _uow.Clubs
+            var club = await _bll.Clubs
                 .FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (club == null)
             {
                 return NotFound();
             }
 
-            return View(club);
+            return View(_clubMapper.Map(club));
         }
 
         // POST: Club/Delete/5
@@ -129,9 +139,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var club = await _uow.Clubs.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
-            _uow.Clubs.Remove(club!, User.GetUserId()!.Value);
-            await _uow.SaveChangesAsync();
+            var club = await _bll.Clubs.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
+            _bll.Clubs.Remove(club!, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
     }

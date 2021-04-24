@@ -1,10 +1,14 @@
 ﻿using Contracts.DAL.Base.Repositories;
-using Domain.App;
+using DALAppDTO = DAL.App.DTO;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface IClubTeamRepository : IBaseRepository<Club_Team>
+    public interface IClubTeamRepository : IBaseRepository<DALAppDTO.ClubTeam>, IClubTeamRepositoryCustom<DALAppDTO.ClubTeam>
     {
         
+    }
+
+    public interface IClubTeamRepositoryCustom<TEntity>
+    {
     }
 }

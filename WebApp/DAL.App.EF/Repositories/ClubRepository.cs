@@ -1,12 +1,17 @@
-﻿using Contracts.DAL.App.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.DAL.App.Repositories;
+using DAL.App.EF.Mappers;
 using DAL.Base.EF.Repositories;
-using Domain.App;
+
 
 namespace DAL.App.EF.Repositories
 {
-    public class ClubRepository : BaseRepository<Club, AppDbContext>, IClubRepository
+    public class ClubRepository : BaseRepository<DAL.App.DTO.Club, Domain.App.Club, AppDbContext>, IClubRepository
     {
-        public ClubRepository(AppDbContext dbContext) : base(dbContext)
+        public ClubRepository(AppDbContext dbContext, IMapper mapper) : base(dbContext, new ClubMapper(mapper))
         {
         }
     }

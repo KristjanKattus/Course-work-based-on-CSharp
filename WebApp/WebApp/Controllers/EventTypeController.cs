@@ -2,27 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using BLL.App.DTO;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
+using WebApp.ViewModels.EventType;
 
 namespace WebApp.Controllers
 {
     public class EventTypeController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.EventTypeMapper _eventTypeMapper;
 
-        public EventTypeController(AppDbContext context)
+        public EventTypeController(AppDbContext context, IAppBLL bll, IMapper mapper)
         {
-            _context = context;
+            _bll = bll;
+            _eventTypeMapper = new EventTypeMapper(mapper);
         }
 
         // GET: EventType
         public async Task<IActionResult> Index()
         {
-            return View(await _context.EventTypes.ToListAsync());
+            return View((await _bll.EventTypes.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _eventTypeMapper.Map(x)));
         }
 
         // GET: EventType/Details/5
@@ -33,19 +42,19 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var event_Type = await _context.EventTypes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (event_Type == null)
+            var eventType = await _bll.EventTypes.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (eventType == null)
             {
                 return NotFound();
             }
 
-            return View(event_Type);
+            return View(_eventTypeMapper.Map(eventType));
         }
 
         // GET: EventType/Create
         public IActionResult Create()
         {
+            var vm = new EventTypeCreateEditViewModel();
             return View();
         }
 
@@ -54,16 +63,16 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Id")] Event_Type event_Type)
+        public async Task<IActionResult> Create(EventTypeCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                event_Type.Id = Guid.NewGuid();
-                _context.Add(event_Type);
-                await _context.SaveChangesAsync();
+                _bll.EventTypes.Add(_eventTypeMapper.Map(vm.EventType)!);
+                
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(event_Type);
+            return View(vm);
         }
 
         // GET: EventType/Edit/5
@@ -74,12 +83,15 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var event_Type = await _context.EventTypes.FindAsync(id);
-            if (event_Type == null)
+            var eventType = await _bll.EventTypes.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (eventType == null)
             {
                 return NotFound();
             }
-            return View(event_Type);
+
+            var vm = new EventTypeCreateEditViewModel();
+            vm.EventType = _eventTypeMapper.Map(eventType)!;
+            return View(vm);
         }
 
         // POST: EventType/Edit/5
@@ -87,34 +99,20 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Description,Id")] Event_Type event_Type)
+        public async Task<IActionResult> Edit(Guid id, EventTypeCreateEditViewModel vm)
         {
-            if (id != event_Type.Id)
+            if (id != vm.EventType.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(event_Type);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!Event_TypeExists(event_Type.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _bll.EventTypes.Update(_eventTypeMapper.Map(vm.EventType)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(event_Type);
+            return View(vm);
         }
 
         // GET: EventType/Delete/5
@@ -125,14 +123,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var event_Type = await _context.EventTypes
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (event_Type == null)
+            var eventType = await _bll.EventTypes
+                .FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (eventType == null)
             {
                 return NotFound();
             }
-
-            return View(event_Type);
+            return View(_eventTypeMapper.Map(eventType));
         }
 
         // POST: EventType/Delete/5
@@ -140,15 +137,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var event_Type = await _context.EventTypes.FindAsync(id);
-            _context.EventTypes.Remove(event_Type);
-            await _context.SaveChangesAsync();
+            await _bll.EventTypes.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool Event_TypeExists(Guid id)
-        {
-            return _context.EventTypes.Any(e => e.Id == id);
         }
     }
 }

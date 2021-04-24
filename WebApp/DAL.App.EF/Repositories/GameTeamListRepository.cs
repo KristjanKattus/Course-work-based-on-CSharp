@@ -1,13 +1,15 @@
-﻿using Contracts.DAL.App.Repositories;
+﻿using AutoMapper;
+using Contracts.DAL.App.Repositories;
+using DAL.App.EF.Mappers;
 using DAL.Base.EF.Repositories;
-using Domain.App;
+
 
 namespace DAL.App.EF.Repositories
 {
-    public class GameTeamListRepository : BaseRepository<Game_Team_List, AppDbContext>, IGameTeamListRepository
+    public class GameTeamListRepository : BaseRepository<DAL.App.DTO.GameTeamList, Domain.App.Game_Team_List, AppDbContext>, IGameTeamListRepository
 
     {
-        public GameTeamListRepository(AppDbContext dbContext) : base(dbContext)
+        public GameTeamListRepository(AppDbContext dbContext, IMapper mapper) : base(dbContext, new GameTeamListMapper(mapper))
         {
         }
     }

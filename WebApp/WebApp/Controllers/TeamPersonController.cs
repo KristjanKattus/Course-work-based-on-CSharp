@@ -2,28 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
+using WebApp.ViewModels.TeamPerson;
 
 namespace WebApp.Controllers
 {
     public class TeamPersonController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.TeamPersonMapper _teamPersonMapper;
 
-        public TeamPersonController(AppDbContext context)
+        public TeamPersonController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _teamPersonMapper = new TeamPersonMapper(mapper);
         }
 
         // GET: TeamPerson
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.TeamPersons.Include(t => t.Person).Include(t => t.Role).Include(t => t.Team);
-            return View(await appDbContext.ToListAsync());
+            
+            return View((await _bll.TeamPersons.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _teamPersonMapper.Map(x)).ToList());
         }
 
         // GET: TeamPerson/Details/5
@@ -34,26 +42,25 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var team_Person = await _context.TeamPersons
-                .Include(t => t.Person)
-                .Include(t => t.Role)
-                .Include(t => t.Team)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (team_Person == null)
+            var teamPerson = await _bll.TeamPersons.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (teamPerson == null)
             {
                 return NotFound();
             }
 
-            return View(team_Person);
+            return View(_teamPersonMapper.Map(teamPerson));
         }
 
         // GET: TeamPerson/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName");
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name");
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name");
-            return View();
+            var vm = new TeamPersonCreateEditViewModel
+            {
+                PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)),
+                RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value)),
+                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
+            };
+            return View(vm);
         }
 
         // POST: TeamPerson/Create
@@ -61,19 +68,19 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PersonId,TeamId,RoleId,Id")] Team_Person team_Person)
+        public async Task<IActionResult> Create(TeamPersonCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                team_Person.Id = Guid.NewGuid();
-                _context.Add(team_Person);
-                await _context.SaveChangesAsync();
+                _bll.TeamPersons.Add(_teamPersonMapper.Map(vm.TeamPerson)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", team_Person.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", team_Person.RoleId);
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name", team_Person.TeamId);
-            return View(team_Person);
+
+            vm.PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value));
+            vm.RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value));
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value));
+            return View(vm);
         }
 
         // GET: TeamPerson/Edit/5
@@ -84,15 +91,19 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var team_Person = await _context.TeamPersons.FindAsync(id);
-            if (team_Person == null)
+            var teamPerson = await _bll.TeamPersons.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (teamPerson == null)
             {
                 return NotFound();
             }
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", team_Person.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", team_Person.RoleId);
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name", team_Person.TeamId);
-            return View(team_Person);
+            var vm = new TeamPersonCreateEditViewModel
+            {
+                TeamPerson = _teamPersonMapper.Map(teamPerson)!,
+                PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)),
+                RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value)),
+                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
+            };
+            return View(vm);
         }
 
         // POST: TeamPerson/Edit/5
@@ -100,37 +111,23 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("PersonId,TeamId,RoleId,Id")] Team_Person team_Person)
+        public async Task<IActionResult> Edit(Guid id, TeamPersonCreateEditViewModel vm)
         {
-            if (id != team_Person.Id)
+            if (id != vm.TeamPerson.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(team_Person);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!Team_PersonExists(team_Person.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _bll.TeamPersons.Update(_teamPersonMapper.Map(vm.TeamPerson)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", team_Person.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", team_Person.RoleId);
-            ViewData["TeamId"] = new SelectList(_context.Teams, "Id", "Name", team_Person.TeamId);
-            return View(team_Person);
+            vm.PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value));
+            vm.RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value));
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value));
+            return View(vm);
         }
 
         // GET: TeamPerson/Delete/5
@@ -141,17 +138,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var team_Person = await _context.TeamPersons
-                .Include(t => t.Person)
-                .Include(t => t.Role)
-                .Include(t => t.Team)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (team_Person == null)
+            var teamPerson = await _bll.TeamPersons.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (teamPerson == null)
             {
                 return NotFound();
             }
 
-            return View(team_Person);
+            return View(_teamPersonMapper.Map(teamPerson));
         }
 
         // POST: TeamPerson/Delete/5
@@ -159,15 +152,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var team_Person = await _context.TeamPersons.FindAsync(id);
-            _context.TeamPersons.Remove(team_Person);
-            await _context.SaveChangesAsync();
+            await _bll.TeamPersons.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool Team_PersonExists(Guid id)
-        {
-            return _context.TeamPersons.Any(e => e.Id == id);
         }
     }
 }

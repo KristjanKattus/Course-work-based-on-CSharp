@@ -1,12 +1,14 @@
-﻿using Contracts.DAL.App.Repositories;
+﻿using AutoMapper;
+using Contracts.DAL.App.Repositories;
+using DAL.App.EF.Mappers;
 using DAL.Base.EF.Repositories;
 using Domain.App;
 
 namespace DAL.App.EF.Repositories
 {
-    public class AreaRepository : BaseRepository<Stadium_Area, AppDbContext>, IAreaRepository
+    public class StadiumAreaRepository : BaseRepository<DAL.App.DTO.StadiumArea, Domain.App.Stadium_Area, AppDbContext>, IStadiumAreaRepository
     {
-        public AreaRepository(AppDbContext dbContext) : base(dbContext)
+        public StadiumAreaRepository(AppDbContext dbContext, IMapper mapper) : base(dbContext, new StadiumAreaMapper(mapper))
         {
             
         }

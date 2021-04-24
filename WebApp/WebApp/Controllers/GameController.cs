@@ -2,28 +2,38 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
+using WebApp.ViewModels.Club;
+using WebApp.ViewModels.Game;
+using Stadium = BLL.App.DTO.Stadium;
 
 namespace WebApp.Controllers
 {
     public class GameController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.GameMapper _gameMapper;
 
-        public GameController(AppDbContext context)
+        public GameController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _gameMapper = new GameMapper(mapper);
+
         }
 
         // GET: Game
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Games.Include(g => g.Stadium);
-            return View(await appDbContext.ToListAsync());
+            
+            return View((await _bll.Games.GetAllAsync(User.GetUserId()!.Value)).Select(x => _gameMapper.Map(x)).ToList());
         }
 
         // GET: Game/Details/5
@@ -34,22 +44,25 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game = await _context.Games
-                .Include(g => g.Stadium)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var game = await _bll.Games.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (game == null)
             {
                 return NotFound();
             }
 
-            return View(game);
+            return View(_gameMapper.Map(game));
         }
 
         // GET: Game/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["StadiumId"] = new SelectList(_context.Stadiums, "Id", "Name");
-            return View();
+            var vm = new GameCreateEditViewModel
+            {
+                Stadiums = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value),
+                    nameof(Stadium.Id))
+            };
+
+            return View(vm);
         }
 
         // POST: Game/Create
@@ -57,17 +70,17 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("StadiumId,GameLength,MatchRound,Id")] Game game)
+        public async Task<IActionResult> Create(GameCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                game.Id = Guid.NewGuid();
-                _context.Add(game);
-                await _context.SaveChangesAsync();
+                _bll.Games.Add(_gameMapper.Map(vm.Game)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["StadiumId"] = new SelectList(_context.Stadiums, "Id", "Name", game.StadiumId);
-            return View(game);
+            
+            vm.Stadiums = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value), nameof(Stadium.Id));
+            return View(vm);
         }
 
         // GET: Game/Edit/5
@@ -78,13 +91,19 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game = await _context.Games.FindAsync(id);
+            var game = await _bll.Games.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (game == null)
             {
                 return NotFound();
             }
-            ViewData["StadiumId"] = new SelectList(_context.Stadiums, "Id", "Name", game.StadiumId);
-            return View(game);
+
+            var vm = new GameCreateEditViewModel
+            {
+                Game = _gameMapper.Map(game)!,
+                Stadiums = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value),
+                    nameof(Stadium.Id))
+            };
+            return View(vm);
         }
 
         // POST: Game/Edit/5
@@ -92,35 +111,21 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("StadiumId,GameLength,MatchRound,Id")] Game game)
+        public async Task<IActionResult> Edit(Guid id, GameCreateEditViewModel vm)
         {
-            if (id != game.Id)
+            if (id != vm.Game.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(game);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!GameExists(game.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                _bll.Games.Update(_gameMapper.Map(vm.Game)!);
+                await _bll.SaveChangesAsync();
+;                return RedirectToAction(nameof(Index));
             }
-            ViewData["StadiumId"] = new SelectList(_context.Stadiums, "Id", "Name", game.StadiumId);
-            return View(game);
+            vm.Stadiums = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value), nameof(Stadium.Id));
+            return View(vm);
         }
 
         // GET: Game/Delete/5
@@ -131,15 +136,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game = await _context.Games
-                .Include(g => g.Stadium)
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var game = await _bll.Games.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
             if (game == null)
             {
                 return NotFound();
             }
 
-            return View(game);
+            return View(_gameMapper.Map(game)!);
         }
 
         // POST: Game/Delete/5
@@ -147,15 +150,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var game = await _context.Games.FindAsync(id);
-            _context.Games.Remove(game);
-            await _context.SaveChangesAsync();
+            await _bll.Games.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool GameExists(Guid id)
-        {
-            return _context.Games.Any(e => e.Id == id);
         }
     }
 }

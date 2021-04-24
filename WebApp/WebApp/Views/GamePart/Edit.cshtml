@@ -1,4 +1,4 @@
-@model Domain.App.Game_Part
+@model WebApp.ViewModels.GamePart.GamePartCreateEditViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,22 +12,10 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="TypeId" class="control-label"></label>
-                <select asp-for="TypeId" class="form-control" asp-items="ViewBag.TypeId"></select>
-                <span asp-validation-for="TypeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GameId" class="control-label"></label>
-                <select asp-for="GameId" class="form-control" asp-items="ViewBag.GameId"></select>
-                <span asp-validation-for="GameId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NumberInOrder" class="control-label"></label>
-                <input asp-for="NumberInOrder" class="form-control" />
-                <span asp-validation-for="NumberInOrder" class="text-danger"></span>
-            </div>
-            <input type="hidden" asp-for="Id" />
+            
+            <partial name="_CreateEdit" model="Model"/>
+            
+            <input type="hidden" asp-for="GamePart.Id" />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

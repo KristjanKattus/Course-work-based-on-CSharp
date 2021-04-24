@@ -2,28 +2,35 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
+using WebApp.ViewModels.GameTeamList;
 
 namespace WebApp.Controllers
 {
     public class GameTeamListController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.GameTeamListMapper _gameTeamListMapper;
 
-        public GameTeamListController(AppDbContext context)
+        public GameTeamListController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _gameTeamListMapper = new GameTeamListMapper(mapper);
         }
 
         // GET: GameTeamList
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.GameTeamListMembers.Include(g => g.GameTeam).Include(g => g.Person).Include(g => g.Role);
-            return View(await appDbContext.ToListAsync());
+            return View((await _bll.GameTeamLists.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _gameTeamListMapper.Map(x)).ToList());
         }
 
         // GET: GameTeamList/Details/5
@@ -34,26 +41,27 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game_Team_List = await _context.GameTeamListMembers
-                .Include(g => g.GameTeam)
-                .Include(g => g.Person)
-                .Include(g => g.Role)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (game_Team_List == null)
+            var gameTeamList = await _bll.GameTeamLists.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (gameTeamList == null)
             {
                 return NotFound();
             }
 
-            return View(game_Team_List);
+            return View(_gameTeamListMapper.Map(gameTeamList));
         }
 
         // GET: GameTeamList/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["GameTeamId"] = new SelectList(_context.GameTeams, "Id", "Id");
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName");
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name");
-            return View();
+            var vm = new GameTeamListCreateEditViewModel
+            {
+                GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllAsync(User.GetUserId()!.Value)),
+                PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)),
+                RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value))
+                
+            };
+            
+            return View(vm);
         }
 
         // POST: GameTeamList/Create
@@ -61,19 +69,20 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PersonId,GameTeamId,RoleId,InStartingLineup,Staff,Id")] Game_Team_List game_Team_List)
+        public async Task<IActionResult> Create(GameTeamListCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                game_Team_List.Id = Guid.NewGuid();
-                _context.Add(game_Team_List);
-                await _context.SaveChangesAsync();
+                _bll.GameTeamLists.Add(_gameTeamListMapper.Map(vm.GameTeamList)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GameTeamId"] = new SelectList(_context.GameTeams, "Id", "Id", game_Team_List.GameTeamId);
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Team_List.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Team_List.RoleId);
-            return View(game_Team_List);
+            
+            vm.GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllAsync(User.GetUserId()!.Value));
+            vm.PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value));
+            vm.RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value));
+            
+            return View(vm);
         }
 
         // GET: GameTeamList/Edit/5
@@ -84,15 +93,20 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game_Team_List = await _context.GameTeamListMembers.FindAsync(id);
-            if (game_Team_List == null)
+            var gameTeamList = await _bll.GameTeamLists.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (gameTeamList == null)
             {
                 return NotFound();
             }
-            ViewData["GameTeamId"] = new SelectList(_context.GameTeams, "Id", "Id", game_Team_List.GameTeamId);
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Team_List.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Team_List.RoleId);
-            return View(game_Team_List);
+            var vm = new GameTeamListCreateEditViewModel
+            {
+                GameTeamList = _gameTeamListMapper.Map(gameTeamList)!,
+                GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllAsync(User.GetUserId()!.Value)),
+                PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)),
+                RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value))
+                
+            };
+            return View(vm);
         }
 
         // POST: GameTeamList/Edit/5
@@ -100,37 +114,22 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("PersonId,GameTeamId,RoleId,InStartingLineup,Staff,Id")] Game_Team_List game_Team_List)
+        public async Task<IActionResult> Edit(Guid id, GameTeamListCreateEditViewModel vm)
         {
-            if (id != game_Team_List.Id)
+            if (id != vm.GameTeamList.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(game_Team_List);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!Game_Team_ListExists(game_Team_List.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _bll.GameTeamLists.Update(_gameTeamListMapper.Map(vm.GameTeamList)!);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["GameTeamId"] = new SelectList(_context.GameTeams, "Id", "Id", game_Team_List.GameTeamId);
-            ViewData["PersonId"] = new SelectList(_context.Persons, "Id", "FirstName", game_Team_List.PersonId);
-            ViewData["RoleId"] = new SelectList(_context.FRoles, "Id", "Name", game_Team_List.RoleId);
-            return View(game_Team_List);
+            vm.GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllAsync(User.GetUserId()!.Value));
+            vm.PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value));
+            vm.RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value));
+            return View(vm);
         }
 
         // GET: GameTeamList/Delete/5
@@ -141,17 +140,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game_Team_List = await _context.GameTeamListMembers
-                .Include(g => g.GameTeam)
-                .Include(g => g.Person)
-                .Include(g => g.Role)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (game_Team_List == null)
+            var gameTeamList = await _bll.GameTeamLists.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (gameTeamList == null)
             {
                 return NotFound();
             }
 
-            return View(game_Team_List);
+            return View(_gameTeamListMapper.Map(gameTeamList));
         }
 
         // POST: GameTeamList/Delete/5
@@ -159,15 +154,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var game_Team_List = await _context.GameTeamListMembers.FindAsync(id);
-            _context.GameTeamListMembers.Remove(game_Team_List);
-            await _context.SaveChangesAsync();
+            await _bll.GameTeamLists.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool Game_Team_ListExists(Guid id)
-        {
-            return _context.GameTeamListMembers.Any(e => e.Id == id);
         }
     }
 }

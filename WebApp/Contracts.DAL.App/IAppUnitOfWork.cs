@@ -7,7 +7,7 @@ namespace Contracts.DAL.App
 {
     public interface IAppUnitOfWork : IBaseUnitOfWork
     {
-        IAreaRepository Areas { get; }
+        IStadiumAreaRepository StadiumAreas { get; }
         IClubRepository Clubs { get; }
         IClubTeamRepository ClubTeams { get; }
         IEventTypeRepository EventTypes { get; }

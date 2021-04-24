@@ -1,0 +1,17 @@
+﻿@model WebApp.ViewModels.League.LeagueCreateEditViewModel
+
+<div class="form-group">
+    <label asp-for="League.Name" class="control-label"></label>
+    <input asp-for="League.Name" class="form-control" />
+    <span asp-validation-for="League.Name" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="League.Duration" class="control-label"></label>
+    <input asp-for="League.Duration" class="form-control" />
+    <span asp-validation-for="League.Duration" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="League.Description" class="control-label"></label>
+    <input asp-for="League.Description" class="form-control" />
+    <span asp-validation-for="League.Description" class="text-danger"></span>
+</div>

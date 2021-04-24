@@ -1,10 +1,14 @@
 ﻿using Contracts.DAL.Base.Repositories;
-using Domain.App;
+using DALAppDTO = DAL.App.DTO;
 
 namespace Contracts.DAL.App.Repositories
 {
-    public interface IAreaRepository : IBaseRepository<Stadium_Area>
+    public interface IStadiumAreaRepository : IBaseRepository<DALAppDTO.StadiumArea>, IStadiumAreaRepositoryCustom<DALAppDTO.StadiumArea>
     {
         
+    }
+
+    public interface IStadiumAreaRepositoryCustom<TEntity>
+    {
     }
 }

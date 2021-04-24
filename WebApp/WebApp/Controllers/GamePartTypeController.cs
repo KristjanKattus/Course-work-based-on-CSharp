@@ -2,27 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
+using WebApp.ViewModels.GamePartType;
 
 namespace WebApp.Controllers
 {
     public class GamePartTypeController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.GamePartTypeMapper _gamePartTypeMapper;
 
-        public GamePartTypeController(AppDbContext context)
+        public GamePartTypeController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _gamePartTypeMapper = new GamePartTypeMapper(mapper);
+            
         }
 
         // GET: GamePartType
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Types.ToListAsync());
+            return View((await _bll.GamePartTypes.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _gamePartTypeMapper.Map(x)).ToList());
         }
 
         // GET: GamePartType/Details/5
@@ -33,20 +42,20 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game_Part_Type = await _context.Types
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (game_Part_Type == null)
+            var gamePartType = await _bll.GamePartTypes.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (gamePartType == null)
             {
                 return NotFound();
             }
 
-            return View(game_Part_Type);
+            return View(_gamePartTypeMapper.Map(gamePartType));
         }
 
         // GET: GamePartType/Create
         public IActionResult Create()
         {
-            return View();
+            var vm = new GamePartTypeCreateEditViewModel();
+            return View(vm);
         }
 
         // POST: GamePartType/Create
@@ -54,16 +63,16 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Id")] Game_Part_Type game_Part_Type)
+        public async Task<IActionResult> Create(GamePartTypeCreateEditViewModel vm)
         {
             if (ModelState.IsValid)
             {
-                game_Part_Type.Id = Guid.NewGuid();
-                _context.Add(game_Part_Type);
-                await _context.SaveChangesAsync();
+                _bll.GamePartTypes.Add(_gamePartTypeMapper.Map(vm.GamePartType)!);
+                
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(game_Part_Type);
+            return View(vm);
         }
 
         // GET: GamePartType/Edit/5
@@ -74,12 +83,15 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game_Part_Type = await _context.Types.FindAsync(id);
-            if (game_Part_Type == null)
+            var gamePartType = await _bll.GamePartTypes.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (gamePartType == null)
             {
                 return NotFound();
             }
-            return View(game_Part_Type);
+
+            var vm = new GamePartTypeCreateEditViewModel();
+            vm.GamePartType = _gamePartTypeMapper.Map(gamePartType)!;
+            return View(vm);
         }
 
         // POST: GamePartType/Edit/5
@@ -87,34 +99,20 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Name,Description,Id")] Game_Part_Type game_Part_Type)
+        public async Task<IActionResult> Edit(Guid id, GamePartTypeCreateEditViewModel vm)
         {
-            if (id != game_Part_Type.Id)
+            if (id != vm.GamePartType.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(game_Part_Type);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!Game_Part_TypeExists(game_Part_Type.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _bll.GamePartTypes.Update(_gamePartTypeMapper.Map(vm.GamePartType)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(game_Part_Type);
+            return View(vm);
         }
 
         // GET: GamePartType/Delete/5
@@ -125,14 +123,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game_Part_Type = await _context.Types
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (game_Part_Type == null)
+            var gamePartType = await _bll.GamePartTypes.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (gamePartType == null)
             {
                 return NotFound();
             }
 
-            return View(game_Part_Type);
+            return View(_gamePartTypeMapper.Map(gamePartType));
         }
 
         // POST: GamePartType/Delete/5
@@ -140,15 +137,9 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var game_Part_Type = await _context.Types.FindAsync(id);
-            _context.Types.Remove(game_Part_Type);
-            await _context.SaveChangesAsync();
+            await _bll.GamePartTypes.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool Game_Part_TypeExists(Guid id)
-        {
-            return _context.Types.Any(e => e.Id == id);
         }
     }
 }

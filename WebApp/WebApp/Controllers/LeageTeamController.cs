@@ -2,29 +2,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using PublicApi.DTO.v1.Mappers;
 using WebApp.ViewModels.LeagueTeam;
 
 namespace WebApp.Controllers
 {
-    public class LeageTeamController : Controller
+    
+    
+    public class LeagueTeamController : Controller
     {
-        private readonly AppDbContext _context;
-
-        public LeageTeamController(AppDbContext context)
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.LeagueTeamMapper _leagueTeamMapper;
+        
+        public LeagueTeamController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _leagueTeamMapper = new LeagueTeamMapper(mapper);
         }
 
         // GET: LeageTeam
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.LeagueTeams.Include(l => l.League).Include(l => l.Team);
-            return View(await appDbContext.ToListAsync());
+            return View((await _bll.LeagueTeams.GetAllAsync(User.GetUserId()!.Value)).Select(x => _leagueTeamMapper.Map(x)).ToList());
         }
 
         // GET: LeageTeam/Details/5
@@ -35,25 +42,22 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var league_Team = await _context.LeagueTeams
-                .Include(l => l.League)
-                .Include(l => l.Team)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (league_Team == null)
+            var leagueTeam = await _bll.LeagueTeams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (leagueTeam == null)
             {
                 return NotFound();
             }
 
-            return View(league_Team);
+            return View(_leagueTeamMapper.Map(leagueTeam));
         }
 
         // GET: LeageTeam/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             var vm = new LeagueTeamCreateEditViewModel
             {
-                LeaguesSelectList = new SelectList(_context.Leagues, "Id", "Name"),
-                TeamsSelectList = new SelectList(_context.Teams, "Id", "Name")
+                LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value)),
+                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
             };
 
             return View(vm);
@@ -68,13 +72,13 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                vm.LeagueTeam.Id = Guid.NewGuid();
-                _context.Add(vm.LeagueTeam);
-                await _context.SaveChangesAsync();
+                _bll.LeagueTeams.Add(_leagueTeamMapper.Map(vm.LeagueTeam)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            vm.LeaguesSelectList = new SelectList(_context.Leagues, "Id", "Name", vm.LeagueTeam.LeagueId);
-            vm.LeaguesSelectList = new SelectList(_context.Teams, "Id", "Name", vm.LeagueTeam.TeamId);
+            
+            vm.LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value));
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value));
             return View(vm);
         }
 
@@ -86,16 +90,16 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var league_Team = await _context.LeagueTeams.FindAsync(id);
-            if (league_Team == null)
+            var leagueTeam = await _bll.LeagueTeams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (leagueTeam == null)
             {
                 return NotFound();
             }
             var vm = new LeagueTeamCreateEditViewModel
             {
-                LeagueTeam = league_Team,
-                LeaguesSelectList = new SelectList(_context.Leagues, "Id", "Name"),
-                TeamsSelectList = new SelectList(_context.Teams, "Id", "Name")
+                LeagueTeam = _leagueTeamMapper.Map(leagueTeam)!,
+                LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value)),
+                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
             };
             return View(vm);
         }
@@ -114,26 +118,11 @@ namespace WebApp.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(vm.LeagueTeam);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!League_TeamExists(vm.LeagueTeam.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _bll.LeagueTeams.Update(_leagueTeamMapper.Map(vm.LeagueTeam)!);
                 return RedirectToAction(nameof(Index));
             }
-            vm.LeaguesSelectList = new SelectList(_context.Leagues, "Id", "Name", vm.LeagueTeam.LeagueId);
-            vm.TeamsSelectList = new SelectList(_context.Teams, "Id", "Name", vm.LeagueTeam.TeamId);
+            vm.LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value));
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value));
             return View(vm);
         }
 
@@ -145,16 +134,13 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var league_Team = await _context.LeagueTeams
-                .Include(l => l.League)
-                .Include(l => l.Team)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (league_Team == null)
+            var leagueTeam = await _bll.LeagueTeams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            if (leagueTeam == null)
             {
                 return NotFound();
             }
 
-            return View(league_Team);
+            return View(_leagueTeamMapper.Map(leagueTeam));
         }
 
         // POST: LeageTeam/Delete/5
@@ -162,15 +148,10 @@ namespace WebApp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var league_Team = await _context.LeagueTeams.FindAsync(id);
-            _context.LeagueTeams.Remove(league_Team);
-            await _context.SaveChangesAsync();
+            await _bll.LeagueTeams.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool League_TeamExists(Guid id)
-        {
-            return _context.LeagueTeams.Any(e => e.Id == id);
-        }
     }
 }
