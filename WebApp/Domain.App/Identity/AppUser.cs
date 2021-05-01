@@ -13,7 +13,7 @@ namespace Domain.App.Identity
         public string Lastname { get; set; } = default!;
 
         public ICollection<Person>? Persons { get; set; }
-        // public ICollection<Simple>? Simples { get; set; }
+        
 
         public string FullName => Firstname + " " + Lastname;
         public string FullNameEmail => FullName + " (" + Email + ")";

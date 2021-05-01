@@ -16,7 +16,7 @@ namespace DAL.App.EF.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.3")
+                .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Domain.App.Club", b =>
@@ -140,6 +140,9 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("GamePersonnelId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("GameTeamListId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("GameTime")
                         .HasColumnType("datetime2");
 
@@ -155,6 +158,8 @@ namespace DAL.App.EF.Migrations
                     b.HasIndex("GamePartId");
 
                     b.HasIndex("GamePersonnelId");
+
+                    b.HasIndex("GameTeamListId");
 
                     b.ToTable("GameEvents");
                 });
@@ -793,6 +798,12 @@ namespace DAL.App.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.App.Game_Team_List", "GameTeamList")
+                        .WithMany()
+                        .HasForeignKey("GameTeamListId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("EventType");
 
                     b.Navigation("Game");
@@ -800,6 +811,8 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("GamePart");
 
                     b.Navigation("GamePersonnel");
+
+                    b.Navigation("GameTeamList");
                 });
 
             modelBuilder.Entity("Domain.App.Game_Part", b =>

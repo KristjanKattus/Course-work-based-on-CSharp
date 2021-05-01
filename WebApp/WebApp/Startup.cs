@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -61,7 +62,8 @@ namespace WebApp
                     };
                 });
 
-            services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            services
+                .AddIdentity<AppUser, AppRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<AppDbContext>();
             services.AddControllersWithViews();
@@ -148,9 +150,19 @@ namespace WebApp
 
         private static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
+            
+            
+            
             using var serviceScope =
                 app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             using var ctx = serviceScope.ServiceProvider.GetService<AppDbContext>();
+            
+            var logger = serviceScope.ServiceProvider.GetService<ILogger<Startup>>();
+            if (logger == null)
+            {
+                throw new ApplicationException("Problem in services. Can't initialize logger");
+            }
+            
             if (ctx != null)
             {
                 if (configuration.GetValue<bool>("AppData:DropDataBase"))
@@ -163,7 +175,18 @@ namespace WebApp
                 }
                 if (configuration.GetValue<bool>("AppData:SeedIdentity"))
                 {
-                    //TODO
+                    using var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>();
+                    using var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<AppRole>>();
+
+                    if (userManager != null && roleManager != null)
+                    {
+                        DataInit.SeedIdentity(userManager, roleManager, logger);
+                    }
+                    else
+                    {
+                        Console.Write(
+                            $"No user manager {(userManager == null ? "null" : "ok")} or role manager {(roleManager == null ? "null" : "ok")}!");
+                    }
                 }
                 if (configuration.GetValue<bool>("AppData:SeedData"))
                 {

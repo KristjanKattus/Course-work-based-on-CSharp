@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Contracts.DAL.App.Repositories;
+using DAL.App.DTO;
 using DAL.App.EF.Mappers;
 using DAL.Base.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -18,13 +19,28 @@ namespace DAL.App.EF.Repositories
         {
         }
 
-        // public override async Task<IEnumerable<DAL.App.DTO.ClubTeam>> GetAllAsync(Guid userId = default, bool noTracking = true)
-        // {
-        //     // var query = InitializeQuery(userId, noTracking);
-        //     //
-        //     // var resQuery = query
-        //     //     .Include(x => x.Club)
-        //     //     .Where(c => c.Id)
-        // }
+        
+        public override async Task<IEnumerable<ClubTeam>> GetAllAsync(Guid userId, bool noTracking = true)
+        {
+            var query = InitializeQuery(userId, noTracking);
+
+            var resQuery = query
+                .Include(c => c.Club)
+                .Select(x => Mapper.Map(x));
+
+            var res = await resQuery.ToListAsync();
+            return res!;
+        }
+
+        public override async Task<ClubTeam?> FirstOrDefaultAsync(Guid id, Guid userId = default, bool noTracking = true)
+        {
+            var query = InitializeQuery(userId, noTracking);
+
+            var resQuery = query
+                .Include(c => c.Club);
+
+            var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(m => m.Id == id));
+            return res;
+        }
     }
 }

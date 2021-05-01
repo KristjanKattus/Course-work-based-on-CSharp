@@ -1,4 +1,4 @@
-@model IEnumerable<Domain.App.Game_Event>
+@model IEnumerable<PublicApi.DTO.v1.GameEvent>
 
 @{
     ViewData["Title"] = "Index";
@@ -17,6 +17,9 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.GamePersonnel)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GameTeamList)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.GamePart)
@@ -43,7 +46,10 @@
                 @Html.DisplayFor(modelItem => item.Game.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.GamePersonnel!.Id)
+                @Html.DisplayFor(modelItem => item!.GamePersonnel!.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item!.GameTeamList!.Id)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.GamePart.Id)

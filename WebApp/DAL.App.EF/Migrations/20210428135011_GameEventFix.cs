@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class OneToOne : Migration
+    public partial class GameEventFix : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -498,12 +498,47 @@ namespace DAL.App.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GameTeamListMembers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameTeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    InStartingLineup = table.Column<bool>(type: "bit", nullable: false),
+                    Staff = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameTeamListMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GameTeamListMembers_FRoles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "FRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GameTeamListMembers_GameTeams_GameTeamId",
+                        column: x => x.GameTeamId,
+                        principalTable: "GameTeams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GameTeamListMembers_Persons_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "Persons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GameEvents",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GamePersonnelId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    GameTeamListId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GamePartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EventTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -537,38 +572,10 @@ namespace DAL.App.EF.Migrations
                         principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GameTeamListMembers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GameTeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    InStartingLineup = table.Column<bool>(type: "bit", nullable: false),
-                    Staff = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GameTeamListMembers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GameTeamListMembers_FRoles_RoleId",
-                        column: x => x.RoleId,
-                        principalTable: "FRoles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_GameTeamListMembers_GameTeams_GameTeamId",
-                        column: x => x.GameTeamId,
-                        principalTable: "GameTeams",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_GameTeamListMembers_Persons_PersonId",
-                        column: x => x.PersonId,
-                        principalTable: "Persons",
+                        name: "FK_GameEvents_GameTeamListMembers_GameTeamListId",
+                        column: x => x.GameTeamListId,
+                        principalTable: "GameTeamListMembers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -641,6 +648,11 @@ namespace DAL.App.EF.Migrations
                 name: "IX_GameEvents_GamePersonnelId",
                 table: "GameEvents",
                 column: "GamePersonnelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameEvents_GameTeamListId",
+                table: "GameEvents",
+                column: "GameTeamListId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameParts_GameId",
@@ -757,9 +769,6 @@ namespace DAL.App.EF.Migrations
                 name: "GameEvents");
 
             migrationBuilder.DropTable(
-                name: "GameTeamListMembers");
-
-            migrationBuilder.DropTable(
                 name: "LeagueTeams");
 
             migrationBuilder.DropTable(
@@ -781,7 +790,7 @@ namespace DAL.App.EF.Migrations
                 name: "GamePersonnels");
 
             migrationBuilder.DropTable(
-                name: "GameTeams");
+                name: "GameTeamListMembers");
 
             migrationBuilder.DropTable(
                 name: "Leagues");
@@ -791,6 +800,9 @@ namespace DAL.App.EF.Migrations
 
             migrationBuilder.DropTable(
                 name: "FRoles");
+
+            migrationBuilder.DropTable(
+                name: "GameTeams");
 
             migrationBuilder.DropTable(
                 name: "Persons");

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Contracts.DAL.App.Repositories;
@@ -17,17 +18,31 @@ namespace DAL.App.EF.Repositories
         public GameRepository(AppDbContext dbContext, IMapper mapper) : base(dbContext, new GameMapper(mapper))
         {
         }
-        
-        
-        // public override async Task GetAllAsync(Guid userId, bool noTracking)
-        // {
-        //     var query = InitializeQuery();
-        //     
-        //     var resQuery = query
-        //         .Include(g => g.Stadium)
-        //         .Include(g => g.GameEvents)
-        //         .ThenInclude(ge => ge.)
-                
-        // }
+
+
+        public override async Task<IEnumerable<DTO.Game>> GetAllAsync(Guid userId, bool noTracking = true)
+        {
+            var query = InitializeQuery(userId, noTracking);
+
+            var resQuery = query
+                .Include(g => g.Stadium)
+                .Include(g => g.GameEvents)
+                .Select(g => Mapper.Map(g));
+
+            var res = await resQuery.ToListAsync();
+            return res!;
+        }
+
+        public override async Task<DTO.Game?> FirstOrDefaultAsync(Guid id, Guid userId = default, bool noTracking = true)
+        {
+            var query = InitializeQuery(userId, noTracking);
+
+            var resQuery = query
+                .Include(g => g.Stadium)
+                .Include(g => g.GameEvents);
+
+            var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(m => m.Id == id));
+            return res!;
+        }
     }
 }
