@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Domain.Base;
 using Microsoft.AspNetCore.Identity;
 
 namespace DAL.App.DTO.Identity
@@ -13,8 +14,9 @@ namespace DAL.App.DTO.Identity
         public string Lastname { get; set; } = default!;
 
         public ICollection<Person>? Persons { get; set; }
-        // public ICollection<Simple>? Simples { get; set; }
-
+        
+        [Range(1, Int32.MaxValue)]
+        public  EGender Gender { get; set; }
         public string FullName => Firstname + " " + Lastname;
         public string FullNameEmail => FullName + " (" + Email + ")";
     }

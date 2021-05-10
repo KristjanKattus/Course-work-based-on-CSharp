@@ -45,21 +45,20 @@ namespace DAL.App.EF.AppDataInit
             
             foreach (var userInfo in InitialData.Users)
             {
-                var user = userManager.FindByNameAsync(userInfo.name).Result;
-                if (user == null)
+                var appUser = userManager.FindByNameAsync(userInfo.name).Result;
+                if (appUser == null)
                 {
-                    user = new AppUser()
+                    appUser = new AppUser()
                     {
                         Email = userInfo.name,
                         UserName = userInfo.name,
-                        FirstName = userInfo.firstName,
-                        LastName = userInfo.lastName,
-                        DOB = userInfo.DOB,
+                        Firstname = userInfo.firstName,
+                        Lastname = userInfo.lastName,
                         Gender = userInfo.gender,
                         EmailConfirmed = true
                     };
 
-                    var result = userManager.CreateAsync(user, userInfo.password).Result;
+                    var result = userManager.CreateAsync(appUser, userInfo.password).Result;
                     if (!result.Succeeded)
                     {
                         throw new ApplicationException("User creation failed");
@@ -68,33 +67,33 @@ namespace DAL.App.EF.AppDataInit
 
                 }
 
-                var roleResult = userManager.AddToRolesAsync(user, userInfo.roles).Result;
+                var roleResult = userManager.AddToRolesAsync(appUser, userInfo.roles).Result;
             }
             
-            
-            var user = new AppUser();
-            user.Email = "admin@kkattus.com";
-            user.Firstname = "Admin";
-            user.Lastname = "kkattus.com";
-            user.UserName = user.Email;
-
-            result = userManager.CreateAsync(user, "Foo.bar1").Result;
-            if (!result.Succeeded)
-            {
-                foreach (var identityError in result.Errors)
-                {
-                    Console.WriteLine("Cant create user! Error: " + identityError.Description);
-                }
-            }
-
-            result = userManager.AddToRoleAsync(user, "Admin").Result;
-            if (!result.Succeeded)
-            {
-                foreach (var identityError in result.Errors)
-                {
-                    Console.WriteLine("Cant add user to role! Error: " + identityError.Description);
-                }
-            }
+            //
+            // var user = new AppUser();
+            // user.Email = "admin@kkattus.com";
+            // user.Firstname = "Admin";
+            // user.Lastname = "kkattus.com";
+            // user.UserName = user.Email;
+            //
+            // result = userManager.CreateAsync(user, "Foo.bar1").Result;
+            // if (!result.Succeeded)
+            // {
+            //     foreach (var identityError in result.Errors)
+            //     {
+            //         Console.WriteLine("Cant create user! Error: " + identityError.Description);
+            //     }
+            // }
+            //
+            // result = userManager.AddToRoleAsync(user, "Admin").Result;
+            // if (!result.Succeeded)
+            // {
+            //     foreach (var identityError in result.Errors)
+            //     {
+            //         Console.WriteLine("Cant add user to role! Error: " + identityError.Description);
+            //     }
+            // }
 /*
             result = userManager.UpdateAsync(user).Result;
             if (!result.Succeeded)

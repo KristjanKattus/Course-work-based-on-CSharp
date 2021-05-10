@@ -1,5 +1,6 @@
 ﻿using System;
 using DAL.App.DTO;
+using Domain.Base;
 
 namespace DAL.App.EF.AppDataInit
 {
@@ -11,6 +12,13 @@ namespace DAL.App.EF.AppDataInit
             ("Referee", "Referees"),
             ("Player", "Players"),
             ("Manager", "Managers"),
+        };
+        
+        public static readonly (string name, string password, string firstName, string lastName, EGender gender, string[] roles)[] Users =
+        {
+            ("admin@smarty.ee", "Foo.bar1", "Admin", "///", EGender.Male, new []{"Admin"}),
+            ("referee@smarty.ee", "Foo.bar1", "Referee", "///", EGender.Male, new []{"Referee"}),
+            ("manager@smarty.ee", "Foo.bar1", "Manager", "///", EGender.Male, new []{"Manager"}),
         };
         
 

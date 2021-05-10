@@ -20,8 +20,8 @@ namespace BLL.App.DTO
 
         
         public Guid AppUserId { get; set; }
-        public AppUser? AppUser { get; set; }
-        
-        
+        public AppUser AppUser { get; set; } = default!;
+
+
     }
 }

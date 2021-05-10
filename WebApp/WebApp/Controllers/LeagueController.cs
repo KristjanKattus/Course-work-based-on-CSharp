@@ -107,6 +107,7 @@ namespace WebApp.Controllers
             if (ModelState.IsValid)
             {
                 _bll.Leagues.Update(_leagueMapper.Map(vm.League)!);
+                await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(vm);

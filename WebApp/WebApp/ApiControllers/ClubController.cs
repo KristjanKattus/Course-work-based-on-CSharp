@@ -2,107 +2,172 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
-using Domain.App;
+using Extensions.Base;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Api controller for clubs
+    /// </summary>
+    
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ClubController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.ClubMapper _clubMapper;
 
-        public ClubController(AppDbContext context)
+        /// <summary>
+        /// Constructor. Takes in IAppBll and automapper variant of clubMapper.
+        /// </summary>
+        /// <param name="bll"> Business layer</param>
+        /// <param name="mapper"> Automapper </param>
+        public ClubController(IAppBLL bll, IMapper mapper)
         {
-            _context = context;
+            _bll = bll;
+            _clubMapper = new ClubMapper(mapper);
         }
 
         // GET: api/Club
+        /// <summary>
+        /// Get all Club entities in PublicApiVersion1.0.
+        /// Allowed for all authorized user level "admin".
+        /// </summary>
+        /// <returns>PublicApiVersion1.0 all Club entities</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Club>>> GetClubs()
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IEnumerable<PublicApi.DTO.v1.Club?>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<IEnumerable<PublicApi.DTO.v1.Club>>> GetClubs()
         {
-            return await _context.Clubs.ToListAsync();
+            return Ok((await _bll.Clubs.GetAllAsync(User.GetUserId()!.Value)).Select(x => _clubMapper.Map(x)));
         }
 
         // GET: api/Club/5
+        /// <summary>
+        /// Get specific club which matches the ID
+        /// Can be accessed by authorized users.
+        /// </summary>
+        /// <param name="id">Club's unique ID</param>
+        /// <returns></returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Club>> GetClub(Guid id)
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.Club), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PublicApi.DTO.v1.Club>> GetClub(Guid id)
         {
-            var club = await _context.Clubs.FindAsync(id);
+            var club = await _bll.Clubs.FirstOrDefaultAsync(id!,User.GetUserId()!.Value);
 
             if (club == null)
             {
                 return NotFound();
             }
 
-            return club;
+            return _clubMapper.Map(club)!;
         }
 
         // PUT: api/Club/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Update Club entitty
+        /// </summary>
+        /// <param name="id">Club to be changed ID</param>
+        /// <param name="club">CLub entity to be entered into database</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutClub(Guid id, Club club)
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.Club), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> PutClub(Guid id, PublicApi.DTO.v1.Club club)
         {
             if (id != club.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(club).State = EntityState.Modified;
+            if (await _bll.Clubs.FirstOrDefaultAsync(id, User.GetUserId()!.Value) == null)
+            {
+                return BadRequest();
+            }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ClubExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.Clubs.Update(_clubMapper.Map(club)!);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         // POST: api/Club
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Add created entity into db
+        /// </summary>
+        /// <param name="club"> PublicApiVersion1.0 Club entity to be added </param>
+        /// <returns> Created Action with details </returns>
         [HttpPost]
-        public async Task<ActionResult<Club>> PostClub(Club club)
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.Club), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.Club), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<PublicApi.DTO.v1.Club>> PostClub(PublicApi.DTO.v1.Club club)
         {
-            _context.Clubs.Add(club);
-            await _context.SaveChangesAsync();
+            var bllEntity = _clubMapper.Map(club)!;
+            _bll.Clubs.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetClub", new { id = club.Id }, club);
+            var updatedEntity = _bll.Clubs.GetUpdatedEntityAfterSaveChanges(bllEntity);
+
+            var returnEntity = _clubMapper.Map(updatedEntity);
+
+            return CreatedAtAction("GetClub", new { id = returnEntity!.Id }, returnEntity);
         }
 
         // DELETE: api/Club/5
+        /// <summary>
+        /// Delete Club entity given entities Id.
+        /// </summary>
+        /// <param name="id">Entity specific Id</param>
+        /// <returns>If entity does not exist in db, return NotFound</returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeleteClub(Guid id)
         {
-            var club = await _context.Clubs.FindAsync(id);
-            if (club == null)
+            if (await _bll.Clubs.ExistsAsync(id, User.GetUserId()!.Value))
             {
                 return NotFound();
             }
 
-            _context.Clubs.Remove(club);
-            await _context.SaveChangesAsync();
+            await _bll.Clubs.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool ClubExists(Guid id)
-        {
-            return _context.Clubs.Any(e => e.Id == id);
         }
     }
 }

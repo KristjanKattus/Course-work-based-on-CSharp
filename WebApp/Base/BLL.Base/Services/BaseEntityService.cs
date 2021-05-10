@@ -74,7 +74,6 @@ namespace BLL.Base.Services
         }
 
         
-
         public async  Task<IEnumerable<TBllEntity>> GetAllAsync(TKey? userId, bool noTracking = true)
         {
             return (await ServiceRepository.GetAllAsync(userId, noTracking)).Select(entity => Mapper.Map(entity))!;
