@@ -8,13 +8,13 @@ namespace PublicApi.DTO.v1
     public class LeagueTeam
     {
         public Guid Id { get; set; }
+        
         public Guid LeagueId { get; set; }
-
-        public PublicApi.DTO.v1.League League { get; set; } = default!;
+        public League? League { get; set; }
+        
 
         public Guid TeamId { get; set; }
-
-        public PublicApi.DTO.v1.Team Team { get; set; } = default!;
+        public Team? Team { get; set; }
 
         public DateTime Since { get; set; } = DateTime.Now;
 

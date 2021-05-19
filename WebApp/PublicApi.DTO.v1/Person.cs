@@ -17,5 +17,8 @@ namespace PublicApi.DTO.v1
         public DateTime Date { get; set; } = default!;
 
         public Char Sex { get; set; } = default!;
+        
+        public Guid AppUserId { get; set; }
+        public AppUser? AppUser { get; set; }
     }
 }

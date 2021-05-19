@@ -42,5 +42,7 @@ namespace DAL.App.EF.Repositories
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(m => m.Id == id));
             return res;
         }
+
+        
     }
 }

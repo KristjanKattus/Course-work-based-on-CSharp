@@ -9,7 +9,7 @@ namespace PublicApi.DTO.v1
     {
         public Guid Id { get; set; }
         public Guid StadiumId { get; set; }
-        public PublicApi.DTO.v1.Stadium Stadium { get; set; } = default!;
+        public PublicApi.DTO.v1.Stadium? Stadium { get; set; }
 
         public int GameLength { get; set; }
 

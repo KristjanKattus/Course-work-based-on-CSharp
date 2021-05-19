@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210428135011_GameEventFix")]
-    partial class GameEventFix
+    [Migration("20210517160223_OneToOne")]
+    partial class OneToOne
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -210,7 +210,7 @@ namespace DAL.App.EF.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Types");
+                    b.ToTable("GamePartTypes");
                 });
 
             modelBuilder.Entity("Domain.App.Game_Personnel", b =>
@@ -256,6 +256,9 @@ namespace DAL.App.EF.Migrations
 
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Hometeam")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Points")
                         .HasColumnType("int");
@@ -310,7 +313,7 @@ namespace DAL.App.EF.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("GameTeamListMembers");
+                    b.ToTable("GameTeamLists");
                 });
 
             modelBuilder.Entity("Domain.App.Identity.AppRole", b =>
@@ -321,6 +324,10 @@ namespace DAL.App.EF.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -365,6 +372,9 @@ namespace DAL.App.EF.Migrations
                         .IsRequired()
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
+
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
 
                     b.Property<string>("Lastname")
                         .IsRequired()
@@ -688,12 +698,10 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -729,12 +737,10 @@ namespace DAL.App.EF.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");

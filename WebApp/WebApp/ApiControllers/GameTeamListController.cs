@@ -2,107 +2,161 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
+using Extensions.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using Domain.App;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Api controller for GameTeamList
+    /// </summary>
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GameTeamListController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.GameTeamListMapper _gameTeamListMapper;
+        
 
-        public GameTeamListController(AppDbContext context)
+        /// <summary>
+        /// Constructor. Takes in IAppBll and automapper variant of GameTeamListMapper
+        /// </summary>
+        /// <param name="mapper">Automapper</param>
+        /// <param name="bll">Business layer</param>
+        public GameTeamListController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _gameTeamListMapper = new GameTeamListMapper(mapper);
         }
 
         // GET: api/GameTeamList
+        /// <summary>
+        /// Get all GameTeamList entities in PublicApiVersion1.0.
+        /// </summary>
+        /// <returns>PublicApiVersion1.0 all GameTeamList entities</returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game_Team_List>>> GetGameTeamListMembers()
+        [ProducesResponseType(typeof(IEnumerable<PublicApi.DTO.v1.GameTeamList?>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<IEnumerable<PublicApi.DTO.v1.GameTeamList>>> GetGameTeamListMembers()
         {
-            return await _context.GameTeamListMembers.ToListAsync();
+            return Ok((await _bll.GameTeamLists.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _gameTeamListMapper.Map(x)));
         }
 
         // GET: api/GameTeamList/5
+        /// <summary>
+        /// Get specific GameTeamList which matches the ID
+        /// Can be accessed by authorized users.
+        /// </summary>
+        /// <param name="id">GameTeamList unique Id</param>
+        /// <returns>GameTeamList entity of PublicApi.DTO.v1</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game_Team_List>> GetGame_Team_List(Guid id)
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.GameTeamList), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PublicApi.DTO.v1.GameTeamList>> GetGame_Team_List(Guid id)
         {
-            var game_Team_List = await _context.GameTeamListMembers.FindAsync(id);
+            var gameTeamList = await _bll.GameTeamLists.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
 
-            if (game_Team_List == null)
+            if (gameTeamList == null)
             {
                 return NotFound();
             }
 
-            return game_Team_List;
+            return _gameTeamListMapper.Map(gameTeamList)!;
         }
 
         // PUT: api/GameTeamList/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Update GameTeamList entity
+        /// </summary>
+        /// <param name="id"> GameTeamList to be changed Id </param>
+        /// <param name="gameTeamList"> GameTeamList entity to be updated </param>
+        /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGame_Team_List(Guid id, Game_Team_List game_Team_List)
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.GameTeamList), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> PutGame_Team_List(Guid id, PublicApi.DTO.v1.GameTeamList gameTeamList)
         {
-            if (id != game_Team_List.Id)
+            if (id != gameTeamList.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(game_Team_List).State = EntityState.Modified;
+            if (!await _bll.GameTeamLists.ExistsAsync(id, User.GetUserId()!.Value))
+            {
+                return BadRequest();
+            }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!Game_Team_ListExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.GameTeamLists.Update(_gameTeamListMapper.Map(gameTeamList)!);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         // POST: api/GameTeamList
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Add PublicApi.DTO.v1 GameTeamList entity into Db
+        /// </summary>
+        /// <param name="gameTeamList">PublicApiVersion1.0 GameTeamList entity to be added</param>
+        /// <returns>Created Action with details of added entity</returns>
         [HttpPost]
-        public async Task<ActionResult<Game_Team_List>> PostGame_Team_List(Game_Team_List game_Team_List)
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.GameTeamList), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<PublicApi.DTO.v1.GameTeamList>> PostGame_Team_List(PublicApi.DTO.v1.GameTeamList gameTeamList)
         {
-            _context.GameTeamListMembers.Add(game_Team_List);
-            await _context.SaveChangesAsync();
+            var bllEntity = _gameTeamListMapper.Map(gameTeamList)!;
+            _bll.GameTeamLists.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetGame_Team_List", new { id = game_Team_List.Id }, game_Team_List);
+            var updatedEntity = _bll.GameTeamLists.GetUpdatedEntityAfterSaveChanges(bllEntity);
+
+            var returnEntity = _gameTeamListMapper.Map(updatedEntity);
+
+            return CreatedAtAction("GetGame_Team_List", new { id = returnEntity!.Id }, returnEntity);
         }
 
         // DELETE: api/GameTeamList/5
+        /// <summary>
+        /// Delete GameTeamList entity given it's Id
+        /// </summary>
+        /// <param name="id"> GameTeamList's Id to be deleted </param>
+        /// <returns> NotFound if entity does not exist in Db </returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeleteGame_Team_List(Guid id)
         {
-            var game_Team_List = await _context.GameTeamListMembers.FindAsync(id);
-            if (game_Team_List == null)
+            if (!await _bll.GameTeamLists.ExistsAsync(id, User.GetUserId()!.Value))
             {
                 return NotFound();
             }
 
-            _context.GameTeamListMembers.Remove(game_Team_List);
-            await _context.SaveChangesAsync();
+            await _bll.GameTeamLists.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool Game_Team_ListExists(Guid id)
-        {
-            return _context.GameTeamListMembers.Any(e => e.Id == id);
         }
     }
 }

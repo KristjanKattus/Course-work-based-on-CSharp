@@ -6,8 +6,6 @@ using AutoMapper;
 using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
 using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +16,6 @@ namespace WebApp.ApiControllers
     /// <summary>
     /// Api controller for clubs
     /// </summary>
-    
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
@@ -89,7 +86,7 @@ namespace WebApp.ApiControllers
         /// Update Club entitty
         /// </summary>
         /// <param name="id">Club to be changed ID</param>
-        /// <param name="club">CLub entity to be entered into database</param>
+        /// <param name="club">CLub entity to be updated</param>
         /// <returns></returns>
         [HttpPut("{id}")]
         [Consumes("application/json")]

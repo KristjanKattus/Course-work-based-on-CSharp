@@ -20,7 +20,7 @@ namespace Domain.App
 
         
         public Guid AppUserId { get; set; }
-        public AppUser AppUser { get; set; } = default!;
+        public AppUser? AppUser { get; set; }
 
 
     }

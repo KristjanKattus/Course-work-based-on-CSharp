@@ -13,18 +13,14 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
     public partial class IndexModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly UserManager<AppRole> _roleManager;
-
-        
         private readonly SignInManager<AppUser> _signInManager;
 
         public IndexModel(
             UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager, UserManager<AppRole> roleManager)
+            SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _roleManager = roleManager;
         }
 
         public string? Username { get; set; }

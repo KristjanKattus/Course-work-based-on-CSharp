@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
 using Extensions.Base;
+using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1.Mappers;
 using WebApp.ViewModels.Club;
 using WebApp.ViewModels.Game;
@@ -17,6 +18,7 @@ using Stadium = BLL.App.DTO.Stadium;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class GameController : Controller
     {
         private readonly IAppBLL _bll;
@@ -54,12 +56,13 @@ namespace WebApp.Controllers
         }
 
         // GET: Game/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(Guid id)
         {
             var vm = new GameCreateEditViewModel
             {
-                Stadiums = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value),
-                    nameof(Stadium.Id))
+                StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value),
+                    nameof(Stadium.Id), nameof(Stadium.Name)),
+                HomeTeamSelectList = new SelectList(await _bll.LeagueTeams.GetAllWithLeagueIdAsync(id))
             };
 
             return View(vm);
@@ -79,7 +82,8 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             
-            vm.Stadiums = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value), nameof(Stadium.Id));
+            vm.StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Stadium.Id), nameof(Stadium.Name));
             return View(vm);
         }
 
@@ -100,8 +104,8 @@ namespace WebApp.Controllers
             var vm = new GameCreateEditViewModel
             {
                 Game = _gameMapper.Map(game)!,
-                Stadiums = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value),
-                    nameof(Stadium.Id))
+                StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value),
+                    nameof(Stadium.Id), nameof(Stadium.Name))
             };
             return View(vm);
         }
@@ -124,7 +128,8 @@ namespace WebApp.Controllers
                 await _bll.SaveChangesAsync();
 ;                return RedirectToAction(nameof(Index));
             }
-            vm.Stadiums = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value), nameof(Stadium.Id));
+            vm.StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Stadium.Id), nameof(Stadium.Name));
             return View(vm);
         }
 

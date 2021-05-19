@@ -10,11 +10,14 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
 using Extensions.Base;
+using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1.Mappers;
 using WebApp.ViewModels.GameTeam;
+using Game = DAL.App.DTO.Game;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class GameTeamController : Controller
     {
         private readonly IAppBLL _bll;
@@ -56,8 +59,8 @@ namespace WebApp.Controllers
         {
             var vm = new GameTeamCreateEditViewModel
             {
-                GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value)),
-                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
+                GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value), nameof(Game.Id), nameof(Game.Id)),
+                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id), nameof(Team.Name))
             };
             
             return View(vm);
@@ -77,8 +80,8 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            vm.GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value));
-            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value));
+            vm.GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value), nameof(Game.Id), nameof(Game.Id));
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id), nameof(Team.Name));
             
             return View(vm);
         }
@@ -99,8 +102,8 @@ namespace WebApp.Controllers
             var vm = new GameTeamCreateEditViewModel
             {
                 GameTeam = _gameTeamMapper.Map(gameTeam)!,
-                GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value)),
-                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
+                GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value), nameof(Game.Id), nameof(Game.Id)),
+                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id), nameof(Team.Name))
             };
             return View(vm);
         }
@@ -123,8 +126,8 @@ namespace WebApp.Controllers
                 await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            vm.GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value));
-            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value));
+            vm.GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value), nameof(Game.Id), nameof(Game.Id));
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id), nameof(Team.Name));
             return View(vm);
         }
 

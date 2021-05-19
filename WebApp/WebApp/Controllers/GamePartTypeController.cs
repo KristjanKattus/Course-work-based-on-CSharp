@@ -10,11 +10,13 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
 using Extensions.Base;
+using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1.Mappers;
 using WebApp.ViewModels.GamePartType;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class GamePartTypeController : Controller
     {
         private readonly IAppBLL _bll;

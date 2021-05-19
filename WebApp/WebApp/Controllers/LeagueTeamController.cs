@@ -10,13 +10,14 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
 using Extensions.Base;
+using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1.Mappers;
 using WebApp.ViewModels.LeagueTeam;
 
 namespace WebApp.Controllers
 {
     
-    
+    [Authorize]
     public class LeagueTeamController : Controller
     {
         private readonly IAppBLL _bll;
@@ -31,7 +32,7 @@ namespace WebApp.Controllers
         // GET: LeageTeam
         public async Task<IActionResult> Index()
         {
-            return View((await _bll.LeagueTeams.GetAllAsync(User.GetUserId()!.Value)).Select(x => _leagueTeamMapper.Map(x)).ToList());
+            return View((await _bll.LeagueTeams.GetAllAsync()).Select(x => _leagueTeamMapper.Map(x)).ToList());
         }
 
         // GET: LeageTeam/Details/5
@@ -56,8 +57,10 @@ namespace WebApp.Controllers
         {
             var vm = new LeagueTeamCreateEditViewModel
             {
-                LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value)),
-                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
+                LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(League.Id),  nameof(League.Name)),
+                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(Team.Id), nameof(Team.Name))
             };
 
             return View(vm);
@@ -77,8 +80,10 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             
-            vm.LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value));
-            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value));
+            vm.LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(League.Id),  nameof(League.Name));
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Team.Id), nameof(Team.Name));
             return View(vm);
         }
 
@@ -98,8 +103,10 @@ namespace WebApp.Controllers
             var vm = new LeagueTeamCreateEditViewModel
             {
                 LeagueTeam = _leagueTeamMapper.Map(leagueTeam)!,
-                LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value)),
-                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
+                LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(League.Id),  nameof(League.Name)),
+                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(Team.Id), nameof(Team.Name))
             };
             return View(vm);
         }
@@ -121,8 +128,10 @@ namespace WebApp.Controllers
                 _bll.LeagueTeams.Update(_leagueTeamMapper.Map(vm.LeagueTeam)!);
                 return RedirectToAction(nameof(Index));
             }
-            vm.LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value));
-            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value));
+            vm.LeagueSelectList = new SelectList(await _bll.Leagues.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(League.Id),  nameof(League.Name));
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Team.Id), nameof(Team.Name));
             return View(vm);
         }
 

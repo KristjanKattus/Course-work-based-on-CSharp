@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class GameEventFix : Migration
+    public partial class OneToOne : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,6 +12,7 @@ namespace DAL.App.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -28,6 +29,7 @@ namespace DAL.App.EF.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Firstname = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
                     Lastname = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    Gender = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -92,6 +94,19 @@ namespace DAL.App.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GamePartTypes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GamePartTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Leagues",
                 columns: table => new
                 {
@@ -130,19 +145,6 @@ namespace DAL.App.EF.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Teams", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Types",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Types", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -191,8 +193,8 @@ namespace DAL.App.EF.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
@@ -236,8 +238,8 @@ namespace DAL.App.EF.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -420,15 +422,15 @@ namespace DAL.App.EF.Migrations
                 {
                     table.PrimaryKey("PK_GameParts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GameParts_Games_GameId",
-                        column: x => x.GameId,
-                        principalTable: "Games",
+                        name: "FK_GameParts_GamePartTypes_GamePartTypeId",
+                        column: x => x.GamePartTypeId,
+                        principalTable: "GamePartTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_GameParts_Types_GamePartTypeId",
-                        column: x => x.GamePartTypeId,
-                        principalTable: "Types",
+                        name: "FK_GameParts_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -476,6 +478,7 @@ namespace DAL.App.EF.Migrations
                     TeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Since = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Until = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Hometeam = table.Column<bool>(type: "bit", nullable: false),
                     Scored = table.Column<int>(type: "int", nullable: false),
                     Conceded = table.Column<int>(type: "int", nullable: false),
                     Points = table.Column<int>(type: "int", nullable: false)
@@ -498,7 +501,7 @@ namespace DAL.App.EF.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GameTeamListMembers",
+                name: "GameTeamLists",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -510,21 +513,21 @@ namespace DAL.App.EF.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameTeamListMembers", x => x.Id);
+                    table.PrimaryKey("PK_GameTeamLists", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GameTeamListMembers_FRoles_RoleId",
+                        name: "FK_GameTeamLists_FRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "FRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_GameTeamListMembers_GameTeams_GameTeamId",
+                        name: "FK_GameTeamLists_GameTeams_GameTeamId",
                         column: x => x.GameTeamId,
                         principalTable: "GameTeams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_GameTeamListMembers_Persons_PersonId",
+                        name: "FK_GameTeamLists_Persons_PersonId",
                         column: x => x.PersonId,
                         principalTable: "Persons",
                         principalColumn: "Id",
@@ -573,9 +576,9 @@ namespace DAL.App.EF.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_GameEvents_GameTeamListMembers_GameTeamListId",
+                        name: "FK_GameEvents_GameTeamLists_GameTeamListId",
                         column: x => x.GameTeamListId,
-                        principalTable: "GameTeamListMembers",
+                        principalTable: "GameTeamLists",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -685,18 +688,18 @@ namespace DAL.App.EF.Migrations
                 column: "StadiumId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameTeamListMembers_GameTeamId",
-                table: "GameTeamListMembers",
+                name: "IX_GameTeamLists_GameTeamId",
+                table: "GameTeamLists",
                 column: "GameTeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameTeamListMembers_PersonId",
-                table: "GameTeamListMembers",
+                name: "IX_GameTeamLists_PersonId",
+                table: "GameTeamLists",
                 column: "PersonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameTeamListMembers_RoleId",
-                table: "GameTeamListMembers",
+                name: "IX_GameTeamLists_RoleId",
+                table: "GameTeamLists",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
@@ -790,13 +793,13 @@ namespace DAL.App.EF.Migrations
                 name: "GamePersonnels");
 
             migrationBuilder.DropTable(
-                name: "GameTeamListMembers");
+                name: "GameTeamLists");
 
             migrationBuilder.DropTable(
                 name: "Leagues");
 
             migrationBuilder.DropTable(
-                name: "Types");
+                name: "GamePartTypes");
 
             migrationBuilder.DropTable(
                 name: "FRoles");

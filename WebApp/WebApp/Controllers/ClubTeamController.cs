@@ -11,12 +11,14 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
 using Extensions.Base;
+using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1.Mappers;
 using WebApp.ViewModels.ClubTeam;
 using Club = BLL.App.DTO.Club;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class ClubTeamController : Controller
     {
         private readonly IAppBLL _bll;
@@ -31,7 +33,7 @@ namespace WebApp.Controllers
         // GET: ClubTeam
         public async Task<IActionResult> Index()
         {
-            return View((await _bll.ClubTeams.GetAllAsync(User.GetUserId()!.Value)).Select(x => _clubTeamMapper.Map(x)).ToList());
+            return View((await _bll.ClubTeams.GetAllAsync()).Select(x => _clubTeamMapper.Map(x)).ToList());
         }
 
         // GET: ClubTeam/Details/5
@@ -57,7 +59,7 @@ namespace WebApp.Controllers
             var vm = new ClubTeamCreateEditViewModel();
             vm.ClubSelectList = new SelectList(await _bll.Clubs.GetAllAsync(User.GetUserId()!.Value), nameof(Club.Id),
                 nameof(Club.Name));
-            vm.TeamlSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id),
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id),
                 nameof(Team.Name));
             return View(vm);
         }
@@ -78,7 +80,7 @@ namespace WebApp.Controllers
             }
             vm.ClubSelectList = new SelectList(await _bll.Clubs.GetAllAsync(User.GetUserId()!.Value), nameof(Club.Id),
                 nameof(Club.Name));
-            vm.TeamlSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id),
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id),
                 nameof(Team.Name));
             return View(vm);
         }
@@ -101,7 +103,7 @@ namespace WebApp.Controllers
             vm.ClubTeam = clubTeam;
             vm.ClubSelectList = new SelectList(await _bll.Clubs.GetAllAsync(User.GetUserId()!.Value), nameof(Club.Id),
                 nameof(Club.Name));
-            vm.TeamlSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id),
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id),
                 nameof(Team.Name));
             return View(vm);
         }
@@ -126,7 +128,7 @@ namespace WebApp.Controllers
             }
             vm.ClubSelectList = new SelectList(await _bll.Clubs.GetAllAsync(User.GetUserId()!.Value), nameof(Club.Id),
                 nameof(Club.Name));
-            vm.TeamlSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id),
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value), nameof(Team.Id),
                 nameof(Team.Name));
             return View(vm);
         }

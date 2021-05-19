@@ -24,8 +24,8 @@ namespace DAL.App.EF.Repositories
             var query = InitializeQuery(userId, noTracking);
 
             var resQuery = query
-                .Include(l => l.Team)
                 .Include(l => l.League)
+                .Include(l => l.Team)
                 .Select(l => Mapper.Map(l));
 
             var res = await resQuery.ToListAsync();
@@ -45,5 +45,23 @@ namespace DAL.App.EF.Repositories
 
             return res;
         }
+        
+        
+        public async Task<IEnumerable<LeagueTeam>> GetAllWithLeagueIdAsync(Guid leagueId)
+        {
+            var query = InitializeQuery();
+
+            var resQuery = query
+                .Include(l => l.League)
+                .Include(l => l.Team)
+                .Where(l => l.LeagueId == leagueId)
+                .Select(l => Mapper.Map(l));
+            
+            var res = await resQuery.ToListAsync();
+
+            return res!;
+        }
+
+        
     }
 }

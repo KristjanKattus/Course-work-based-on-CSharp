@@ -14,6 +14,6 @@ namespace DAL.App.DTO
         [MaxLength(128)]
         public string? Description { get; set; }
 
-        public ICollection<Team_Person>? TeamPersons { get; set; }
+        public ICollection<TeamPerson>? TeamPersons { get; set; }
     }
 }

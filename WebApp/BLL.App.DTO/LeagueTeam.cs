@@ -8,11 +8,11 @@ namespace BLL.App.DTO
     {
         public Guid LeagueId { get; set; }
 
-        public League League { get; set; } = default!;
+        public League? League { get; set; } = default!;
 
         public Guid TeamId { get; set; }
 
-        public Team Team { get; set; } = default!;
+        public Team? Team { get; set; } = default!;
 
         public DateTime Since { get; set; } = DateTime.Now;
 
