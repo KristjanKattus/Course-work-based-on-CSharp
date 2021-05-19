@@ -18,7 +18,7 @@ namespace DAL.App.EF
         public DbSet<Game_Part> GameParts { get; set; } = default!;
         public DbSet<Game_Personnel> GamePersonnels { get; set; } = default!;
         public DbSet<Game_Team> GameTeams { get; set; } = default!;
-        public DbSet<Game_Team_List> GameTeamListMembers { get; set; } = default!;
+        public DbSet<Game_Team_List> GameTeamLists { get; set; } = default!;
         public DbSet<League> Leagues { get; set; } = default!;
         public DbSet<League_Team> LeagueTeams { get; set; } = default!;
         public DbSet<Person> Persons { get; set; } = default!;
@@ -26,7 +26,7 @@ namespace DAL.App.EF
         public DbSet<Stadium> Stadiums { get; set; } = default!;
         public DbSet<Team> Teams { get; set; } = default!;
         public DbSet<Team_Person> TeamPersons { get; set; } = default!;
-        public DbSet<Game_Part_Type> Types { get; set; } = default!;
+        public DbSet<Game_Part_Type> GamePartTypes { get; set; } = default!;
         
         
         public AppDbContext(DbContextOptions<AppDbContext> options)

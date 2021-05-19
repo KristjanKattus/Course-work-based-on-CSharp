@@ -6,9 +6,6 @@ using AutoMapper;
 using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using Domain.App;
 using Extensions.Base;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -85,9 +82,14 @@ namespace WebApp.ApiControllers
         /// Update clubTeam entity
         /// </summary>
         /// <param name="id"> Club to be changed Id</param>
-        /// <param name="clubTeam"> ClubTeam entity to be added into Db </param>
+        /// <param name="clubTeam"> ClubTeam entity to be updated </param>
         /// <returns></returns>
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.ClubTeam), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> PutClub_Team(Guid id, PublicApi.DTO.v1.ClubTeam clubTeam)
         {
             if (id != clubTeam.Id)
@@ -148,7 +150,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeleteClub_Team(Guid id)
         {
-            if (await _bll.ClubTeams.ExistsAsync(id, User.GetUserId()!.Value))
+            if (!await _bll.ClubTeams.ExistsAsync(id, User.GetUserId()!.Value))
             {
                 return NotFound();
             }

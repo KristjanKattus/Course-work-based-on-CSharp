@@ -1,0 +1,65 @@
+@model IEnumerable<PublicApi.DTO.v1.LeagueTableTeam>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LeagueTeamName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GamesPlayed)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GamesWon)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GamesLost)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GamesTied)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GoalsScored)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GoalsConceded)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.LeagueTeamName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GamesPlayed)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GamesWon)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GamesLost)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GamesTied)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GoalsScored)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GoalsConceded)
+            </td>
+            
+        </tr>
+}
+    </tbody>
+</table>

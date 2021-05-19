@@ -40,6 +40,8 @@ namespace WebApp
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
             
+            services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
+            services.AddScoped<IAppBLL, AppBLL>();
             
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services
@@ -65,11 +67,11 @@ namespace WebApp
             services
                 .AddIdentity<AppUser, AppRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddDefaultUI()
-                .AddEntityFrameworkStores<AppDbContext>();
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
             services.AddControllersWithViews();
 
-            services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
-            services.AddScoped<IAppBLL, AppBLL>();
+            
 
             // Add support for API versioning
             services.AddApiVersioning(options => options.ReportApiVersions = true);
@@ -190,11 +192,17 @@ namespace WebApp
                 }
                 if (configuration.GetValue<bool>("AppData:SeedData"))
                 {
-                    DataInit.SeedAppData(ctx);
+                    using var userManager = serviceScope.ServiceProvider.GetService<UserManager<AppUser>>();
+                    using var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<AppRole>>();
+                    
+                    if (userManager != null && roleManager != null)
+                    {
+                        DataInit.SeedAppData(ctx, logger, userManager, roleManager);
+                    }
+                    
                 }
-                
-                ctx.Database.EnsureDeleted();
-                ctx.Database.Migrate();
+                // ctx.Database.EnsureDeleted();
+                // ctx.Database.Migrate();
             }
         }
     }

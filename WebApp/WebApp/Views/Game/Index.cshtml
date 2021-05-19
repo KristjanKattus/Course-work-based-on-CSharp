@@ -28,7 +28,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Stadium.Name)
+                @Html.DisplayFor(modelItem => item.Stadium!.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.GameLength)

@@ -1,5 +1,6 @@
 ﻿using System;
 using DAL.App.DTO;
+using Domain.App;
 using Domain.Base;
 
 namespace DAL.App.EF.AppDataInit
@@ -50,7 +51,32 @@ namespace DAL.App.EF.AppDataInit
             ("Tura", "Pop", DateTime.Parse("2001-11-02"), 'M'),
             ("Peter", "Coruch", DateTime.Parse("2003-07-08"), 'M'),
             ("Yo ", "Ming", DateTime.Parse("2000-02-09"), 'M'),
-            ("Steve", "Irving", DateTime.Parse("1089-11-11"), 'M'),
+            ("Steve", "Irving", DateTime.Parse("1089-11-11"), 'M')
+        };
+
+        // public static readonly (Person Person, Team Team, Role Role)[] TeamPerson =
+        // {
+        //     (new Person {FirstName = "Steve", LastName = "Irving", Date = DateTime.Parse("2000-01-01"), Sex = 'M'},
+        //         new Team {Name = "Team1League1"}, new Role {Name = "Player"}),
+        //     (new Person {FirstName = "Boy", LastName = "Fred", Date = DateTime.Parse("2000-01-01"), Sex = 'M'},
+        //         new Team {Name = "Team1League1"}, new Role {Name = "Player"}),
+        //     (new Person {FirstName = "Alan", LastName = "Smith", Date = DateTime.Parse("2000-01-01"), Sex = 'M'},
+        //         new Team {Name = "Team1League1"}, new Role {Name = "Player"}),
+        //     (new Person {FirstName = "Tura", LastName = "Pop", Date = DateTime.Parse("2000-01-01"), Sex = 'M'},
+        //         new Team {Name = "Team1League1"}, new Role {Name = "Player"}),
+        //
+        // };
+        
+        // public static readonly (Person Person, )
+
+        public static readonly (Domain.App.Stadium_Area stadiumArea, string Name, DateTime Since, string PitchType, int Category)[] Stadiums =
+        {
+            (new Stadium_Area {Name = "Tartu", Since = DateTime.Now}, "Tamme Staadion", DateTime.Now, "Natural grass", 4),
+            (new Stadium_Area {Name = "Tartu", Since = DateTime.Now}, "Annelinna Staadion", DateTime.Now, "Artificial grass", 4),
+            (new Stadium_Area {Name = "Tallinn", Since = DateTime.Now}, "A Le Coq Arena", DateTime.Now, "Natural grass", 4),
+            (new Stadium_Area {Name = "Tallinn", Since = DateTime.Now}, "Sportland Arena", DateTime.Now, "Artificial grass", 4),
+            (new Stadium_Area {Name = "Narva", Since = DateTime.Now}, "Narva staadion", DateTime.Now, "Natural grass", 4),
+            (new Stadium_Area {Name = "Kuresaare", Since = DateTime.Now}, "Kuresaare linnataadion", DateTime.Now, "Natural grass", 4),
         };
 
         public static readonly (string Name, string? Description)[] EventTypes =
@@ -70,10 +96,9 @@ namespace DAL.App.EF.AppDataInit
             ("First Extra time", ""),
             ("Second Extra time", ""),
             ("Penalties", ""),
-            
+
         };
-
-
+        
         public static readonly (string Name, int Duration, string? Description)[] Leagues =
         {
             ("Preemiumliiga", 34, "Estonias first league"),

@@ -8,6 +8,6 @@ namespace WebApp.ViewModels.ClubTeam
 
         public SelectList? ClubSelectList { get; set; }
         
-        public SelectList? TeamlSelectList { get; set; }
+        public SelectList? TeamSelectList { get; set; }
     }
 }

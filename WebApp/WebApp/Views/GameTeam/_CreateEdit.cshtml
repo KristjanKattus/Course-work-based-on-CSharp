@@ -1,13 +1,13 @@
 ﻿@model WebApp.ViewModels.GameTeam.GameTeamCreateEditViewModel
 
 <div class="form-group">
-    <label asp-for="GameTeam.GameId" class="control-label"></label>
-    <select asp-for="GameTeam.GameId" class="form-control" asp-items="ViewBag.GameId"></select>
+    <label asp-for="GameTeam.Game" class="control-label"></label>
+    <select asp-for="GameTeam.GameId" class="form-control" asp-items="Model.GameSelectList"></select>
     <span asp-validation-for="GameTeam.GameId" class="text-danger"></span>
 </div>
 <div class="form-group">
-    <label asp-for="GameTeam.TeamId" class="control-label"></label>
-    <select asp-for="GameTeam.TeamId" class="form-control" asp-items="ViewBag.TeamId"></select>
+    <label asp-for="GameTeam.Team" class="control-label"></label>
+    <select asp-for="GameTeam.TeamId" class="form-control" asp-items="Model.TeamSelectList"></select>
     <span asp-validation-for="GameTeam.TeamId" class="text-danger"></span>
 </div>
 <div class="form-group">

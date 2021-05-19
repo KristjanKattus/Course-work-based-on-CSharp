@@ -10,11 +10,13 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
 using Extensions.Base;
+using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1.Mappers;
 using WebApp.ViewModels.Team;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class TeamController : Controller
     {
         private readonly IAppBLL _bll;
@@ -29,7 +31,7 @@ namespace WebApp.Controllers
         // GET: Team
         public async Task<IActionResult> Index()
         {
-            return View((await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
+            return View((await _bll.Teams.GetAllAsync())
                 .Select(x => _teamMapper.Map(x)).ToList());
         }
 

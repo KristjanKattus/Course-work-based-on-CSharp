@@ -12,7 +12,7 @@ namespace PublicApi.DTO.v1
         public Team? Team { get; set; }
 
         public Guid ClubId { get; set; }
-        public PublicApi.DTO.v1.Club Club { get; set; } = default!;
+        public Club? Club { get; set; }
         
         public DateTime Since { get; set; } = DateTime.Now;
 

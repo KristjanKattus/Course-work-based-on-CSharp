@@ -74,7 +74,7 @@ namespace DAL.Base.EF.Repositories
         {
             var query = InitializeQuery(userId, noTracking);
             
-            return await query.Select(d => Mapper.Map(d)).FirstOrDefaultAsync(e => e!.Id.Equals(id));
+            return Mapper.Map(await query.FirstOrDefaultAsync(e => e!.Id.Equals(id)));
         }
 
         public virtual TDalEntity Add(TDalEntity entity)

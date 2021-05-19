@@ -1,4 +1,8 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AutoMapper;
 using BLL.App.Mappers;
 using BLL.Base.Services;
 using Contracts.BLL.App.Services;
@@ -13,6 +17,11 @@ namespace BLL.App.Services
     {
         public GameTeamService(IAppUnitOfWork serviceUow, IGameTeamRepository serviceRepository, IMapper mapper) : base(serviceUow, serviceRepository, new GameTeamMapper(mapper))
         {
+        }
+
+        public async Task<IEnumerable<BLLAppDTO.GameTeam>> GetAllTeamGamesAsync(Guid teamId)
+        {
+            return (await ServiceRepository.GetAllTeamGamesAsync(teamId)).Select(x => Mapper.Map(x))!;
         }
     }
 }

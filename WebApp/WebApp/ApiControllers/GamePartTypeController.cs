@@ -2,107 +2,163 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
+using Extensions.Base;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Api controller for GamePartTypes
+    /// </summary>
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class GamePartTypeController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.GamePartTypeMapper _gamePartTypeMapper;
 
-        public GamePartTypeController(AppDbContext context)
+        /// <summary>
+        /// Constructor. Takes in IAppBll and automapper variant of GamePartTypeMapper
+        /// </summary>
+        /// <param name="mapper"> Automapper </param>
+        /// <param name="bll"> Business layer </param>
+        public GamePartTypeController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _gamePartTypeMapper = new GamePartTypeMapper(mapper);
         }
 
         // GET: api/GamePartType
+        /// <summary>
+        /// Get all GamePartType entities in PublicApiVersion1.0.
+        /// </summary>
+        /// <returns> PublicApiVersion1.0 all GamePartType entities </returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Game_Part_Type>>> GetTypes()
+        [ProducesResponseType(typeof(IEnumerable<PublicApi.DTO.v1.GamePartType?>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<IEnumerable<PublicApi.DTO.v1.GamePartType>>> GetTypes()
         {
-            return await _context.Types.ToListAsync();
+            return Ok((await _bll.GamePartTypes.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _gamePartTypeMapper.Map(x)));
         }
 
         // GET: api/GamePartType/5
+        /// <summary>
+        /// Get specific GamePartType which matches the ID
+        /// Can be accessed by authorized users.
+        /// </summary>
+        /// <param name="id"> GamePartType unique Id </param>
+        /// <returns> GamePartType entity of PublicApi.DTO.v1 </returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<Game_Part_Type>> GetGame_Part_Type(Guid id)
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.GamePartType), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PublicApi.DTO.v1.GamePartType>> GetGame_Part_Type(Guid id)
         {
-            var game_Part_Type = await _context.Types.FindAsync(id);
+            var gamePartType = await _bll.GamePartTypes.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
 
-            if (game_Part_Type == null)
+            if (gamePartType == null)
             {
                 return NotFound();
             }
 
-            return game_Part_Type;
+            return _gamePartTypeMapper.Map(gamePartType)!;
         }
 
         // PUT: api/GamePartType/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Update GamePartType entity
+        /// </summary>
+        /// <param name="id"> GamePartType to be changed Id </param>
+        /// <param name="gamePartType"> GamePartType entity to be updated </param>
+        /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutGame_Part_Type(Guid id, Game_Part_Type game_Part_Type)
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.GamePartType), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> PutGame_Part_Type(Guid id, PublicApi.DTO.v1.GamePartType gamePartType)
         {
-            if (id != game_Part_Type.Id)
+            if (id != gamePartType.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(game_Part_Type).State = EntityState.Modified;
+            if (!await _bll.GamePartTypes.ExistsAsync(id, User.GetUserId()!.Value))
+            {
+                return BadRequest();
+            }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!Game_Part_TypeExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.GamePartTypes.Update(_gamePartTypeMapper.Map(gamePartType)!);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         // POST: api/GamePartType
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Add PublicApi.DTO.v1 GamePartType entity into Db
+        /// </summary>
+        /// <param name="gamePartType"> PublicApiVersion1.0 GamePartType entity to be added </param>
+        /// <returns> Created Action with details of added entity </returns>
         [HttpPost]
-        public async Task<ActionResult<Game_Part_Type>> PostGame_Part_Type(Game_Part_Type game_Part_Type)
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.GamePartType), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<Game_Part_Type>> PostGame_Part_Type(PublicApi.DTO.v1.GamePartType gamePartType)
         {
-            _context.Types.Add(game_Part_Type);
-            await _context.SaveChangesAsync();
+            var bllEntity = _gamePartTypeMapper.Map(gamePartType)!;
+            _bll.GamePartTypes.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetGame_Part_Type", new { id = game_Part_Type.Id }, game_Part_Type);
+            var updatedEntity = _bll.GamePartTypes.GetUpdatedEntityAfterSaveChanges(bllEntity);
+
+            var returnEntity = _gamePartTypeMapper.Map(updatedEntity);
+
+            return CreatedAtAction("GetGame_Part_Type", new { id = returnEntity!.Id }, returnEntity);
         }
 
         // DELETE: api/GamePartType/5
+        /// <summary>
+        /// Delete GamePartType entity given it's Id
+        /// </summary>
+        /// <param name="id"> GamePartType's Id to be deleted </param>
+        /// <returns> NotFound if entity does not exist in Db </returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeleteGame_Part_Type(Guid id)
         {
-            var game_Part_Type = await _context.Types.FindAsync(id);
-            if (game_Part_Type == null)
+            if (!await _bll.GamePartTypes.ExistsAsync(id, User.GetUserId()!.Value))
             {
                 return NotFound();
             }
 
-            _context.Types.Remove(game_Part_Type);
-            await _context.SaveChangesAsync();
+            await _bll.GamePartTypes.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool Game_Part_TypeExists(Guid id)
-        {
-            return _context.Types.Any(e => e.Id == id);
         }
     }
 }

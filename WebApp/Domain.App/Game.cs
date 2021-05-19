@@ -7,7 +7,7 @@ namespace Domain.App
     public class Game : DomainEntityId
     {
         public Guid StadiumId { get; set; }
-        public Stadium Stadium { get; set; } = default!;
+        public Stadium? Stadium { get; set; }
 
         public int GameLength { get; set; }
 

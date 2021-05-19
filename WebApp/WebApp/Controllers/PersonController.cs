@@ -10,11 +10,13 @@ using Microsoft.EntityFrameworkCore;
 using DAL.App.EF;
 using Domain.App;
 using Extensions.Base;
+using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1.Mappers;
 using WebApp.ViewModels.Person;
 
 namespace WebApp.Controllers
 {
+    [Authorize]
     public class PersonController : Controller
     {
         private readonly IAppBLL _bll;
@@ -29,7 +31,7 @@ namespace WebApp.Controllers
         // GET: Person
         public async Task<IActionResult> Index()
         {
-            return View((await _bll.Persons.GetAllAsync(User.GetUserId()!.Value))
+            return View((await _bll.Persons.GetAllAsync())
                 .Select(x => _personMapper.Map(x)).ToList());
         }
 
@@ -54,7 +56,7 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             var vm = new PersonCreateEditViewModel();
-            return View();
+            return View(vm);
         }
 
         // POST: Person/Create
@@ -66,6 +68,7 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                vm.Person.AppUserId = User.GetUserId()!.Value;
                 _bll.Persons.Add(_personMapper.Map(vm.Person)!);
                 await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

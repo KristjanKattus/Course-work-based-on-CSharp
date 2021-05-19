@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using BLL.App.DTO;
 using Contracts.BLL.App;
 
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PublicApi.DTO.v1.Mappers;
 using WebApp.ViewModels.StadiumArea;
+using Stadium = BLL.App.DTO.Stadium;
+using StadiumArea = DAL.App.DTO.StadiumArea;
 
 
 namespace WebApp.Controllers
@@ -62,8 +65,9 @@ namespace WebApp.Controllers
         public async Task<IActionResult> Create()
         {
             var vm = new StadiumAreaCreateEditViewModel
-                {StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value))};
-            return View();
+                {StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(Stadium.Id), nameof(Stadium.Name))};
+            return View(vm);
         }
 
         // POST: Stadium_Area/Create
@@ -100,7 +104,8 @@ namespace WebApp.Controllers
             var vm = new StadiumAreaCreateEditViewModel
             {
                 StadiumArea = _stadiumAreaMapper.Map(area)!,
-                StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value))
+                StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(Stadium.Id), nameof(Stadium.Name))
             };
 
             return View(vm);
@@ -124,7 +129,8 @@ namespace WebApp.Controllers
                 await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            vm.StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value));
+            vm.StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Stadium.Id), nameof(Stadium.Name));
             
             return View(vm);
             

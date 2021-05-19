@@ -23,7 +23,7 @@ namespace DAL.App.EF.Repositories
             var query = InitializeQuery(userId, noTracking);
 
             var resQuery = query
-                .Include(g => g.Team)
+                .Include(g => g.Game)
                 .Include(g => g.Team)
                 .Select(g => Mapper.Map(g));
 
@@ -37,13 +37,24 @@ namespace DAL.App.EF.Repositories
             var query = InitializeQuery(userId, noTracking);
 
             var resQuery = query
-                .Include(g => g.Team)
+                .Include(g => g.Game)
                 .Include(g => g.Team);
                 
 
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(g => g.Id == id));
 
             return res;
+        }
+        
+        public async Task<IEnumerable<GameTeam>> GetAllTeamGamesAsync(Guid teamId)
+        {
+            var query = InitializeQuery();
+
+            var resQuery = query
+                .Where(x => x.TeamId == teamId)
+                .Select(x => Mapper.Map(x));
+
+            return (await resQuery.ToListAsync())!;
         }
     }
 }

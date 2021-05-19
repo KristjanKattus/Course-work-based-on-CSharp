@@ -2,118 +2,162 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Contracts.BLL.App;
+using Domain.App;
+using Extensions.Base;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DAL.App.EF;
-using Domain.App;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
 {
+    /// <summary>
+    /// Api controller for LeagueTeam
+    /// </summary>
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class LeagueTeamController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IAppBLL _bll;
+        private readonly PublicApi.DTO.v1.Mappers.LeagueTeamMapper _leagueTeamMapper;
 
-        public LeagueTeamController(AppDbContext context)
+        /// <summary>
+        /// Constructor. Takes in IAppBll and automapper variant of LeagueTeamMapper
+        /// </summary>
+        /// <param name="mapper">Automapper</param>
+        /// <param name="bll">Business layer</param>
+        public LeagueTeamController(IMapper mapper, IAppBLL bll)
         {
-            _context = context;
+            _bll = bll;
+            _leagueTeamMapper = new LeagueTeamMapper(mapper);
         }
 
         // GET: api/LeagueTeam
+        /// <summary>
+        /// Get all LeagueTeam entities in PublicApiVersion1.0.
+        /// </summary>
+        /// <returns>PublicApiVersion1.0 all LeagueTeam entities</returns>
         [HttpGet]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<League_Team>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IEnumerable<League_Team>>> GetLeagueTeams()
+        [ProducesResponseType(typeof(IEnumerable<PublicApi.DTO.v1.LeagueTeam?>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<IEnumerable<PublicApi.DTO.v1.LeagueTeam>>> GetLeagueTeams()
         {
-            return await _context.LeagueTeams.ToListAsync();
+            return Ok((await _bll.LeagueTeams.GetAllAsync(User.GetUserId()!.Value))
+                .Select(x => _leagueTeamMapper.Map(x)));
         }
 
         // GET: api/LeageTeam/5
+        /// <summary>
+        /// Get specific League which matches the ID
+        /// Can be accessed by authorized users.
+        /// </summary>
+        /// <param name="id">LeagueTeam unique Id</param>
+        /// <returns>LeagueTeam entity of PublicApi.DTO.v1</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult<League_Team>> GetLeague_Team(Guid id)
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.LeagueTeam), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PublicApi.DTO.v1.LeagueTeam>> GetLeague_Team(Guid id)
         {
-            var league_Team = await _context.LeagueTeams.FindAsync(id);
+            var leagueTeam = await _bll.LeagueTeams.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
 
-            if (league_Team == null)
+            if (leagueTeam == null)
             {
                 return NotFound();
             }
 
-            return league_Team;
+            return _leagueTeamMapper.Map(leagueTeam)!;
         }
 
         // PUT: api/LeageTeam/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Update LeagueTeam entity
+        /// </summary>
+        /// <param name="id"> LeagueTeam to be changed Id </param>
+        /// <param name="leagueTeam"> LeagueTeam entity to be updated </param>
+        /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutLeague_Team(Guid id, League_Team league_Team)
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.LeagueTeam), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> PutLeague_Team(Guid id, PublicApi.DTO.v1.LeagueTeam leagueTeam)
         {
-            if (id != league_Team.Id)
+            if (id != leagueTeam.Id)
+            {
+                return BadRequest();
+            }
+            
+            if (!await _bll.LeagueTeams.ExistsAsync(id, User.GetUserId()!.Value))
             {
                 return BadRequest();
             }
 
-            _context.Entry(league_Team).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!League_TeamExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _bll.LeagueTeams.Update(_leagueTeamMapper.Map(leagueTeam)!);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
         }
 
         // POST: api/LeageTeam
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Add PublicApi.DTO.v1 LeagueTeam entity into Db
+        /// </summary>
+        /// <param name="leagueTeam">PublicApiVersion1.0 LeagueTeam entity to be added</param>
+        /// <returns>Created Action with details of added entity</returns>
         [HttpPost]
-        public async Task<ActionResult<League_Team>> PostLeague_Team(League_Team league_Team)
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.LeagueTeam), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult<PublicApi.DTO.v1.LeagueTeam>> PostLeague_Team(PublicApi.DTO.v1.LeagueTeam leagueTeam)
         {
-            _context.LeagueTeams.Add(league_Team);
-            await _context.SaveChangesAsync();
+            var bllEntity = _leagueTeamMapper.Map(leagueTeam)!;
+            _bll.LeagueTeams.Add(bllEntity);
+            await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetLeague_Team", new
-            {
-                id = league_Team.Id,
-                Version = HttpContext.GetRequestedApiVersion()?.ToString() ?? "0" 
-            }, league_Team);
+            var updatedEntity = _bll.LeagueTeams.GetUpdatedEntityAfterSaveChanges(bllEntity);
+
+            var returnEntity = _leagueTeamMapper.Map(updatedEntity);
+            return CreatedAtAction("GetLeague_Team", new { id = returnEntity!.Id }, returnEntity);
         }
 
         // DELETE: api/LeageTeam/5
+        /// <summary>
+        /// Delete LeagueTeam entity given it's Id
+        /// </summary>
+        /// <param name="id"> LeagueTeam's Id to be deleted </param>
+        /// <returns> NotFound if entity does not exist in Db </returns>
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeleteLeague_Team(Guid id)
         {
-            var league_Team = await _context.LeagueTeams.FindAsync(id);
-            if (league_Team == null)
+            if (!await _bll.LeagueTeams.ExistsAsync(id, User.GetUserId()!.Value))
             {
                 return NotFound();
             }
 
-            _context.LeagueTeams.Remove(league_Team);
-            await _context.SaveChangesAsync();
+            await _bll.LeagueTeams.RemoveAsync(id, User.GetUserId()!.Value);
+            await _bll.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool League_TeamExists(Guid id)
-        {
-            return _context.LeagueTeams.Any(e => e.Id == id);
         }
     }
 }
