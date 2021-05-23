@@ -12,6 +12,8 @@
     
     <partial name="_Details" model="Model"/>
     
+    
+     <a asp-controller="GameEvent" asp-action="Create"  asp-route-gameId="@Model.Id">Add Game Event</a>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |

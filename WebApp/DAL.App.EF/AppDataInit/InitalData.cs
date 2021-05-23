@@ -15,7 +15,8 @@ namespace DAL.App.EF.AppDataInit
             ("Manager", "Managers"),
         };
         
-        public static readonly (string name, string password, string firstName, string lastName, EGender gender, string[] roles)[] Users =
+        public static readonly (string name, string password, string firstName, string lastName
+            , EGender gender, string[] roles)[] Users =
         {
             ("admin@smarty.ee", "Foo.bar1", "Admin", "///", EGender.Male, new []{"Admin"}),
             ("referee@smarty.ee", "Foo.bar1", "Referee", "///", EGender.Male, new []{"Referee"}),
@@ -69,7 +70,8 @@ namespace DAL.App.EF.AppDataInit
         
         // public static readonly (Person Person, )
 
-        public static readonly (Domain.App.Stadium_Area stadiumArea, string Name, DateTime Since, string PitchType, int Category)[] Stadiums =
+        public static readonly (Domain.App.Stadium_Area stadiumArea, string Name, DateTime Since
+            , string PitchType, int Category)[] Stadiums =
         {
             (new Stadium_Area {Name = "Tartu", Since = DateTime.Now}, "Tamme Staadion", DateTime.Now, "Natural grass", 4),
             (new Stadium_Area {Name = "Tartu", Since = DateTime.Now}, "Annelinna Staadion", DateTime.Now, "Artificial grass", 4),

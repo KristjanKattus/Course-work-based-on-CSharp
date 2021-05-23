@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.App.EF.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20210517160223_OneToOne")]
-    partial class OneToOne
+    [Migration("20210522124320_Db")]
+    partial class Db
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -107,6 +107,9 @@ namespace DAL.App.EF.Migrations
                     b.Property<int>("GameLength")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("LeagueId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("MatchRound")
                         .HasColumnType("int");
 
@@ -145,8 +148,8 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("GameTeamListId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("GameTime")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("GameTime")
+                        .HasColumnType("int");
 
                     b.Property<int>("NumberInOrder")
                         .HasColumnType("int");

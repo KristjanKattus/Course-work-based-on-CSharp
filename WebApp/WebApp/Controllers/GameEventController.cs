@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using BLL.App.DTO;
 using Contracts.BLL.App;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -53,15 +54,17 @@ namespace WebApp.Controllers
         }
 
         // GET: GameEvent/Create
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(Guid gameId)
         {
             var vm = new GameEventCreateEditViewModel
             {
-                EventTypeSelectList = new SelectList(await _bll.EventTypes.GetAllAsync(User.GetUserId()!.Value)),
-                GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value)),
-                GamePartSelectList = new SelectList(await _bll.GameParts.GetAllAsync(User.GetUserId()!.Value)),
-                GamePersonnelSelectList = new SelectList(await _bll.GamePersonnel.GetAllAsync(User.GetUserId()!.Value)),
-                GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllAsync(User.GetUserId()!.Value))
+                GameId = gameId,
+                EventTypeSelectList = new SelectList(await _bll.EventTypes.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(EventType.Id), nameof(EventType.Name)),
+                GamePartSelectList = new SelectList(await _bll.GameParts.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(GamePart.Id), nameof(GamePart.GamePartType.Name)),
+                GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllTeamGamesWithGameIdAsync(gameId)
+                    , nameof(GameTeam.Id), nameof(GameTeam.TeamName))
             };
             return View(vm);
         }
@@ -75,17 +78,21 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-
+                vm.GameEvent.GameId = vm.GameId;
                 _bll.GameEvents.Add(_gameEventMapper.Map(vm.GameEvent)!);
                 await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            vm.EventTypeSelectList = new SelectList(await _bll.EventTypes.GetAllAsync(User.GetUserId()!.Value));
-            vm.GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value));
-            vm.GamePartSelectList = new SelectList(await _bll.GameParts.GetAllAsync(User.GetUserId()!.Value));
-            vm.GamePersonnelSelectList = new SelectList(await _bll.GamePersonnel.GetAllAsync(User.GetUserId()!.Value));
-            vm.GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllAsync(User.GetUserId()!.Value));
+            vm.GameId = vm.GameId;
+            vm.EventTypeSelectList = new SelectList(await _bll.EventTypes.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(EventType.Id), nameof(EventType.Name));
+           
+            vm.GamePartSelectList = new SelectList(await _bll.GameParts.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(GamePart.Id), nameof(GamePart.GamePartType.Name));
+            
+            vm.GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllTeamGamesWithGameIdAsync(vm.GameId)
+                , nameof(GameTeam.Id), nameof(GameTeam.Team.Name));
             return View(vm);
         }
 
@@ -105,11 +112,12 @@ namespace WebApp.Controllers
             var vm = new GameEventCreateEditViewModel
             {
                 GameEvent = _gameEventMapper.Map(gameEvent)!,
-                EventTypeSelectList = new SelectList(await _bll.EventTypes.GetAllAsync(User.GetUserId()!.Value)),
-                GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value)),
-                GamePartSelectList = new SelectList(await _bll.GameParts.GetAllAsync(User.GetUserId()!.Value)),
-                GamePersonnelSelectList = new SelectList(await _bll.GamePersonnel.GetAllAsync(User.GetUserId()!.Value)),
-                GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllAsync(User.GetUserId()!.Value))
+                EventTypeSelectList = new SelectList(await _bll.EventTypes.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(EventType.Id), nameof(EventType.Name)),
+                GamePartSelectList = new SelectList(await _bll.GameParts.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(GamePart.Id), nameof(GamePart.GamePartType.Name)),
+                GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllTeamGamesWithGameIdAsync(gameEvent.GameId)
+                    , nameof(GameTeam.Id), nameof(GameTeam.Team.Name))
             };
             return View(vm);
         }
@@ -133,11 +141,16 @@ namespace WebApp.Controllers
                 
                 return RedirectToAction(nameof(Index));
             }
-            vm.EventTypeSelectList = new SelectList(await _bll.EventTypes.GetAllAsync(User.GetUserId()!.Value));
-            vm.GameSelectList = new SelectList(await _bll.Games.GetAllAsync(User.GetUserId()!.Value));
-            vm.GamePartSelectList = new SelectList(await _bll.GameParts.GetAllAsync(User.GetUserId()!.Value));
-            vm.GamePersonnelSelectList = new SelectList(await _bll.GamePersonnel.GetAllAsync(User.GetUserId()!.Value));
-            vm.GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllAsync(User.GetUserId()!.Value));
+
+            
+            vm.EventTypeSelectList = new SelectList(await _bll.EventTypes.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(EventType.Id), nameof(EventType.Name));
+           
+            vm.GamePartSelectList = new SelectList(await _bll.GameParts.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(GamePart.Id), nameof(GamePart.GamePartType.Name));
+            
+            vm.GameTeamSelectList = new SelectList(await _bll.GameTeams.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(GameTeam.Id), nameof(GameTeam.Team.Name));
             return View(vm);
         }
 

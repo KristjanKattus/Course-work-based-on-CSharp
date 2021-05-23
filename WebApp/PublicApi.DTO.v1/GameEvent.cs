@@ -10,21 +10,19 @@ namespace PublicApi.DTO.v1
         public Guid Id { get; set; }
 
         public Guid GameId { get; set; }
-        public PublicApi.DTO.v1.Game Game { get; set; } = default!;
+        public Game? Game { get; set; }
 
-        public Guid GamePersonnelId { get; set; }
-        public PublicApi.DTO.v1.GamePersonnel? GamePersonnel { get; set; }
         
         public Guid GameTeamListId { get; set; }
-        public Game_Team_List? GameTeamList { get; set; }
+        public GameTeamList? GameTeamList { get; set; }
 
         public Guid GamePartId { get; set; }
-        public PublicApi.DTO.v1.GamePart GamePart { get; set; } = default!;
+        public GamePart? GamePart { get; set; }
 
         public Guid EventTypeId { get; set; }
-        public PublicApi.DTO.v1.EventType EventType { get; set; } = default!;
+        public EventType? EventType { get; set; }
 
-        public DateTime GameTime { get; set; }
+        public int GameTime { get; set; }
 
         public int NumberInOrder { get; set; }
 

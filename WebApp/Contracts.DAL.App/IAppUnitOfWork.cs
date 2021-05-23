@@ -25,25 +25,6 @@ namespace Contracts.DAL.App
         ITeamPersonRepository TeamPersons { get; }
         ITeamRepository Teams { get; }
         IGamePartTypeRepository GamePartTypes { get; }
-        
-        // IBaseRepository<Stadium_Area> Areas { get; }
-        // IBaseRepository<Club> Clubs { get; }
-        // IBaseRepository<Club_Team> ClubTeams { get; }
-        // IBaseRepository<Event_Type> EventTypes { get; }
-        // IBaseRepository<Game_Event> GameEvents { get; }
-        // IBaseRepository<Game_Part> GameParts { get; }
-        // IBaseRepository<Game_Personnel> GamePersonnel { get; }
-        // IBaseRepository<Game> Games { get; }
-        // IBaseRepository<Game_Team_List> GameTeamLists { get; }
-        // IBaseRepository<Game_Team> GameTeams { get; }
-        // IBaseRepository<League> Leagues { get; }
-        // IBaseRepository<League_Team> LeagueTeams { get; }
-        // IBaseRepository<Person> Persons { get; }
-        // IBaseRepository<Role> Roles { get; }
-        // IBaseRepository<Stadium> Stadiums { get; }
-        // IBaseRepository<Team_Person> TeamPersons { get; }
-        // IBaseRepository<Team> Teams { get; }
-        // IBaseRepository<Game_Part_Type> GamePartTypes { get; }
-        
+
     }
 }

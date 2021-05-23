@@ -37,10 +37,10 @@
                 @Html.DisplayFor(modelItem => item.Person!.FirstName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.GameTeam.Id)
+                @Html.DisplayFor(modelItem => item.GameTeam!.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Role.Name)
+                @Html.DisplayFor(modelItem => item.Role!.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.InStartingLineup)

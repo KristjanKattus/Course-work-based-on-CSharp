@@ -23,5 +23,43 @@ namespace BLL.App.Services
         {
             return (await ServiceRepository.GetAllTeamGamesAsync(teamId)).Select(x => Mapper.Map(x))!;
         }
+
+        public async Task<IEnumerable<BLLAppDTO.GameTeam>> GetAllTeamGamesWithGameIdAsync(Guid gameId,  bool noTracking = true)
+        {
+            var games = (await ServiceRepository.GetAllTeamGamesWithGameIdAsync(gameId, noTracking)).ToList();
+            var gameTeams = games.ToList();
+            foreach (var game in gameTeams)
+            {
+                game.TeamName = game.Team!.Name;
+            }
+            return gameTeams.Select(x => Mapper.Map(x))!;
+        }
+
+        public async Task<BLLAppDTO.GameTeam> FirstOrDefaultWithGameIdAsync(Guid id)
+        {
+            return Mapper.Map(await ServiceRepository.FirstOrDefaultWithGameIdAsync(id))!;
+        }
+
+        public async Task RemoveGamesWithGameIdAsync(Guid id,  bool noTracking = true)
+        {
+            //ToDo Fix This Delete function. Throws Game.Id tracked multiple times
+            var teamsToBeRemoved = (await ServiceRepository.GetAllTeamGamesWithGameIdAsync(id, noTracking));
+            
+            var removeGamesWithGameId = teamsToBeRemoved.ToList();
+            foreach (var team in removeGamesWithGameId)
+            {
+                ServiceUow.GameTeams.Remove(team);
+                await ServiceUow.SaveChangesAsync();
+            }
+            //await ServiceUow.SaveChangesAsync();
+        }
+
+        public async Task RemoveWithGameIdAsync(Guid id)
+        {
+            var team = await ServiceRepository.FirstOrDefaultWithGameIdAsync(id);
+
+            await ServiceRepository.RemoveAsync(team.Id);
+            
+        }
     }
 }

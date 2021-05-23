@@ -17,12 +17,12 @@
 </div>
 
 <div class="form-group">
-    <label asp-for="HomeTeamId" class="control-label"></label>
+    <label class="control-label">HomeTeam</label>
     <select asp-for="HomeTeamId" class="form-control" asp-items="Model.HomeTeamSelectList"></select>
-    <span asp-validation-for="Game.StadiumId" class="text-danger"></span>
+    <span asp-validation-for="HomeTeamId" class="text-danger"></span>
 </div>
 <div class="form-group">
-    <label asp-for="AwayTeamId" class="control-label"></label>
+    <label class="control-label">AwayTeam</label>
     <select asp-for="AwayTeamId" class="form-control" asp-items="Model.AwayTeamSelectList"></select>
-    <span asp-validation-for="Game.StadiumId" class="text-danger"></span>
+    <span asp-validation-for="AwayTeamId" class="text-danger"></span>
 </div>

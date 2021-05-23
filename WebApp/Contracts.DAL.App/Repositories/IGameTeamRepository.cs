@@ -14,6 +14,10 @@ namespace Contracts.DAL.App.Repositories
     public interface IGameTeamRepositoryCustom<TEntity>
     {
         public Task<IEnumerable<TEntity>> GetAllTeamGamesAsync(Guid teamId);
+
+        public Task<IEnumerable<TEntity>> GetAllTeamGamesWithGameIdAsync(Guid gameId,  bool noTracking = true);
         
+        public Task<TEntity>FirstOrDefaultWithGameIdAsync(Guid id);
+
     }
 }

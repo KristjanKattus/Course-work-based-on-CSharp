@@ -15,9 +15,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.Game)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GamePersonnel)
-            </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.GameTeamList)
             </th>
@@ -43,19 +41,17 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Game.Id)
+                @Html.DisplayFor(modelItem => item.Game!.Id)
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item!.GamePersonnel!.Id)
-            </td>
+
             <td>
                 @Html.DisplayFor(modelItem => item!.GameTeamList!.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.GamePart.Id)
+                @Html.DisplayFor(modelItem => item.GamePart!.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EventType.Name)
+                @Html.DisplayFor(modelItem => item.EventType!.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.GameTime)

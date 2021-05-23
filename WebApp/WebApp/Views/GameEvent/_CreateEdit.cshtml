@@ -1,42 +1,32 @@
 ﻿@model WebApp.ViewModels.GameEvent.GameEventCreateEditViewModel
 
 <div class="form-group">
-                <label asp-for="GameEvent.GameId" class="control-label"></label>
-                <select asp-for="GameEvent.GameId" class="form-control" asp-items="ViewBag.GameId"></select>
-                <span asp-validation-for="GameEvent.GameId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GameEvent.GamePersonnelId" class="control-label"></label>
-                <select asp-for="GameEvent.GamePersonnelId" class="form-control" asp-items="ViewBag.GamePersonnelId"></select>
-                <span asp-validation-for="GameEvent.GamePersonnelId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GameEvent.GameTeamListId" class="control-label"></label>
-                <select asp-for="GameEvent.GameTeamListId" class="form-control" asp-items="ViewBag.GameTeamListId"></select>
-                <span asp-validation-for="GameEvent.GameTeamListId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GameEvent.GamePartId" class="control-label"></label>
-                <select asp-for="GameEvent.GamePartId" class="form-control" asp-items="ViewBag.GamePartId"></select>
-                <span asp-validation-for="GameEvent.GamePartId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GameEvent.EventTypeId" class="control-label"></label>
-                <select asp-for="GameEvent.EventTypeId" class="form-control" asp-items="ViewBag.EventTypeId"></select>
-                <span asp-validation-for="GameEvent.EventTypeId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GameEvent.GameTime" class="control-label"></label>
-                <input asp-for="GameEvent.GameTime" class="form-control" />
-                <span asp-validation-for="GameEvent.GameTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GameEvent.NumberInOrder" class="control-label"></label>
-                <input asp-for="GameEvent.NumberInOrder" class="form-control" />
-                <span asp-validation-for="GameEvent.NumberInOrder" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="GameEvent.Description" class="control-label"></label>
-                <input asp-for="GameEvent.Description" class="form-control" />
-                <span asp-validation-for="GameEvent.Description" class="text-danger"></span>
-            </div>
+    <label asp-for="GameEvent.GameTeamList" class="control-label"></label>
+    <select asp-for="GameEvent.GameTeamListId" class="form-control" asp-items="Model.GameTeamSelectList"></select>
+    <span asp-validation-for="GameEvent.GameTeamListId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameEvent.GamePart" class="control-label"></label>
+    <select asp-for="GameEvent.GamePartId" class="form-control" asp-items="Model.GamePartSelectList"></select>
+    <span asp-validation-for="GameEvent.GamePartId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameEvent.EventTypeId" class="control-label"></label>
+    <select asp-for="GameEvent.EventTypeId" class="form-control" asp-items="Model.EventTypeSelectList"></select>
+    <span asp-validation-for="GameEvent.EventTypeId" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameEvent.GameTime" class="control-label"></label>
+    <input asp-for="GameEvent.GameTime" class="form-control"/>
+    <span asp-validation-for="GameEvent.GameTime" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameEvent.NumberInOrder" class="control-label"></label>
+    <input asp-for="GameEvent.NumberInOrder" class="form-control"/>
+    <span asp-validation-for="GameEvent.NumberInOrder" class="text-danger"></span>
+</div>
+<div class="form-group">
+    <label asp-for="GameEvent.Description" class="control-label"></label>
+    <input asp-for="GameEvent.Description" class="form-control"/>
+    <span asp-validation-for="GameEvent.Description" class="text-danger"></span>
+</div>

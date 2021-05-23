@@ -9,6 +9,7 @@ using DAL.App.EF.Mappers;
 using DAL.Base.EF.Repositories;
 using Domain.App;
 using Microsoft.EntityFrameworkCore;
+using Game = DAL.App.DTO.Game;
 
 namespace DAL.App.EF.Repositories
 {
@@ -24,7 +25,6 @@ namespace DAL.App.EF.Repositories
 
             var resQuery = query
                 .Include(g => g.Game)
-                .Include(g => g.GamePersonnel)
                 .Include(g => g.GameTeamList)
                 .Include(g => g.GamePart)
                 .Include(g => g.EventType)
@@ -42,7 +42,6 @@ namespace DAL.App.EF.Repositories
 
             var resQuery = query
                 .Include(g => g.Game)
-                .Include(g => g.GamePersonnel)
                 .Include(g => g.GameTeamList)
                 .Include(g => g.GamePart)
                 .Include(g => g.EventType);
@@ -50,6 +49,24 @@ namespace DAL.App.EF.Repositories
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(g => g.Id == id));
 
             return res;
+        }
+
+        public async Task<IEnumerable<GameEvent>> GetWithGameIdAsync(Guid gameId)
+        {
+            var query = InitializeQuery();
+
+            var resQuery = query
+                .Include(g => g.Game)
+                .Include(g => g.GameTeamList)
+                .Include(g => g.GamePart)
+                .Include(g => g.EventType)
+                .Where(g => g.GameId == gameId)
+                .Select(g => Mapper.Map(g));
+
+
+            var res = await resQuery.ToListAsync();
+                
+            return res!;
         }
     }
 }

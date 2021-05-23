@@ -11,7 +11,6 @@ namespace BLL.App.DTO
         public League? League { get; set; } = default!;
 
         public Guid TeamId { get; set; }
-
         public Team? Team { get; set; } = default!;
 
         public DateTime Since { get; set; } = DateTime.Now;
@@ -21,5 +20,8 @@ namespace BLL.App.DTO
         
         [MaxLength(128)]
         public string? Description { get; set; }
+
+        
     }
+    
 }

@@ -9,11 +9,13 @@ namespace PublicApi.DTO.v1
     {
         public Guid Id { get; set; }
         public Guid StadiumId { get; set; }
-        public PublicApi.DTO.v1.Stadium? Stadium { get; set; }
+        public Stadium? Stadium { get; set; }
 
-        public int GameLength { get; set; }
+        public Guid LeagueId { get; set; }
 
-        public ICollection<PublicApi.DTO.v1.GameEvent>? GameEvents { get; set; }
+        public int GameLength { get; set; } = 90;
+
+        public ICollection<GameEvent>? GameEvents { get; set; }
         public int MatchRound { get; set; }
     }
 }

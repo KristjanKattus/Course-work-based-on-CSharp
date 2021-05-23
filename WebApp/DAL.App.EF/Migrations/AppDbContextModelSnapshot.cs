@@ -105,6 +105,9 @@ namespace DAL.App.EF.Migrations
                     b.Property<int>("GameLength")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("LeagueId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("MatchRound")
                         .HasColumnType("int");
 
@@ -143,8 +146,8 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("GameTeamListId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("GameTime")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("GameTime")
+                        .HasColumnType("int");
 
                     b.Property<int>("NumberInOrder")
                         .HasColumnType("int");

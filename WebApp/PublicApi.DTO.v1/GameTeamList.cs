@@ -8,13 +8,13 @@ namespace PublicApi.DTO.v1
     {
         public Guid Id { get; set; }
         public Guid PersonId { get; set; }
-        public PublicApi.DTO.v1.Person? Person { get; set; }
+        public Person? Person { get; set; }
 
         public Guid GameTeamId { get; set; }
-        public PublicApi.DTO.v1.GameTeam GameTeam { get; set; } = default!;
+        public GameTeam? GameTeam { get; set; }
 
         public Guid RoleId { get; set; }
-        public PublicApi.DTO.v1.Role Role { get; set; } = default!;
+        public Role? Role { get; set; }
         
         public bool InStartingLineup { get; set; }
         public bool Staff { get; set; }

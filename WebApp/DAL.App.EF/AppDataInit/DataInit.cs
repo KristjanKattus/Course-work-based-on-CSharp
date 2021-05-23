@@ -169,7 +169,7 @@ namespace DAL.App.EF.AppDataInit
                 {
                     Person = person,
                     Team = team,
-                    RoleId = Guid.Parse("F2EDF7F2-7F8B-43EA-F724-08D9194D4910")
+                    RoleId = Guid.Parse("5C32ED6A-028E-4FF6-22AE-08D91D1F6373")
                     
                 };
                 ctx.TeamPersons.Add(teamPerson);

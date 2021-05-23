@@ -10,6 +10,8 @@ namespace BLL.App.DTO
 
         public Guid TeamId { get; set; }
         public Team? Team { get; set; }
+        public string? TeamName { get; set; }
+        
 
         public DateTime Since { get; set; } = DateTime.Now;
         public DateTime? Until { get; set; }

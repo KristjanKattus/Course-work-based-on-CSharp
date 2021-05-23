@@ -56,5 +56,33 @@ namespace DAL.App.EF.Repositories
 
             return (await resQuery.ToListAsync())!;
         }
+
+        public async Task<IEnumerable<GameTeam>> GetAllTeamGamesWithGameIdAsync(Guid gameId, bool noTracking = true)
+        {
+            var query = InitializeQuery();
+
+            var resQuery = query
+                .Include(g => g.Game)
+                .Include(g => g.Team)
+                .Where(g => g.GameId == gameId)
+                .Select(g => Mapper.Map(g));
+
+            
+            return (await resQuery.ToListAsync())!;
+        }
+
+        public async Task<GameTeam> FirstOrDefaultWithGameIdAsync(Guid id)
+        {
+            var query = InitializeQuery();
+
+            var resQuery = query
+                .Include(g => g.Game)
+                .Include(g => g.Team)
+                .Where(g => g.GameId == id);
+                
+
+            var res = Mapper.Map(await resQuery.FirstOrDefaultAsync());
+            return res!;
+        }
     }
 }

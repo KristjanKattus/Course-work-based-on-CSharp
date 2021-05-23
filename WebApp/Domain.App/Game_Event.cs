@@ -8,21 +8,22 @@ namespace Domain.App
     {
 
         public Guid GameId { get; set; }
-        public Game Game { get; set; } = default!;
+        public Game? Game { get; set; }
 
-        public Guid GamePersonnelId { get; set; }
-        public Game_Personnel? GamePersonnel { get; set; }
 
         public Guid GameTeamListId { get; set; }
         public Game_Team_List? GameTeamList { get; set; }
         
+        
         public Guid GamePartId { get; set; }
-        public Game_Part GamePart { get; set; } = default!;
+        public Game_Part? GamePart { get; set; }
+        
 
         public Guid EventTypeId { get; set; }
-        public Event_Type EventType { get; set; } = default!;
+        public Event_Type? EventType { get; set; }
+        
 
-        public DateTime GameTime { get; set; }
+        public int GameTime { get; set; }
 
         public int NumberInOrder { get; set; }
 

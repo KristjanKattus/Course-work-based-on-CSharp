@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class OneToOne : Migration
+    public partial class Db : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -394,6 +394,7 @@ namespace DAL.App.EF.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     StadiumId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LeagueId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameLength = table.Column<int>(type: "int", nullable: false),
                     MatchRound = table.Column<int>(type: "int", nullable: false)
                 },
@@ -544,7 +545,7 @@ namespace DAL.App.EF.Migrations
                     GameTeamListId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GamePartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EventTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GameTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    GameTime = table.Column<int>(type: "int", nullable: false),
                     NumberInOrder = table.Column<int>(type: "int", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: true)
                 },

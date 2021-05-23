@@ -10,10 +10,10 @@ namespace DAL.App.DTO
         public Person? Person { get; set; }
 
         public Guid GameTeamId { get; set; }
-        public Game_Team GameTeam { get; set; } = default!;
+        public GameTeam? GameTeam { get; set; }
 
         public Guid RoleId { get; set; }
-        public Role Role { get; set; } = default!;
+        public Role? Role { get; set; }
         
         public bool InStartingLineup { get; set; }
         public bool Staff { get; set; }
