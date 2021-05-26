@@ -86,12 +86,12 @@ namespace DAL.App.EF.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                    b.Property<Guid>("NameId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("NameId");
 
                     b.ToTable("EventTypes");
                 });
@@ -140,9 +140,6 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("GamePartId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("GamePersonnelId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("GameTeamListId")
                         .HasColumnType("uniqueidentifier");
 
@@ -159,8 +156,6 @@ namespace DAL.App.EF.Migrations
                     b.HasIndex("GameId");
 
                     b.HasIndex("GamePartId");
-
-                    b.HasIndex("GamePersonnelId");
 
                     b.HasIndex("GameTeamListId");
 
@@ -525,10 +520,8 @@ namespace DAL.App.EF.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                    b.Property<Guid>("NameId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Since")
                         .HasColumnType("datetime2");
@@ -537,6 +530,8 @@ namespace DAL.App.EF.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("NameId");
 
                     b.ToTable("FRoles");
                 });
@@ -648,6 +643,41 @@ namespace DAL.App.EF.Migrations
                     b.HasIndex("TeamId");
 
                     b.ToTable("TeamPersons");
+                });
+
+            modelBuilder.Entity("Domain.Base.LangString", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LangStrings");
+                });
+
+            modelBuilder.Entity("Domain.Base.Translation", b =>
+                {
+                    b.Property<string>("Culture")
+                        .HasMaxLength(5)
+                        .HasColumnType("nvarchar(5)");
+
+                    b.Property<Guid>("LangStringId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(10240)
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Culture", "LangStringId");
+
+                    b.HasIndex("LangStringId");
+
+                    b.ToTable("Translations");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -770,6 +800,17 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("Domain.App.Event_Type", b =>
+                {
+                    b.HasOne("Domain.Base.LangString", "Name")
+                        .WithMany()
+                        .HasForeignKey("NameId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Name");
+                });
+
             modelBuilder.Entity("Domain.App.Game", b =>
                 {
                     b.HasOne("Domain.App.Stadium", "Stadium")
@@ -801,12 +842,6 @@ namespace DAL.App.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.App.Game_Personnel", "GamePersonnel")
-                        .WithMany()
-                        .HasForeignKey("GamePersonnelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.App.Game_Team_List", "GameTeamList")
                         .WithMany()
                         .HasForeignKey("GameTeamListId")
@@ -818,8 +853,6 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Game");
 
                     b.Navigation("GamePart");
-
-                    b.Navigation("GamePersonnel");
 
                     b.Navigation("GameTeamList");
                 });
@@ -945,6 +978,17 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("AppUser");
                 });
 
+            modelBuilder.Entity("Domain.App.Role", b =>
+                {
+                    b.HasOne("Domain.Base.LangString", "Name")
+                        .WithMany()
+                        .HasForeignKey("NameId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Name");
+                });
+
             modelBuilder.Entity("Domain.App.Stadium", b =>
                 {
                     b.HasOne("Domain.App.Stadium_Area", "StadiumArea")
@@ -981,6 +1025,17 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("Role");
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("Domain.Base.Translation", b =>
+                {
+                    b.HasOne("Domain.Base.LangString", "LangString")
+                        .WithMany("Translations")
+                        .HasForeignKey("LangStringId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LangString");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -1057,6 +1112,11 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("Domain.App.Team", b =>
                 {
                     b.Navigation("TeamPersons");
+                });
+
+            modelBuilder.Entity("Domain.Base.LangString", b =>
+                {
+                    b.Navigation("Translations");
                 });
 #pragma warning restore 612, 618
         }

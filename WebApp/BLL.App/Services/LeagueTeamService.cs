@@ -54,6 +54,7 @@ namespace BLL.App.Services
 
                 var leagueTableTeam = new BLLAppDTO.LeagueTableTeam
                 {
+                    LeagueTeamName = leagueTeam.Team!.Name,
                     Points = points,
                     GamesPlayed = gamesPlayed,
                     GamesWon = gamesWon,

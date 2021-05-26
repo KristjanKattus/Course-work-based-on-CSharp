@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-
 using Domain.App.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -26,14 +25,15 @@ namespace WebApp.Areas.Identity.Pages.Account
             _emailSender = emailSender;
         }
 
-        [BindProperty]
-        public InputModel Input { get; set; } = null!;
+        [BindProperty] public InputModel Input { get; set; } = default!;
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
-            public string? Email { get; set; }
+            [Required(ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_Required")]
+            [EmailAddress(ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_Email")]
+            public string Email { get; set; } = default!;
         }
 
         public void OnGet()
@@ -60,7 +60,7 @@ namespace WebApp.Areas.Identity.Pages.Account
             var callbackUrl = Url.Page(
                 "/Account/ConfirmEmail",
                 pageHandler: null,
-                values: new { userId = userId, code = code },
+                values: new {userId = userId, code = code},
                 protocol: Request.Scheme);
             await _emailSender.SendEmailAsync(
                 Input.Email,

@@ -1,7 +1,8 @@
 @page
+@using Base.Resources.Areas.Identity.Pages.Account
 @model RegisterConfirmationModel
 @{
-    ViewData["Title"] = "Register confirmation";
+    ViewData["Title"] = RegisterConfirmation.RegisterConfirm;
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -16,7 +17,7 @@
     else
     {
 <p>
-        Please check your email to confirm your account.
+        @RegisterConfirmation.CheckEmail
 </p>
     }
 }

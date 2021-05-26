@@ -6,6 +6,7 @@ using System.Text.Encodings.Web;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.App.Identity;
+using Base.Resources.Areas.Identity.Pages.Account.Manage;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -30,24 +31,28 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
             _emailSender = emailSender;
         }
 
-        public string Username { get; set; } = null!;
+        // public string Username { get; set; }
 
-        public string Email { get; set; } = null!;
+        [Display(Name = "DisplayEmail", ResourceType = typeof(Email))]
+        public string? Email { get; set; }
 
         public bool IsEmailConfirmed { get; set; }
 
         [TempData]
-        public string StatusMessage { get; set; } = null!;
+        public string StatusMessage { get; set; } = default!;
 
         [BindProperty]
-        public InputModel Input { get; set; } = null!;
+        public InputModel Input { get; set; } = default!;
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
-            [Display(Name = "New email")]
-            public string? NewEmail { get; set; }
+            [Required(ErrorMessageResourceType = typeof(Base.Resources.Common), ErrorMessageResourceName = "ErrorMessage_Required")]
+
+            [EmailAddress(ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_Email")]
+
+            [Display(Name = nameof(NewEmail), ResourceType = typeof(Email))]
+            public string NewEmail { get; set; } = default!;
         }
 
         private async Task LoadAsync(AppUser user)

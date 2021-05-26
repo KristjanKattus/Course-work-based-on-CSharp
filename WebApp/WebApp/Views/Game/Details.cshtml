@@ -1,21 +1,72 @@
-@model PublicApi.DTO.v1.Game
+@model PublicApi.DTO.v1.LeagueGame
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = @Resources.Common.Details;
 }
 
-<h1>Details</h1>
+<h1>@Resources.Common.Details</h1>
 
 <div>
-    <h4>Game</h4>
-    <hr />
+    <h4>@Resources.PublicApi.DTO.v1.GameEvent.Game</h4>
     
-    <partial name="_Details" model="Model"/>
-    
-    
-     <a asp-controller="GameEvent" asp-action="Create"  asp-route-gameId="@Model.Id">Add Game Event</a>
+    @* <div class="table-responsive"> *@
+    @*             <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4"> *@
+    @*                 <div class="row"> *@
+    @*                     <div class="col-sm-12"> *@
+    @*                         <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;"> *@
+    @*                             <thead> *@
+    @*                             <tr role="row"> *@
+    @*                                 <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].LeagueTeamName)</th> *@
+    @*                                 <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GamesPlayed)</th> *@
+    @*                                 <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GamesWon)</th> *@
+    @*                                 <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GamesLost)</th> *@
+    @*                                 <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GamesTied)</th> *@
+    @*                                 <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GoalsScored)</th> *@
+    @*                                 <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GoalsConceded)</th> *@
+    @*                                 <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].Points)</th> *@
+    @*                             </tr> *@
+    @*                             </thead> *@
+    @*                             <tbody> *@
+    @*                             @foreach (var item in Model.LeagueTableTeams!) *@
+    @*                             { *@
+    @*                                 <tr> *@
+    @*                                     <td> *@
+    @*                                         @Html.DisplayFor(modelItem => item.LeagueTeamName) *@
+    @*                                     </td> *@
+    @*                                     <td> *@
+    @*                                         @Html.DisplayFor(modelItem => item.GamesPlayed) *@
+    @*                                     </td> *@
+    @*                                     <td> *@
+    @*                                         @Html.DisplayFor(modelItem => item.GamesWon) *@
+    @*                                     </td> *@
+    @*                                     <td> *@
+    @*                                         @Html.DisplayFor(modelItem => item.GamesLost) *@
+    @*                                     </td> *@
+    @*                                     <td> *@
+    @*                                         @Html.DisplayFor(modelItem => item.GamesTied) *@
+    @*                                     </td> *@
+    @*                                     <td> *@
+    @*                                         @Html.DisplayFor(modelItem => item.GoalsScored) *@
+    @*                                     </td> *@
+    @*                                     <td> *@
+    @*                                         @Html.DisplayFor(modelItem => item.GoalsConceded) *@
+    @*                                     </td> *@
+    @*                                     <td> *@
+    @*                                         @Html.DisplayFor(modelItem => item.Points) *@
+    @*                                     </td> *@
+    @*                                 </tr> *@
+    @*                             } *@
+    @*                             </tbody> *@
+    @*                         </table> *@
+    @*                     </div> *@
+    @*                 </div> *@
+    @*             </div> *@
+    @*         </div> *@
+    @* </div> *@
+<div>
+    <a asp-controller="GameEvent" asp-action="Create"  asp-route-gameId="@Model.Game!.Id">@Resources.Common.AddGameEvent</a>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+    <a asp-action="Edit" asp-route-id="@Model.Game!.Id">@Resources.Common.Edit</a> |
+    <a asp-action="Index">@Resources.Common.BackToList</a>
+</div></div>

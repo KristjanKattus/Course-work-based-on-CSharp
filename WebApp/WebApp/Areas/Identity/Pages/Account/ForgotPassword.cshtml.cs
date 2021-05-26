@@ -27,13 +27,16 @@ namespace WebApp.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; } = null!;
+        public InputModel Input { get; set; } = default!;
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; } = null!;
+            [Required(ErrorMessageResourceType = typeof(Base.Resources.Common), ErrorMessageResourceName = "ErrorMessage_Required")]
+
+            [EmailAddress(ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_Email")]
+
+            public string Email { get; set; } = default!;
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -41,7 +44,9 @@ namespace WebApp.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(Input.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                // TODO: Email confirmation is not enabled currently in system, so here we allow password reminders even without it
+                //if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                if (user == null)
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return RedirectToPage("./ForgotPasswordConfirmation");

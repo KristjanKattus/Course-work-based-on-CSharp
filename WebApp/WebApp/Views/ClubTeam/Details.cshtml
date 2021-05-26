@@ -1,17 +1,17 @@
 @model PublicApi.DTO.v1.ClubTeam
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = @Resources.Common.Details;
 }
 
-<h1>Details</h1>
+<h1>@Resources.Common.Details</h1>
 
 <div>
-    <h4>Club_Team</h4>
+    <h4>@Resources.PublicApi.DTO.v1.ClubTeam.ClubTeamS</h4>
     <hr />
     
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id">@Resources.Common.Edit</a>
+    <a asp-action="Index">@Resources.Common.BackToList</a>
 </div>

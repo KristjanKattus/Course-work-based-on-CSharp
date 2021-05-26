@@ -14,15 +14,15 @@ namespace DAL.App.EF.AppDataInit
             ("Player", "Players"),
             ("Manager", "Managers"),
         };
-        
+
         public static readonly (string name, string password, string firstName, string lastName
             , EGender gender, string[] roles)[] Users =
-        {
-            ("admin@smarty.ee", "Foo.bar1", "Admin", "///", EGender.Male, new []{"Admin"}),
-            ("referee@smarty.ee", "Foo.bar1", "Referee", "///", EGender.Male, new []{"Referee"}),
-            ("manager@smarty.ee", "Foo.bar1", "Manager", "///", EGender.Male, new []{"Manager"}),
-        };
-        
+            {
+                ("admin@fas.ee", "Foo.bar1", "Admin", "///", EGender.Male, new[] {"Admin"}),
+                ("referee@fas.ee", "Foo.bar1", "Referee", "///", EGender.Male, new[] {"Referee"}),
+                ("manager@fas.ee", "Foo.bar1", "Manager", "///", EGender.Male, new[] {"Manager"}),
+            };
+
 
         public static readonly (string Name, DateTime since, DateTime until, string Description)[] Clubs =
         {
@@ -35,13 +35,12 @@ namespace DAL.App.EF.AppDataInit
         };
 
 
-        public static readonly (string Name, DateTime since, DateTime until, string? description)[] Roles =
+        public static readonly (string[] Name, DateTime since, DateTime until, string? description)[] Roles =
         {
-            ("Referee", DateTime.Now, default, ""),
-            ("Player", DateTime.Now, default, ""),
-            ("Manager", DateTime.Now, default, ""),
-            ("Assistant manager", DateTime.Now, default, ""),
-            ("Physio", DateTime.Now, default, "")
+            (new []{"Referee", "Kohtunik"}, DateTime.Now, default, ""),
+            (new []{"Player", "Mängija"}, DateTime.Now, default, ""),
+            (new []{"Manager", "Treener"}, DateTime.Now, default, ""),
+            (new []{"Physio", "Füsioterapeud"}, DateTime.Now, default, "")
         };
 
         public static readonly (string Firstname, string Lastname, DateTime Date, Char Sex)[] Persons =
@@ -67,8 +66,14 @@ namespace DAL.App.EF.AppDataInit
         //         new Team {Name = "Team1League1"}, new Role {Name = "Player"}),
         //
         // };
-        
+
         // public static readonly (Person Person, )
+
+        public static readonly (string culture, string cultureUI)[] Cultures =
+        {
+            ("en-GB", "en"),
+            ("et", "et")
+        };
 
         public static readonly (Domain.App.Stadium_Area stadiumArea, string Name, DateTime Since
             , string PitchType, int Category)[] Stadiums =
@@ -81,14 +86,14 @@ namespace DAL.App.EF.AppDataInit
             (new Stadium_Area {Name = "Kuresaare", Since = DateTime.Now}, "Kuresaare linnataadion", DateTime.Now, "Natural grass", 4),
         };
 
-        public static readonly (string Name, string? Description)[] EventTypes =
+        public static readonly (string[] Name, string? Description)[] EventTypes =
         {
-            ("Goal", ""),
-            ("Own goal", ""),
-            ("Yellow card", ""),
-            ("Red card", ""),
-            ("Penalty", ""),
-            ("Missed penalty", "")
+            (new [] {"Goal", "Värav"}, ""),
+            (new [] {"Own goal", "Omavärav"}, ""),
+            (new [] {"Yellow card", "Kollane kaart"}, ""),
+            (new [] {"Red card", "Punane kaart"}, ""),
+            (new [] {"Penalty", "Penalti"}, ""),
+            (new [] {"Missed penalty", "Eksitud penalti"}, "")
         };
         
         public static readonly (string Name, string? Description)[] GamePartTypes =

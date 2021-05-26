@@ -24,23 +24,24 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
         }
 
         [BindProperty]
-        public InputModel Input { get; set; } = null!;
+        public InputModel Input { get; set; } = default!;
 
         [TempData]
-        public string StatusMessage { get; set; } = null!;
+        public string StatusMessage { get; set; } = default!;
 
         public class InputModel
         {
-            [Required]
+            [Required(ErrorMessageResourceType = typeof(Base.Resources.Common), ErrorMessageResourceName = "ErrorMessage_Required")]
+
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "New password")]
-            public string NewPassword { get; set; } = null!;
+            public string NewPassword { get; set; } = default!;
 
             [DataType(DataType.Password)]
             [Display(Name = "Confirm new password")]
             [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; } = null!;
+            public string ConfirmPassword { get; set; } = default!;
         }
 
         public async Task<IActionResult> OnGetAsync()

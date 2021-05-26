@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using BLL.App;
@@ -10,6 +12,8 @@ using Domain.App.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +24,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using WebApp.Helpers;
 
 namespace WebApp
 {
@@ -90,6 +95,29 @@ namespace WebApp
                 typeof(PublicApi.DTO.v1.MappingProfiles.AutoMapperProfile)
                 );
 
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                //TODO should be in appsettings.json
+                var appSupportedCultures = new[]
+                {
+                    new CultureInfo("et"),
+                    new CultureInfo("en-GB")
+                };
+                options.SupportedCultures = appSupportedCultures;
+                options.SupportedUICultures = appSupportedCultures;
+                options.DefaultRequestCulture = new RequestCulture("en-GB", "en");
+                options.SetDefaultCulture("en-GB");
+                options.RequestCultureProviders = new List<IRequestCultureProvider>()
+                {
+                    new QueryStringRequestCultureProvider(),
+                    new CookieRequestCultureProvider()
+                };
+            });
+
+
+            services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureModelBindingLocalization>();
+
+
         }
         
         
@@ -130,6 +158,9 @@ namespace WebApp
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseRequestLocalization(
+                app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>()?.Value);
 
             app.UseAuthentication();
             app.UseAuthorization();

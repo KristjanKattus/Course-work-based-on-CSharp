@@ -24,39 +24,46 @@ namespace WebApp.Areas.Identity.Pages.Account
         }
 
         [BindProperty]
-        public InputModel Input { get; set; } = null!;
+        public InputModel Input { get; set; } = default!;
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
-            public string Email { get; set; } = null!;
+            [Required(ErrorMessageResourceType = typeof(Base.Resources.Common), ErrorMessageResourceName = "ErrorMessage_Required")]
+            [EmailAddress(ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_Email")]
+            public string Email { get; set; } = default!;
 
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessageResourceType = typeof(Base.Resources.Common), ErrorMessageResourceName = "ErrorMessage_Required")]
+            [StringLength(100, ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_StringLengthMinMax", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            public string Password { get; set; } = null!;
+            public string Password { get; set; } = default!;
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; } = null!;
+            [Display(Name = nameof(ConfirmPassword),
+                ResourceType = typeof(Base.Resources.Areas.Identity.Pages.Account.Register))]
+            [Compare("Password",
+                ErrorMessageResourceType = typeof(Base.Resources.Areas.Identity.Pages.Account.Register),
+                ErrorMessageResourceName = "PasswordsDontMatch")]
+            public string ConfirmPassword { get; set; } = default!;
 
-            public string Code { get; set; } = null!;
+            public string Code { get; set; } = default!;
         }
 
-        public IActionResult OnGet(string? code)
+        public IActionResult OnGet(string? code = null)
         {
             if (code == null)
             {
                 return BadRequest("A code must be supplied for password reset.");
             }
-
-            Input = new InputModel
+            else
             {
-                Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
-            };
-            return Page();
+                Input = new InputModel
+                {
+                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
+                };
+                return Page();
+            }
         }
 
         public async Task<IActionResult> OnPostAsync()

@@ -32,26 +32,26 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
             _urlEncoder = urlEncoder;
         }
 
-        public string? SharedKey { get; set; }
+        public string SharedKey { get; set; } = default!;
 
-        public string? AuthenticatorUri { get; set; }
+        public string AuthenticatorUri { get; set; } = default!;
 
         [TempData]
         public string[]? RecoveryCodes { get; set; }
 
         [TempData]
-        public string? StatusMessage { get; set; }
+        public string StatusMessage { get; set; } = default!;
 
-        [BindProperty]
-        public InputModel? Input { get; set; }
+        [BindProperty] public InputModel Input { get; set; } = default!;
 
         public class InputModel
         {
-            [Required]
+            [Required(ErrorMessageResourceType = typeof(Base.Resources.Common), ErrorMessageResourceName = "ErrorMessage_Required")]
+
             [StringLength(7, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Text)]
             [Display(Name = "Verification Code")]
-            public string? Code { get; set; }
+            public string Code { get; set; } = default!;
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -82,7 +82,7 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
             }
 
             // Strip spaces and hypens
-            var verificationCode = Input!.Code!.Replace(" ", string.Empty).Replace("-", string.Empty);
+            var verificationCode = Input.Code.Replace(" ", string.Empty).Replace("-", string.Empty);
 
             var is2faTokenValid = await _userManager.VerifyTwoFactorTokenAsync(
                 user, _userManager.Options.Tokens.AuthenticatorTokenProvider, verificationCode);

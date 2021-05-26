@@ -2,11 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using DAL.App.EF;
 using Domain.App.Identity;
+using Base.Resources;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Index = Base.Resources.Areas.Identity.Pages.Account.Manage.Index;
 
 namespace WebApp.Areas.Identity.Pages.Account.Manage
 {
@@ -14,40 +21,48 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly AppDbContext _ctx;
 
         public IndexModel(
             UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager)
+            SignInManager<AppUser> signInManager, 
+            AppDbContext ctx)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _ctx = ctx;
         }
 
+        [Display(Name = nameof(Username), ResourceType = typeof(Index))]
         public string? Username { get; set; }
 
-        [TempData]
-        public string? StatusMessage { get; set; }
 
-        [BindProperty]
-        public InputModel? Input { get; set; }
+        [TempData] public string StatusMessage { get; set; } = default!;
+
+        [BindProperty] public InputModel Input { get; set; } = default!;
 
         public class InputModel
         {
-            [Phone]
-            [Display(Name = "Phone number")]
+            [Required(ErrorMessageResourceName = "ErrorMessage_Required", ErrorMessageResourceType = typeof(Common))]
+            [Phone(ErrorMessageResourceName = "ErrorMessage_NotValidPhone", ErrorMessageResourceType = typeof(Common))]
+            [Display(Name = nameof(PhoneNumber), ResourceType = typeof(Index))]
             public string? PhoneNumber { get; set; }
-            
-            [Display(Name = "First name")]
-            [StringLength(128, MinimumLength = 1)]
-            public string Firstname { get; set; } = default!;
 
-            [Display(Name = "Last name")]
-            [StringLength(128, MinimumLength = 1)]
-            public string Lastname { get; set; } = default!;
+            [Required(ErrorMessageResourceName = "ErrorMessage_Required", ErrorMessageResourceType = typeof(Common))]
+            [StringLength(128, ErrorMessageResourceName = "ErrorMessage_StringLengthMinMax", ErrorMessageResourceType = typeof(Common), MinimumLength = 1)]
+            [Display(Name = nameof(FirstName), ResourceType = typeof(Index))]
+            public string FirstName { get; set; } = default!;
+            
+            [Required(ErrorMessageResourceName = "ErrorMessage_Required", ErrorMessageResourceType = typeof(Common))]
+            [StringLength(128, ErrorMessageResourceName = "ErrorMessage_StringLengthMinMax", ErrorMessageResourceType = typeof(Common), MinimumLength = 1)]
+            [Display(Name = nameof(LastName), ResourceType = typeof(Index))]
+            public string LastName { get; set; } = default!;
+            
         }
 
         private async Task LoadAsync(AppUser user)
         {
+            
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
@@ -56,8 +71,8 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
-                Firstname = user.Firstname,
-                Lastname = user.Lastname
+                FirstName = user.Firstname ?? "",
+                LastName = user.Lastname ?? "",
             };
         }
 
@@ -66,9 +81,8 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound(string.Format(Index.Unable_to_load_user_with_ID,_userManager.GetUserId(User)));
             }
-            
 
             await LoadAsync(user);
             return Page();
@@ -79,7 +93,7 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound(string.Format(Index.Unable_to_load_user_with_ID,_userManager.GetUserId(User)));
             }
 
             if (!ModelState.IsValid)
@@ -89,30 +103,32 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
             }
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input!.PhoneNumber != phoneNumber)
+            if (Input.PhoneNumber != phoneNumber)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = Index.Unexpected_error_when_trying_to_set_phone_number;
                     return RedirectToPage();
                 }
             }
 
 
-            user.Firstname = Input.Firstname;
-            user.Lastname = Input.Lastname;
+            user.Firstname = Input.FirstName;
+            user.Lastname = Input.LastName;
 
+          
             var result = await _userManager.UpdateAsync(user);
-
             if (!result.Succeeded)
             {
-                StatusMessage = "Unexpected error when trying to update user info";
+                StatusMessage = Index.Unexpected_error_when_trying_to_update_profile_data;
                 return RedirectToPage();
             }
             
+            
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = Index.Your_profile_has_been_updated;
+
             return RedirectToPage();
         }
     }

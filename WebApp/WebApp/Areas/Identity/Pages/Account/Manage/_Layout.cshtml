@@ -1,24 +1,24 @@
-﻿@{
+﻿@using Base.Resources.Areas.Identity.Pages.Account.Manage
+@{
     if (ViewData.TryGetValue("ParentLayout", out var parentLayout))
     {
-        Layout = (string)parentLayout;
+        Layout = (string) parentLayout;
     }
     else
     {
-        
-        // Layout = "/Areas/Identity/Pages/_Layout.cshtml";
+        //Layout = "/Areas/Identity/Pages/_Layout.cshtml";
         Layout = "/Views/Shared/_Layout.cshtml";
     }
 }
 
-<h2>Manage your account</h2>
+<h2>@_Layout.Manage_your_account</h2>
 
 <div>
-    <h4>Change your account settings</h4>
-    <hr />
+    <h4>@_Layout.Change_your_account_settings</h4>
+    <hr/>
     <div class="row">
         <div class="col-md-3">
-            <partial name="_ManageNav" />
+            <partial name="_ManageNav"/>
         </div>
         <div class="col-md-9">
             @RenderBody()

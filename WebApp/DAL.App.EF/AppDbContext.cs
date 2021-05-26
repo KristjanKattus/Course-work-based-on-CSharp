@@ -2,6 +2,7 @@
 using System.Linq;
 using Domain.App;
 using Domain.App.Identity;
+using Domain.Base;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,8 +28,11 @@ namespace DAL.App.EF
         public DbSet<Team> Teams { get; set; } = default!;
         public DbSet<Team_Person> TeamPersons { get; set; } = default!;
         public DbSet<Game_Part_Type> GamePartTypes { get; set; } = default!;
-        
-        
+
+        public DbSet<LangString> LangStrings { get; set; } = default!;
+        public DbSet<Translation> Translations { get; set; } = default!;
+
+
         public AppDbContext(DbContextOptions<AppDbContext> options)
          : base(options)
         {
@@ -37,6 +41,7 @@ namespace DAL.App.EF
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<Translation>().HasKey(k => new { k.Culture, k.LangStringId});
 
             foreach (var relationship in builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {

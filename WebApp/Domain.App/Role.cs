@@ -6,7 +6,9 @@ namespace Domain.App
 {
     public class Role : DomainEntityId
     {
-        [MaxLength(32)] public string Name { get; set; } = default!;
+        
+        public Guid NameId { get; set; }
+        [MaxLength(32)] public LangString Name { get; set; } = default!;
 
         public DateTime Since { get; set; } = DateTime.Now;
 

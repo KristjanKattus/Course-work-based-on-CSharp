@@ -28,11 +28,15 @@ namespace WebApp.Controllers
     public class GameController : Controller
     {
         private readonly IAppBLL _bll;
+        private readonly IMapper _mapper;
+        private readonly PublicApi.DTO.v1.Mappers.LeagueGameMapper _leagueGameMapper;
         private readonly PublicApi.DTO.v1.Mappers.GameMapper _gameMapper;
 
         public GameController(IMapper mapper, IAppBLL bll)
         {
+            _mapper = mapper;
             _bll = bll;
+            _leagueGameMapper = new LeagueGameMapper(mapper);
             _gameMapper = new GameMapper(mapper);
 
         }
@@ -45,6 +49,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Game/Details/5
+        [AllowAnonymous]
         public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
@@ -52,13 +57,21 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var game = await _bll.Games.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            var game = await _bll.Games.GetLeagueGameAsync(id.Value, _mapper);
+
             if (game == null)
             {
                 return NotFound();
             }
+            // var teams = await _bll.GameTeams.GetAllTeamGamesWithGameIdAsync(id.Value);
+            // var vm = new GameDetailsViewModel
+            // // {
+            // //     Game = _league
+            // // };
             
-            return View(_gameMapper.Map(game));
+            
+            
+            return View(_leagueGameMapper.Map(game));
         }
 
         // GET: Game/Create
@@ -74,7 +87,7 @@ namespace WebApp.Controllers
             var vm = new GameCreateEditViewModel
             {
                 LeagueId = leagueId,
-                StadiumSelectList = new SelectList(await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value),
+                StadiumSelectList = new SelectList((await _bll.Stadiums.GetAllAsync(User.GetUserId()!.Value)),
                     nameof(Stadium.Id), nameof(Stadium.Name)),
                 HomeTeamSelectList = new SelectList(teamList
                     , nameof(Team.Id), nameof(Team.Name)),

@@ -47,5 +47,19 @@ namespace DAL.App.EF.Repositories
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(m => m.Id == id));
             return res!;
         }
+
+        public async Task<IEnumerable<DTO.Game>> GetAllGamesWithLeagueIdAsync(Guid leagueId)
+        {
+            var query = InitializeQuery();
+
+            var resQuery = query
+                .Include(g => g.Stadium)
+                .Include(g => g.GameEvents)
+                .Where(g => g.LeagueId == leagueId)
+                .Select(g => Mapper.Map(g));
+
+            var res = await resQuery.ToListAsync();
+            return res!;
+        }
     }
 }

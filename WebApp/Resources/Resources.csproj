@@ -1,0 +1,242 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Update="Views\Shared\_Layout.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>_Layout.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\Club.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Club.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\ClubTeam.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>ClubTeam.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\EventType.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>EventType.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\Game.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Game.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\GameEvent.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>GameEvent.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\GamePart.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>GamePart.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\GamePartType.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>GamePartType.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\GamePersonnel.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>GamePersonnel.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\GameTeam.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>GameTeam.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\GameTeamList.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>GameTeamList.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\League.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>League.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\LeagueGame.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>LeagueGame.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\LeagueTableTeam.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>LeagueTableTeam.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\LeagueTeam.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>LeagueTeam.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\Login.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Login.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\Message.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Message.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\Person.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Person.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\Register.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Register.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\Role.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Role.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\Stadium.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Stadium.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\StadiumArea.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>StadiumArea.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\Team.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Team.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="PublicApi.DTO.v1\TeamPerson.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>TeamPerson.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Common\Common.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Common.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\Shared\_Layout.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>_Layout.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\Club.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Club.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\ClubTeam.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>ClubTeam.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\EventType.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>EventType.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\Game.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Game.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\GameEvent.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>GameEvent.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\GamePart.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>GamePart.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\GamePartType.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>GamePartType.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\GamePersonnel.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>GamePersonnel.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\GameTeam.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>GameTeam.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\GameTeamList.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>GameTeamList.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\League.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>League.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\LeagueGame.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>LeagueGame.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\LeagueTableTeam.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>LeagueTableTeam.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\LeagueTeam.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>LeagueTeam.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\Login.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Login.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\Message.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Message.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\Person.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Person.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\Register.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Register.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\Role.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Role.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\Stadium.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Stadium.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\StadiumArea.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>StadiumArea.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\Team.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Team.resx</DependentUpon>
+      </Compile>
+      <Compile Update="PublicApi.DTO.v1\TeamPerson.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>TeamPerson.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Common\Common.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Common.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Areas\Identity\Pages\Account" />
+    </ItemGroup>
+
+</Project>

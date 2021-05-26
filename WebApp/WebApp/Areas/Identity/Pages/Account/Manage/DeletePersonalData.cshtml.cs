@@ -26,13 +26,14 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
         }
 
         [BindProperty]
-        public InputModel Input { get; set; } = null!;
+        public InputModel Input { get; set; } = default!;
 
         public class InputModel
         {
-            [Required]
+            [Required(ErrorMessageResourceType = typeof(Base.Resources.Common), ErrorMessageResourceName = "ErrorMessage_Required")]
+
             [DataType(DataType.Password)]
-            public string Password { get; set; } = null!;
+            public string Password { get; set; } = default!;
         }
 
         public bool RequirePassword { get; set; }

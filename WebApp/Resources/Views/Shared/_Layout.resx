@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Languages" xml:space="preserve">
+        <value>Languages</value>
+    </data>
+    <data name="Leagues" xml:space="preserve">
+        <value>Leagues</value>
+    </data>
+    <data name="FootballAssociation" xml:space="preserve">
+        <value>Football Association</value>
+    </data>
+    <data name="MenLeague" xml:space="preserve">
+        <value>Men</value>
+    </data>
+    <data name="League1" xml:space="preserve">
+        <value>Premier League</value>
+    </data>
+    <data name="League2" xml:space="preserve">
+        <value>First League</value>
+    </data>
+    <data name="League3" xml:space="preserve">
+        <value>Second League</value>
+    </data>
+    <data name="Copyright" xml:space="preserve">
+        <value>Copyright</value>
+    </data>
+    <data name="SearchFor" xml:space="preserve">
+        <value>Search for</value>
+    </data>
+</root>

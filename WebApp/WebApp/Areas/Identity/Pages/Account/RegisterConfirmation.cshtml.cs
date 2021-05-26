@@ -22,13 +22,13 @@ namespace WebApp.Areas.Identity.Pages.Account
             _sender = sender;
         }
 
-        public string Email { get; set; } = null!;
+        public string Email { get; set; } = default!;
 
         public bool DisplayConfirmAccountLink { get; set; }
 
-        public string EmailConfirmationUrl { get; set; } = null!;
+        public string EmailConfirmationUrl { get; set; }  = default!;
 
-        public async Task<IActionResult> OnGetAsync(string email, string? returnUrl)
+        public async Task<IActionResult> OnGetAsync(string? email, string? returnUrl = null)
         {
             if (email == null)
             {
@@ -43,7 +43,7 @@ namespace WebApp.Areas.Identity.Pages.Account
 
             Email = email;
             // Once you add a real email sender, you should remove this code that lets you confirm the account
-            DisplayConfirmAccountLink = true;
+            DisplayConfirmAccountLink = false;
             if (DisplayConfirmAccountLink)
             {
                 var userId = await _userManager.GetUserIdAsync(user);

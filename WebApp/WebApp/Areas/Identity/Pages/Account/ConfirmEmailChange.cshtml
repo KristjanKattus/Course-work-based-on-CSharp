@@ -1,8 +1,9 @@
 @page
+@using Base.Resources.Areas.Identity.Pages.Account
 @model ConfirmEmailChangeModel
 @{
-    ViewData["Title"] = "Confirm email change";
+    ViewData["Title"] = ConfirmEmailChange.EmailConfirmChange;
 }
 
-<h1>@ViewData["Title"]</h1>
+<h1>@ConfirmEmailChange.EmailConfirmChange</h1>
 <partial name="_StatusMessage" model="Model.StatusMessage" />

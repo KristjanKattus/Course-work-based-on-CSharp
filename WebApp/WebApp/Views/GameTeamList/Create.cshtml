@@ -1,12 +1,12 @@
 @model WebApp.ViewModels.GameTeamList.GameTeamListCreateEditViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = @Resources.Common.Create;
 }
 
-<h1>Create</h1>
+<h1>@Resources.Common.Create</h1>
 
-<h4>Game_Team_List</h4>
+<h4>@Resources.PublicApi.DTO.v1.GameEvent.GameTeamList</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -20,7 +20,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">@Resources.Common.BackToList</a>
 </div>
 
 @section Scripts {

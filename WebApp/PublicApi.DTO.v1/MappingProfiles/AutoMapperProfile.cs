@@ -26,6 +26,7 @@ namespace PublicApi.DTO.v1.MappingProfiles
             CreateMap<BLL.App.DTO.Team, Team>().ReverseMap();
             CreateMap<BLL.App.DTO.TeamPerson, TeamPerson>().ReverseMap();
             CreateMap<BLL.App.DTO.LeagueTableTeam, LeagueTableTeam>().ReverseMap();
+            CreateMap<BLL.App.DTO.LeagueGame, LeagueGame>().ReverseMap();
         }
     }
 }

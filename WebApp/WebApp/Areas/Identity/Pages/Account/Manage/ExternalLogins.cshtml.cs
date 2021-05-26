@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using DAL.App.EF;
 using Domain.App.Identity;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.Areas.Identity.Pages.Account.Manage
 {
@@ -14,23 +17,24 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly AppDbContext _ctx;
 
         public ExternalLoginsModel(
             UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager)
+            SignInManager<AppUser> signInManager, AppDbContext ctx)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _ctx = ctx;
         }
 
-        public IList<UserLoginInfo> CurrentLogins { get; set; } = null!;
+        public IList<UserLoginInfo> CurrentLogins { get; set; } = default!;
 
-        public IList<AuthenticationScheme> OtherLogins { get; set; } = null!;
+        public IList<AuthenticationScheme> OtherLogins { get; set; } = default!;
 
         public bool ShowRemoveButton { get; set; }
 
-        [TempData]
-        public string StatusMessage { get; set; } = null!;
+        [TempData] public string StatusMessage { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -75,7 +79,9 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
 
             // Request a redirect to the external login provider to link a login for the current user
             var redirectUrl = Url.Page("./ExternalLogins", pageHandler: "LinkLoginCallback");
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl, _userManager.GetUserId(User));
+            var properties =
+                _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl,
+                    _userManager.GetUserId(User));
             return new ChallengeResult(provider, properties);
         }
 
@@ -90,13 +96,35 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
             var info = await _signInManager.GetExternalLoginInfoAsync(user.Id.ToString());
             if (info == null)
             {
-                throw new InvalidOperationException($"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
+                throw new InvalidOperationException(
+                    $"Unexpected error occurred loading external login info for user with ID '{user.Id}'.");
             }
+
+            // save all the claims from external provider
+            foreach (var claim in info.Principal.Claims)
+            {
+                await _userManager.AddClaimAsync(user, claim
+                );
+
+                // update user info from claims
+                switch (claim.Type)
+                {
+                    case ClaimTypes.GivenName:
+                        user.Firstname = claim!.Value;
+                        break;
+                    case ClaimTypes.Surname:
+                        user.Lastname = claim!.Value;
+                        break;
+                }
+            }
+
+            await _userManager.UpdateAsync(user);
 
             var result = await _userManager.AddLoginAsync(user, info);
             if (!result.Succeeded)
             {
-                StatusMessage = "The external login was not added. External logins can only be associated with one account.";
+                StatusMessage =
+                    "The external login was not added. External logins can only be associated with one account.";
                 return RedirectToPage();
             }
 

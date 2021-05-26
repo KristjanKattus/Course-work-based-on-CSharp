@@ -26,8 +26,7 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
             _logger = logger;
         }
 
-        [TempData]
-        public string StatusMessage { get; set; } = null!;
+        [TempData] public string StatusMessage { get; set; } = default!;
 
         public async Task<IActionResult> OnGet()
         {

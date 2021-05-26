@@ -13,10 +13,9 @@ namespace WebApp.Areas.Identity.Pages.Account.Manage
     public class ShowRecoveryCodesModel : PageModel
     {
         [TempData]
-        public string[] RecoveryCodes { get; set; } = null!;
+        public string[]? RecoveryCodes { get; set; }
 
-        [TempData]
-        public string StatusMessage { get; set; } = null!;
+        [TempData] public string StatusMessage { get; set; } = default!;
 
         public IActionResult OnGet()
         {

@@ -1,24 +1,15 @@
-﻿@model PublicApi.DTO.v1.Game
+﻿@model PublicApi.DTO.v1.LeagueGame
 
 <dl class="row">
     <dt class = "col-sm-2">
-        @Html.DisplayNameFor(model => model.Stadium)
+        @Html.DisplayNameFor(model => model.Game!.Stadium)
     </dt>
     <dd class = "col-sm-10">
-        @Html.DisplayFor(model => model.Stadium!.Name)
+        @Html.DisplayFor(model => model.Game!.Stadium!.Name)
     </dd>
+
     <dt class = "col-sm-2">
-        @Html.DisplayNameFor(model => model.GameLength)
+        @Html.DisplayNameFor(model => model.Game!.MatchRound)
     </dt>
-    <dd class = "col-sm-10">
-        @Html.DisplayFor(model => model.GameLength)
-    </dd>
-    <dt class = "col-sm-2">
-        @Html.DisplayNameFor(model => model.MatchRound)
-    </dt>
-    <dd class = "col-sm-10">
-        @Html.DisplayFor(model => model.MatchRound)
-    </dd>
-    
-    
+
 </dl>

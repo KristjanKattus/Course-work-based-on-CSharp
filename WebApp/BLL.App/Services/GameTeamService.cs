@@ -42,7 +42,6 @@ namespace BLL.App.Services
 
         public async Task RemoveGamesWithGameIdAsync(Guid id,  bool noTracking = true)
         {
-            //ToDo Fix This Delete function. Throws Game.Id tracked multiple times
             var teamsToBeRemoved = (await ServiceRepository.GetAllTeamGamesWithGameIdAsync(id, noTracking));
             
             var removeGamesWithGameId = teamsToBeRemoved.ToList();
@@ -51,14 +50,14 @@ namespace BLL.App.Services
                 ServiceUow.GameTeams.Remove(team);
                 await ServiceUow.SaveChangesAsync();
             }
-            //await ServiceUow.SaveChangesAsync();
+            
         }
 
         public async Task RemoveWithGameIdAsync(Guid id)
         {
             var team = await ServiceRepository.FirstOrDefaultWithGameIdAsync(id);
 
-            await ServiceRepository.RemoveAsync(team.Id);
+             ServiceRepository.Remove(team);
             
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DAL.App.DTO;
 using Domain.App.Identity;
+using Domain.Base;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -77,40 +78,6 @@ namespace DAL.App.EF.AppDataInit
                 var roleResult = userManager.AddToRolesAsync(appUser, userInfo.roles).Result;
             }
             
-            //
-            // var user = new AppUser();
-            // user.Email = "admin@kkattus.com";
-            // user.Firstname = "Admin";
-            // user.Lastname = "kkattus.com";
-            // user.UserName = user.Email;
-            //
-            // result = userManager.CreateAsync(user, "Foo.bar1").Result;
-            // if (!result.Succeeded)
-            // {
-            //     foreach (var identityError in result.Errors)
-            //     {
-            //         Console.WriteLine("Cant create user! Error: " + identityError.Description);
-            //     }
-            // }
-            //
-            // result = userManager.AddToRoleAsync(user, "Admin").Result;
-            // if (!result.Succeeded)
-            // {
-            //     foreach (var identityError in result.Errors)
-            //     {
-            //         Console.WriteLine("Cant add user to role! Error: " + identityError.Description);
-            //     }
-            // }
-/*
-            result = userManager.UpdateAsync(user).Result;
-            if (!result.Succeeded)
-            {
-                foreach (var identityError in result.Errors)
-                {
-                    Console.WriteLine("Cant update user! Error: " + identityError.Description);
-                }
-            }
-*/            
         }
         public static void SeedAppData(AppDbContext ctx, ILogger logger, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
@@ -169,7 +136,7 @@ namespace DAL.App.EF.AppDataInit
                 {
                     Person = person,
                     Team = team,
-                    RoleId = Guid.Parse("5C32ED6A-028E-4FF6-22AE-08D91D1F6373")
+                    RoleId = Guid.Parse("7192D998-49B3-4A31-A246-08D91F92B71A")
                     
                 };
                 ctx.TeamPersons.Add(teamPerson);
@@ -225,9 +192,18 @@ namespace DAL.App.EF.AppDataInit
 
             foreach (var eventTypesData in InitialData.EventTypes)
             {
+                
+                var langString = new LangString();
+
+                for(var i = 0; i < InitialData.Cultures.Length; i++)
+                {
+                    langString.SetTranslation(eventTypesData.Name[i], InitialData.Cultures[i].culture);  
+                }
+                
+                
                 var eventTypes = new Domain.App.Event_Type
                 {
-                    Name = eventTypesData.Name
+                    Name = langString
                 };
                 ctx.EventTypes.Add(eventTypes);
             }
@@ -264,9 +240,17 @@ namespace DAL.App.EF.AppDataInit
 
             foreach (var roleData in InitialData.Roles)
             {
+                var langString = new LangString();
+
+                for(var i = 0; i < InitialData.Cultures.Length; i++)
+                {
+                    langString.SetTranslation(roleData.Name[i], InitialData.Cultures[i].culture);  
+                }
+                
                 var role = new Domain.App.Role
                 {
-                    Name = roleData.Name,
+                    
+                    Name = langString,
                     Since = roleData.since
                 };
                 ctx.FRoles.Add(role);

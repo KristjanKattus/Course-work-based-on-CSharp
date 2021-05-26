@@ -37,64 +37,101 @@ namespace WebApp.Areas.Identity.Pages.Account
             _emailSender = emailSender;
         }
 
-        [BindProperty]
-        public InputModel Input { get; set; } = null!;
+        [BindProperty] public InputModel Input { get; set; } = default!;
 
-        public string ReturnUrl { get; set; } = null!;
+        public PasswordRequirementsViewModel? PasswordRequirements { get; set; }
 
-        public IList<AuthenticationScheme> ExternalLogins { get; set; } = null!;
+        public string? ReturnUrl { get; set; }
+
+        public IList<AuthenticationScheme> ExternalLogins { get; set; } = default!;
+
+        public class PasswordRequirementsViewModel
+        {
+            public bool RequireDigit { get; set; }
+            public int RequiredLength { get; set; }
+            public bool RequireLowercase { get; set; }
+            public bool RequireUppercase { get; set; }
+            public int RequiredUniqueChars { get; set; }
+            public bool RequireNonAlphanumeric { get; set; }
+        }
 
         public class InputModel
         {
-            [Required]
-            [EmailAddress]
-            [Display(Name = "Email")]
-            public string Email { get; set; } = null!;
+            [Required(ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_Required")]
+            [EmailAddress(ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_Email")]
+            [Display(ResourceType = typeof(Base.Resources.Areas.Identity.Pages.Account.Register),
+                Name = nameof(Email))]
+            public string Email { get; set; } = default!;
 
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_Required")]
+            [StringLength(100, ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_StringLengthMinMax", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string Password { get; set; } = null!;
+            [Display(Name = nameof(Password),
+                ResourceType = typeof(Base.Resources.Areas.Identity.Pages.Account.Register))]
+            public string Password { get; set; } = default!;
 
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; } = null!;
-            
-            [Display(Name = "First name")]
-            [StringLength(128, MinimumLength = 1)]
-            public string Firstname { get; set; } = default!;
+            [Display(Name = nameof(ConfirmPassword),
+                ResourceType = typeof(Base.Resources.Areas.Identity.Pages.Account.Register))]
+            [Compare("Password",
+                ErrorMessageResourceType = typeof(Base.Resources.Areas.Identity.Pages.Account.Register),
+                ErrorMessageResourceName = "PasswordsDontMatch")]
+            public string ConfirmPassword { get; set; } = default!;
 
-            [Display(Name = "Last name")]
-            [StringLength(128, MinimumLength = 1)]
-            public string Lastname { get; set; } = default!;
+            [MaxLength(128, ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_MaxLength")] 
+            [Display(ResourceType = typeof(Base.Resources.Areas.Identity.Pages.Account.Register),
+                Name = nameof(FirstName))]
+            public virtual string FirstName { get; set; } = default!;
+
+            [MaxLength(128, ErrorMessageResourceType = typeof(Base.Resources.Common),
+                ErrorMessageResourceName = "ErrorMessage_MaxLength")] 
+            [Display(ResourceType = typeof(Base.Resources.Areas.Identity.Pages.Account.Register),
+                Name = nameof(LastName))]
+            public virtual string LastName { get; set; } = default!;
         }
 
-        public async Task OnGetAsync(string? returnUrl)
+        public async Task OnGetAsync(string? returnUrl = null)
         {
-            ReturnUrl = returnUrl!;
+            ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
+            PasswordRequirements = new PasswordRequirementsViewModel()
+            {
+                RequireDigit = _userManager.Options.Password.RequireDigit,
+                RequiredLength = _userManager.Options.Password.RequiredLength,
+                RequireLowercase = _userManager.Options.Password.RequireLowercase,
+                RequireUppercase = _userManager.Options.Password.RequireUppercase,
+                RequiredUniqueChars = _userManager.Options.Password.RequiredUniqueChars,
+                RequireNonAlphanumeric = _userManager.Options.Password.RequireNonAlphanumeric
+            };
         }
 
-        public async Task<IActionResult> OnPostAsync(string? returnUrl)
+        public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new AppUser { UserName = Input.Email, Email = Input.Email, Firstname = Input.Firstname, Lastname = Input.Lastname};
+                var user = new AppUser
+                {
+                    UserName = Input.Email, Email = Input.Email, Firstname = Input.FirstName, Lastname = Input.LastName
+                };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("User created a new account with password");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
+                        values: new {area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl},
                         protocol: Request.Scheme);
 
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
@@ -102,7 +139,7 @@ namespace WebApp.Areas.Identity.Pages.Account
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                        return RedirectToPage("RegisterConfirmation", new {email = Input.Email, returnUrl = returnUrl});
                     }
                     else
                     {
@@ -110,6 +147,7 @@ namespace WebApp.Areas.Identity.Pages.Account
                         return LocalRedirect(returnUrl);
                     }
                 }
+
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);

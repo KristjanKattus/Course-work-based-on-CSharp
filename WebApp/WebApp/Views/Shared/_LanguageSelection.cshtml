@@ -1,0 +1,26 @@
+﻿@using Microsoft.Extensions.Options
+@using Microsoft.AspNetCore.Builder
+@inject IOptions<RequestLocalizationOptions> LocalizationOptions
+@{
+    var cultureItems = LocalizationOptions.Value.SupportedUICultures
+        .Select(c => new {Value = c.Name, Text = c.NativeName}).ToList();
+}
+
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLanguage" aria-expanded="true" aria-controls="collapseLanguage">
+        <i class="fas fa-fw fa-cog"></i>
+        <span>@Resources.Views.Shared._Layout.Languages</span>
+    </a>
+    <div id="collapseLanguage" class="collapse" aria-labelledby="collapseLanguage" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+            @foreach (var item in cultureItems)
+            {
+                <a class="collapse-item" asp-area="" asp-controller="Home"
+                   asp-action="SetLanguage" asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString"
+                   asp-route-culture="@item.Value">
+                    @item.Text
+                </a>
+            }
+        </div>
+    </div>
+</li>

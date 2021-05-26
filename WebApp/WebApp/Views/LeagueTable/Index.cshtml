@@ -1,65 +1,115 @@
-@model IEnumerable<PublicApi.DTO.v1.LeagueTableTeam>
+@model WebApp.ViewModels.LeagueTableIndexViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = @Resources.Common.LeagueTable;
 }
 
-<h1>Index</h1>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary"></h6>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                            <thead>
+                            <tr role="row">
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].LeagueTeamName)</th>
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GamesPlayed)</th>
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GamesWon)</th>
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GamesLost)</th>
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GamesTied)</th>
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GoalsScored)</th>
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].GoalsConceded)</th>
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.LeagueTableTeams![0].Points)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var item in Model.LeagueTableTeams!)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.LeagueTeamName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.GamesPlayed)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.GamesWon)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.GamesLost)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.GamesTied)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.GoalsScored)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.GoalsConceded)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Points)
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <table class="table">
     <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.LeagueTeamName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GamesPlayed)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GamesWon)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GamesLost)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GamesTied)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GoalsScored)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GoalsConceded)
-            </th>
-            
-            <th></th>
-        </tr>
+    <tr>
+        <td>
+            @Html.DisplayNameFor(model => model!.LeagueGames![0].HomeTeam!.Team!.Name)
+        </td>
+        <td>
+            @Html.DisplayNameFor(model => model!.LeagueGames![0].AwayTeam!.Team!.Name)
+        </td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>
+            @Html.DisplayNameFor(model => model!.LeagueGames![0].Game!.Stadium!.Name)
+        </td>
+        <td></td>
+    </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+    @foreach (var item in Model.LeagueGames!)
+    {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.LeagueTeamName)
+                @Html.DisplayFor(modelItem => item.HomeTeam!.Team!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.GamesPlayed)
+                @Html.Raw(item.HomeTeam!.Scored)
+            </td>
+            <td>:</td>
+            <td>
+                @Html.Raw(item.AwayTeam!.Scored)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.GamesWon)
+                @Html.DisplayFor(modelItem => item.AwayTeam!.Team!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.GamesLost)
+                @Html.DisplayFor(modelItem => item.Game!.Stadium!.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.GamesTied)
+                <a class="btn btn-info btn-circle" asp-area="" asp-controller="Game" asp-route-id="@item.Game!.Id" asp-action="Details">
+                   <i class="fas fa-info-circle">I</i>
+                </a>
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GoalsScored)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GoalsConceded)
-            </td>
-            
         </tr>
-}
+    }
     </tbody>
 </table>

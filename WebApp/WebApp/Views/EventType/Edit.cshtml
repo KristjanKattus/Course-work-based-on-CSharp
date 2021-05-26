@@ -1,12 +1,12 @@
 @model WebApp.ViewModels.EventType.EventTypeCreateEditViewModel
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = @Resources.Common.Edit;
 }
 
-<h1>Edit</h1>
+<h1>>@Resources.Common.Edit</h1>
 
-<h4>Event_Game_Part_Type</h4>
+<h4>@Resources.PublicApi.DTO.v1.GameEvent.EventType</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -17,14 +17,14 @@
             
             <input type="hidden" asp-for="EventType.Id" />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="@Resources.Common.Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">@Resources.Common.BackToList</a>
 </div>
 
 @section Scripts {
