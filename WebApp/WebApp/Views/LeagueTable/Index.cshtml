@@ -3,13 +3,13 @@
 @{
     ViewData["Title"] = @Resources.Common.LeagueTable;
 }
+<div class="d-sm-flex align-items-center justify-content-center">
+    <div class="card shadow mb-4" style="width: 70%;">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">@Model.LeagueName</h6>
+        </div>
+        <div class="card-body">
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary"></h6>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
             <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
                 <div class="row">
                     <div class="col-sm-12">
@@ -65,51 +65,67 @@
     </div>
 </div>
 
+<div class="row">
+</div>
 
-<table class="table">
-    <thead>
-    <tr>
-        <td>
-            @Html.DisplayNameFor(model => model!.LeagueGames![0].HomeTeam!.Team!.Name)
-        </td>
-        <td>
-            @Html.DisplayNameFor(model => model!.LeagueGames![0].AwayTeam!.Team!.Name)
-        </td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td>
-            @Html.DisplayNameFor(model => model!.LeagueGames![0].Game!.Stadium!.Name)
-        </td>
-        <td></td>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model.LeagueGames!)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.HomeTeam!.Team!.Name)
-            </td>
-            <td>
-                @Html.Raw(item.HomeTeam!.Scored)
-            </td>
-            <td>:</td>
-            <td>
-                @Html.Raw(item.AwayTeam!.Scored)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AwayTeam!.Team!.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Game!.Stadium!.Name)
-            </td>
-            <td>
-                <a class="btn btn-info btn-circle" asp-area="" asp-controller="Game" asp-route-id="@item.Game!.Id" asp-action="Details">
-                   <i class="fas fa-info-circle">I</i>
-                </a>
-            </td>
-        </tr>
-    }
-    </tbody>
-</table>
+<div class="d-sm-flex align-items-center justify-content-center">
+    <div class="card shadow mb-4" style="width: 70%;">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">@Resources.Common.Games</h6>
+        </div>
+        <div class="card-body">
+            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                            <thead class="text-center">
+                            <tr role="row">
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model!.LeagueGames![0].HomeTeam)</th>
+                                <th rowspan="1" colspan="1"></th>
+                                <th rowspan="1" colspan="1"></th>
+                                <th rowspan="1" colspan="1"></th>
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model!.LeagueGames![0].AwayTeam)</th>
+                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model!.LeagueGames![0].Game!.Stadium)</th>
+                                <th rowspan="1" colspan="1"></th>
+    
+                            </tr>
+                            </thead>
+                            <tbody class="text-center ">
+                            @foreach (var item in Model.LeagueGames!)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.HomeTeam!.Team!.Name)
+                                    </td>
+                                    <td>
+                                        @Html.Raw(item.HomeTeam!.Scored)
+                                    </td>
+                                    <td>
+                                        :
+                                    </td>
+                                    <td>
+                                        @Html.Raw(item.AwayTeam!.Scored)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.AwayTeam!.Team!.Name)
+                                    </td>
+                                    <td class="">
+                                        <div class="d-sm-flex align-items-center justify-content-center">@Html.DisplayFor(modelItem => item.Game!.Stadium!.Name)</div>
+                                        <div class="d-sm-flex align-items-center justify-content-center">xsaxs</div>
+
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-info btn-circle" asp-area="" asp-controller="Game" asp-route-id="@item.Game!.Id" asp-action="Details">
+                                            <i class="fas fa-info-circle">I</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

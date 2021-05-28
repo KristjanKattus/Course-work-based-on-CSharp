@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Threading.Tasks;
+using AutoMapper;
 using BLL.App.Mappers;
 using BLL.Base.Services;
 using Contracts.BLL.App.Services;
@@ -13,6 +15,11 @@ namespace BLL.App.Services
     {
         public ClubTeamService(IAppUnitOfWork serviceUow, IClubTeamRepository serviceRepository, IMapper mapper) : base(serviceUow, serviceRepository, new ClubTeamMapper(mapper))
         {
+        }
+
+        public async Task<BLLAppDTO.ClubTeam> GetClubWithTeamIdAsync(Guid teamId)
+        {
+            return Mapper.Map(await ServiceRepository.GetClubWithTeamIdAsync(teamId))!;
         }
     }
 }

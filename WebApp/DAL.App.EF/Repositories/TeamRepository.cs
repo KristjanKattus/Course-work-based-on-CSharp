@@ -24,6 +24,11 @@ namespace DAL.App.EF.Repositories
 
             var resQuery = query
                 .Include(t => t.TeamPersons)
+                    .ThenInclude(t => t.Role)
+                        .ThenInclude(c => c!.Name)
+                            .ThenInclude(t => t!.Translations)
+                .Include(t => t.TeamPersons)
+                    .ThenInclude(t => t.Person)
                 .Select(t => Mapper.Map(t));
 
             var res = await resQuery.ToListAsync();
@@ -36,7 +41,12 @@ namespace DAL.App.EF.Repositories
             var query = InitializeQuery(userId, noTracking);
 
             var resQuery = query
-                .Include(t => t.TeamPersons);
+                .Include(t => t.TeamPersons)
+                    .ThenInclude(t => t.Role)
+                        .ThenInclude(c => c!.Name)
+                            .ThenInclude(t => t!.Translations)
+                .Include(t => t.TeamPersons)
+                    .ThenInclude(t => t.Person);
                 
 
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(s => s.Id == id));

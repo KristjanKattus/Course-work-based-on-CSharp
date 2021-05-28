@@ -1,4 +1,6 @@
-﻿using Contracts.DAL.Base.Repositories;
+﻿using System;
+using System.Threading.Tasks;
+using Contracts.DAL.Base.Repositories;
 using DALAppDTO = DAL.App.DTO;
 
 namespace Contracts.DAL.App.Repositories

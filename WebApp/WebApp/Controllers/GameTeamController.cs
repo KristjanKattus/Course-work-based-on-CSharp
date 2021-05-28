@@ -17,7 +17,7 @@ using Game = DAL.App.DTO.Game;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class GameTeamController : Controller
     {
         private readonly IAppBLL _bll;

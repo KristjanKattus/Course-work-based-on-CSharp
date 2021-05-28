@@ -41,8 +41,12 @@ namespace DAL.App.EF.Repositories
                 .Include(g => g.Stadium)
                 .Include(x => x.GameEvents)
                     .ThenInclude(x => x.EventType)
+                        .ThenInclude(c => c!.Name)
+                            .ThenInclude(t => t!.Translations)
                 .Include(x => x.GameEvents)
-                    .ThenInclude(x => x.GameTeamList);
+                    .ThenInclude(x => x.GameTeamList)
+                        .ThenInclude(x=> x!.TeamPerson)
+                            .ThenInclude(x => x!.Person);
 
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(m => m.Id == id));
             return res!;

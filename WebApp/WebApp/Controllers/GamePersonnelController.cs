@@ -16,7 +16,7 @@ using WebApp.ViewModels.GamePartType;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class GamePersonnelController : Controller
     {
         private readonly IAppBLL _bll;

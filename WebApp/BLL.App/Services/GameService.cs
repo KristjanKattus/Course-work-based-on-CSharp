@@ -74,12 +74,19 @@ namespace BLL.App.Services
             
             var gameTeams = (await ServiceUow.GameTeams.GetAllTeamGamesWithGameIdAsync(gameId)).ToList();
 
+            var homeTeam = gameTeams.FirstOrDefault(x => x.Hometeam);
+            var awayTeam = gameTeams.FirstOrDefault(x => x.Hometeam == false);
+
+            var GTLMapper = new GameTeamListMapper(mapper);
+
             var leagueGame = new BLLAppDTO.LeagueGame
             {
                 Game = Mapper.Map(await ServiceRepository.FirstOrDefaultAsync(gameId)),
                 
-                HomeTeam = gameTeamMapper.Map(gameTeams.FirstOrDefault(x => x.Hometeam)),
-                AwayTeam = gameTeamMapper.Map(gameTeams.FirstOrDefault(x => x.Hometeam == false))
+                HomeTeam = gameTeamMapper.Map(homeTeam),
+                HomeTeamList = (await ServiceUow.GameTeamLists.GetAllWithLeagueTeamIdAsync(homeTeam!.Id)).Select(x => GTLMapper.Map(x)).ToList()!,
+                AwayTeam = gameTeamMapper.Map(awayTeam),
+                AwayTeamList = (await ServiceUow.GameTeamLists.GetAllWithLeagueTeamIdAsync(awayTeam!.Id)).Select(x => GTLMapper.Map(x)).ToList()!,
             };
 
             return leagueGame;

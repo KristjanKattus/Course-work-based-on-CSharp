@@ -18,7 +18,7 @@ using Club = BLL.App.DTO.Club;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class ClubTeamController : Controller
     {
         private readonly IAppBLL _bll;

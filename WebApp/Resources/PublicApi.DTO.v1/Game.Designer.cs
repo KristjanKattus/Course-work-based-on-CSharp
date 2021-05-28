@@ -97,6 +97,15 @@ namespace Resources.PublicApi.DTO.v1 {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Home team.
+        /// </summary>
+        public static string HomeTeamList {
+            get {
+                return ResourceManager.GetString("HomeTeamList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Match round.
         /// </summary>
         public static string MatchRound {

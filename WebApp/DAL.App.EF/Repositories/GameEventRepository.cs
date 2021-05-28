@@ -26,8 +26,9 @@ namespace DAL.App.EF.Repositories
             var resQuery = query
                 .Include(g => g.Game)
                 .Include(g => g.GameTeamList)
-                .Include(g => g.GamePart)
                 .Include(g => g.EventType)
+                .ThenInclude(c => c!.Name)
+                .ThenInclude(t => t!.Translations)
                 .Select(g => Mapper.Map(g));
 
 
@@ -43,8 +44,9 @@ namespace DAL.App.EF.Repositories
             var resQuery = query
                 .Include(g => g.Game)
                 .Include(g => g.GameTeamList)
-                .Include(g => g.GamePart)
-                .Include(g => g.EventType);
+                .Include(g => g.EventType)
+                .ThenInclude(c => c!.Name)
+                .ThenInclude(t => t!.Translations);
 
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(g => g.Id == id));
 
@@ -58,8 +60,11 @@ namespace DAL.App.EF.Repositories
             var resQuery = query
                 .Include(g => g.Game)
                 .Include(g => g.GameTeamList)
-                .Include(g => g.GamePart)
+                .ThenInclude(x=> x!.TeamPerson!)
+                .ThenInclude(x => x.Person)
                 .Include(g => g.EventType)
+                .ThenInclude(c => c!.Name)
+                .ThenInclude(t => t!.Translations)
                 .Where(g => g.GameId == gameId)
                 .Select(g => Mapper.Map(g));
 

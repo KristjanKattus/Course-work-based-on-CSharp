@@ -8,14 +8,14 @@ namespace Domain.App
 
         public Guid PersonId { get; set; }
 
-        public Person Person { get; set; } = default!;   
+        public Person? Person { get; set; } = default!;   
 
         public Guid TeamId { get; set; }
 
-        public Team Team { get; set; }  = default!;
+        public Team? Team { get; set; }  = default!;
 
         public Guid RoleId { get; set; }
 
-        public Role Role { get; set; } = default!;
+        public Role? Role { get; set; } = default!;
     }
 }

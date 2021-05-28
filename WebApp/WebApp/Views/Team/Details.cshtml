@@ -1,19 +1,94 @@
-@model PublicApi.DTO.v1.Team
+@using System.Globalization
+@model WebApp.ViewModels.Team.TeamClientViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = @Resources.PublicApi.DTO.v1.GameTeam.Team;
 }
-
-<h1>@Resources.Common.Details</h1>
-
-<div>
-    <h4>@Resources.PublicApi.DTO.v1.GameTeam.Team</h4>
-    <hr />
+<div class="d-sm-flex align-items-center justify-content-center">
+    <div class="card shadow mb-3 text-center" style="width: 70%;">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary text-center">@Model.Team.Team.Name</h6>
+            </div>
     
-    <partial name="_Details" model="Model"/>
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary text-center">@Model.Team.Club!.Name</h6>
+            </div>
+            <div class="card-body">
+                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                        <div class="text-center"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                <thead>
+                                <tr role="row">
+                                    <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model!.Team!.StaffList![0].Person!.FirstName)</th>
+                                    <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model!.Team!.StaffList![0].Person!.LastName)</th>
+                                    <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model!.Team!.StaffList![0].Person!.Date)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var item in Model.Team.StaffList!)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Person!.FirstName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Person!.LastName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Person!.Date)
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
     
+            </div>
+    
+            <div class="card-body">
+                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                <thead>
+                                <tr role="row">
+                                    <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.Team!.PlayerList![0].Person!.FirstName)</th>
+                                    <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.Team!.PlayerList![0].Person!.LastName)</th>
+                                    <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.Team!.PlayerList![0].Person!.Date.Date)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var item in Model.Team.PlayerList!)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Person!.FirstName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Person!.LastName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Person!.Date)
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+    
+            </div>
+        </div>
 </div>
+    
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">@Resources.Common.Edit</a> |
+    @* <a asp-action="Edit" asp-route-id="@Model.Id">@Resources.Common.Edit</a> | *@
     <a asp-action="Index">@Resources.Common.BackToList</a>
 </div>

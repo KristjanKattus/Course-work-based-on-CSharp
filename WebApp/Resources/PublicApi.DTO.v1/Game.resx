@@ -36,4 +36,7 @@
     <data name="AwayTeam" xml:space="preserve">
         <value>Away team</value>
     </data>
+    <data name="HomeTeamList" xml:space="preserve">
+        <value>Home team</value>
+    </data>
 </root>

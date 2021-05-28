@@ -31,14 +31,14 @@ namespace WebApp.Controllers
         }
 
         // GET: LeagueTable
-        public async Task<IActionResult> Index(Guid Id)
+        public async Task<IActionResult> Index(Guid id)
         {
             var vm = new LeagueTableIndexViewModel();
-            var leagueGameMapper = new LeagueGameMapper(_mapper);
+            vm.LeagueName = (await _bll.Leagues.FirstOrDefaultAsync(id))!.Name;
             vm.LeagueTableTeams =
-                (await _bll.LeagueTeams.GetAllLeagueTeamsDataAsync(Id)).Select(x => _leagueTableMapper.Map(x))
+                (await _bll.LeagueTeams.GetAllLeagueTeamsDataAsync(id)).Select(x => _leagueTableMapper.Map(x))
                 .ToList()!;
-            vm.LeagueGames = (await _bll.Games.GetAllLeagueGameAsync(Id, _mapper))
+            vm.LeagueGames = (await _bll.Games.GetAllLeagueGameAsync(id, _mapper))
                 .Select(x => _leagueGameMapper.Map(x)).ToList()!;
             return View(vm);
         }

@@ -14,7 +14,9 @@ namespace DAL.App.DTO
         
         public int GameLength { get; set; } = 90;
 
-        public ICollection<Game_Event>? GameEvents { get; set; }
+        public ICollection<GameEvent>? GameEvents { get; set; }
+        
+        public ICollection<GameTeam>? GameTeams { get; set; }
         public int MatchRound { get; set; }
     }
 }

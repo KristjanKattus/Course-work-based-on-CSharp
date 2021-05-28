@@ -23,5 +23,80 @@ namespace BLL.App.Services
         {
             return (await ServiceRepository.GetWithGameIdAsync(gameId)).Select(x => Mapper.Map(x))!;
         }
+
+        public async Task UpdateGameTeamAsync(Guid gameEventId)
+        {
+            var gameEvent = await ServiceUow.GameEvents.FirstOrDefaultAsync(gameEventId);
+
+            var gameTeams = (await ServiceUow.GameTeams.GetAllTeamGamesWithGameIdAsync(gameEvent!.GameId))
+                .ToList();
+
+            var eventTeam = gameTeams.First(x => x.Id == gameEvent.GameTeamList!.GameTeamId);
+            var otherTeam = gameTeams.First(x => x.Id != gameEvent.GameTeamList!.GameTeamId);
+
+            if (gameEvent.EventType!.Name == "Goal" || gameEvent.EventType!.Name == "Penalty")
+            {
+                eventTeam.Scored++;
+                otherTeam.Conceded++;
+            }else if (gameEvent.EventType!.Name == "Own goal")
+            {
+                eventTeam.Scored--;
+                eventTeam.Conceded++;
+            }
+            
+            ServiceUow.GameTeams.Update(eventTeam);
+            ServiceUow.GameTeams.Update(otherTeam);
+            await ServiceUow.SaveChangesAsync();
+        }
+
+        public async Task DeleteGameEventAsync(Guid gameEventId)
+        {
+            var gameEvent = await ServiceRepository.FirstOrDefaultAsync(gameEventId);
+
+            var gameTeams = (await ServiceUow.GameTeams.GetAllTeamGamesWithGameIdAsync(gameEvent!.GameId))
+                .ToList();
+
+            var eventTeam = gameTeams.First(x => x.Id == gameEvent.GameTeamList!.GameTeamId);
+            var otherTeam = gameTeams.First(x => x.Id != gameEvent.GameTeamList!.GameTeamId);
+
+            if (gameEvent.EventType!.Name == "Goal" || gameEvent.EventType!.Name == "Penalty")
+            {
+                eventTeam.Scored--;
+                otherTeam.Conceded--;
+            }else if (gameEvent.EventType!.Name == "Own goal")
+            {
+                eventTeam.Conceded--;
+            }
+
+            ServiceUow.GameTeams.Update(eventTeam);
+            await ServiceUow.SaveChangesAsync();
+            ServiceUow.GameTeams.Update(otherTeam);
+            await ServiceUow.SaveChangesAsync();
+            await ServiceRepository.RemoveAsync(gameEventId);
+        }
+
+        public async Task<IEnumerable<BLLAppDTO.GameTeam>> GetUpdateTeams(Guid gameEventId, IMapper mapper)
+        {
+            var gameEvent = await ServiceRepository.FirstOrDefaultAsync(gameEventId);
+
+            var gameTeams = (await ServiceUow.GameTeams.GetAllTeamGamesWithGameIdAsync(gameEvent!.GameId))
+                .ToList();
+
+            var eventTeam = gameTeams.First(x => x.Id == gameEvent.GameTeamList!.GameTeamId);
+            var otherTeam = gameTeams.First(x => x.Id != gameEvent.GameTeamList!.GameTeamId);
+
+            if (gameEvent.EventType!.Name == "Goal" || gameEvent.EventType!.Name == "Penalty")
+            {
+               
+            }else if (gameEvent.EventType!.Name == "Own goal")
+            {
+            }
+
+            var gtMapper = new GameTeamMapper(mapper);
+            var gTeams = new List<BLLAppDTO.GameTeam>();
+            gTeams.Add(gtMapper.Map(eventTeam)!);
+            gTeams.Add(gtMapper.Map(otherTeam)!);
+            return gTeams;
+        }
     }
 }

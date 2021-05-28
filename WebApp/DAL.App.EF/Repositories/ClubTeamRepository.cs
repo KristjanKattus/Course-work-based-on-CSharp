@@ -43,6 +43,17 @@ namespace DAL.App.EF.Repositories
             return res;
         }
 
-        
+
+        public async Task<ClubTeam> GetClubWithTeamIdAsync(Guid teamId)
+        {
+            var query = InitializeQuery();
+
+            var resQuery = query
+                .Include(c => c.Club)
+                .Where(x => x.TeamId == teamId);
+
+            var res = Mapper.Map(await resQuery.FirstOrDefaultAsync());
+            return res!;
+        }
     }
 }

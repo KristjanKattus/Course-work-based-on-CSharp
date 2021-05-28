@@ -16,7 +16,7 @@ using WebApp.ViewModels.Person;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class PersonController : Controller
     {
         private readonly IAppBLL _bll;

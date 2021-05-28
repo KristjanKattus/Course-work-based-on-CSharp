@@ -11,8 +11,9 @@ namespace WebApp.ViewModels.GameEvent
 
         public SelectList? EventTypeSelectList { get; set; }
 
-        public SelectList? GamePartSelectList { get; set; }
+        public Guid HomeTeamId { get; set; }
 
-        public SelectList? GameTeamSelectList { get; set; }
+        public Guid AwayTeamId { get; set; }
+        public SelectList? GameTeamListSelectList { get; set; }
     }
 }

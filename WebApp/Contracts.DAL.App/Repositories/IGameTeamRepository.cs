@@ -17,7 +17,8 @@ namespace Contracts.DAL.App.Repositories
 
         public Task<IEnumerable<TEntity>> GetAllTeamGamesWithGameIdAsync(Guid gameId,  bool noTracking = true);
         
-        public Task<TEntity>FirstOrDefaultWithGameIdAsync(Guid id);
+        public Task<TEntity>FirstOrDefaultWithGameIdAsync(Guid id, bool homeTeam);
+        
 
     }
 }

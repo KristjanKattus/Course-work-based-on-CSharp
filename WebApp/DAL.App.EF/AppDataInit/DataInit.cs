@@ -117,10 +117,17 @@ namespace DAL.App.EF.AppDataInit
             {
                 return;
             }
-            var team = new Domain.App.Team
+            var team1 = new Domain.App.Team
             {
                 Name = "Team1"
             };
+            
+            var team2 = new Domain.App.Team
+            {
+                Name = "Team2"
+            };
+            
+            
             foreach (var personData in InitialData.Persons)
             {
                 var person = new Domain.App.Person
@@ -132,16 +139,29 @@ namespace DAL.App.EF.AppDataInit
                     AppUserId = userManager.Users.First().Id
                 };
 
-                var teamPerson = new Domain.App.Team_Person
+                var teamPerson1 = new Domain.App.Team_Person
                 {
                     Person = person,
-                    Team = team,
-                    RoleId = Guid.Parse("7192D998-49B3-4A31-A246-08D91F92B71A")
+                    Team = team1,
+                    RoleId = Guid.Parse("1549CF6E-D133-42B7-B6BA-08D92218295A")
                     
                 };
-                ctx.TeamPersons.Add(teamPerson);
+                var person2 = person;
+                person.FirstName = person2.FirstName + "2";
+                person.LastName = person2.LastName + "2";
+                var teamPerson2 = new Domain.App.Team_Person
+                {
+                    Person = person2,
+                    Team = team2,
+                    RoleId = Guid.Parse("1549CF6E-D133-42B7-B6BA-08D92218295A")
+                    
+                };
+                ctx.TeamPersons.Add(teamPerson1);
+                ctx.SaveChanges();
+                ctx.TeamPersons.Add(teamPerson2);
+                ctx.SaveChanges();
             }
-            ctx.SaveChanges();
+            
         }
 
         private static void SeedLeagues(AppDbContext ctx, ILogger logger)

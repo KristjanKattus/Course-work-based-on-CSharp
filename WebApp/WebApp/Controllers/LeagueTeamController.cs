@@ -17,7 +17,7 @@ using WebApp.ViewModels.LeagueTeam;
 namespace WebApp.Controllers
 {
     
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class LeagueTeamController : Controller
     {
         private readonly IAppBLL _bll;

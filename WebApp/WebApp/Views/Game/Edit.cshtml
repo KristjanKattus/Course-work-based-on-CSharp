@@ -7,19 +7,26 @@
 <h1>@Resources.Common.Edit</h1>
 
 <h4>@Resources.PublicApi.DTO.v1.GameEvent.Game</h4>
-<hr />
+<hr/>
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
+
             <partial name="_CreateEdit" model="Model"/>
-            
-            <input type="hidden" asp-for="Game.Id" />
+
+            <input type="hidden" asp-for="Game.Id"/>
             <input type="hidden" asp-for="LeagueId"/>
             <div class="form-group">
-                <input type="submit" value="@Resources.Common.Save" class="btn btn-primary" />
+                <input type="submit" value="@Resources.Common.Save" class="btn btn-primary"/>
             </div>
+
+            <a class="collapse-item" asp-area="" asp-controller="GameTeamList"
+                                   asp-route-gameTeamId="4C4F17DE-1CD5-4DF8-68C0-08D91F930A4D" asp-action="Create">
+                                   @Resources.Views.Shared._Layout.League1
+                                </a>
+
+            4C4F17DE-1CD5-4DF8-68C0-08D91F930A4D
         </form>
     </div>
 </div>
@@ -29,5 +36,5 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

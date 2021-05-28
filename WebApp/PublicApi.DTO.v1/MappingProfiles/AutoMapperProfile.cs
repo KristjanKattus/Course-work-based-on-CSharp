@@ -6,6 +6,7 @@ namespace PublicApi.DTO.v1.MappingProfiles
     {
         public AutoMapperProfile()
         {
+            CreateMap<BLL.App.DTO.ClientTeam, ClientTeam>().ReverseMap();
             CreateMap<BLL.App.DTO.Club, ClubAdd>().ReverseMap();
             CreateMap<BLL.App.DTO.Club, Club>().ReverseMap();
             CreateMap<BLL.App.DTO.ClubTeam, ClubTeam>().ReverseMap();

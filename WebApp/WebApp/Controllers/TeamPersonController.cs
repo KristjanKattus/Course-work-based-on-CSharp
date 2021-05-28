@@ -13,10 +13,12 @@ using Extensions.Base;
 using Microsoft.AspNetCore.Authorization;
 using PublicApi.DTO.v1.Mappers;
 using WebApp.ViewModels.TeamPerson;
+using Person = BLL.App.DTO.Person;
+using Team = BLL.App.DTO.Team;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class TeamPersonController : Controller
     {
         private readonly IAppBLL _bll;
@@ -58,9 +60,12 @@ namespace WebApp.Controllers
         {
             var vm = new TeamPersonCreateEditViewModel
             {
-                PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)),
-                RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value)),
-                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
+                PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(Person.Id), nameof(Person.FirstName)),
+                RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(Role.Id), nameof(Role.Name)),
+                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(Team.Id), nameof(Team.Name))
             };
             return View(vm);
         }
@@ -79,9 +84,12 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            vm.PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value));
-            vm.RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value));
-            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value));
+            vm.PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Person.Id), nameof(Person.FirstName));
+            vm.RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Role.Id), nameof(Role.Name));
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Team.Id), nameof(Team.Name));
             return View(vm);
         }
 
@@ -101,9 +109,12 @@ namespace WebApp.Controllers
             var vm = new TeamPersonCreateEditViewModel
             {
                 TeamPerson = _teamPersonMapper.Map(teamPerson)!,
-                PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)),
-                RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value)),
-                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value))
+                PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(Person.Id), nameof(Person.FirstName)),
+                RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(Role.Id), nameof(Role.Name)),
+                TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value)
+                    , nameof(Team.Id), nameof(Team.Name))
             };
             return View(vm);
         }
@@ -126,9 +137,12 @@ namespace WebApp.Controllers
                 await _bll.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            vm.PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value));
-            vm.RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value));
-            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value));
+            vm.PersonSelectList = new SelectList(await _bll.Persons.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Person.Id), nameof(Person.FirstName));
+            vm.RoleSelectList = new SelectList(await _bll.Roles.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Role.Id), nameof(Role.Name));
+            vm.TeamSelectList = new SelectList(await _bll.Teams.GetAllAsync(User.GetUserId()!.Value)
+                , nameof(Team.Id), nameof(Team.Name));
             return View(vm);
         }
 

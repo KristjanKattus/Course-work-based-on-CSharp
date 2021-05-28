@@ -70,6 +70,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add game team list.
+        /// </summary>
+        public static string AddGameTeamList {
+            get {
+                return ResourceManager.GetString("AddGameTeamList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add league game.
         /// </summary>
         public static string AddLeagueGame {
@@ -142,6 +151,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Games.
+        /// </summary>
+        public static string Games {
+            get {
+                return ResourceManager.GetString("Games", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This is my home project.
         /// </summary>
         public static string HomeProjectDefence {
@@ -169,6 +187,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Player.
+        /// </summary>
+        public static string Player {
+            get {
+                return ResourceManager.GetString("Player", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Save {
@@ -183,6 +210,15 @@ namespace Resources {
         public static string Since {
             get {
                 return ResourceManager.GetString("Since", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Staff.
+        /// </summary>
+        public static string StaffList {
+            get {
+                return ResourceManager.GetString("StaffList", resourceCulture);
             }
         }
         

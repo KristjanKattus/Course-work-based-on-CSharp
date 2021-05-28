@@ -8,6 +8,7 @@ using DAL.App.DTO;
 using DAL.App.EF.Mappers;
 using DAL.Base.EF.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Team = Domain.App.Team;
 
 
 namespace DAL.App.EF.Repositories
@@ -41,6 +42,8 @@ namespace DAL.App.EF.Repositories
 
             var resQuery = query
                 .Include(g => g.Person)
+                .Include(g => g.TeamPerson)
+                .ThenInclude(x => x!.Person)
                 .Include(g => g.GameTeam)
                 .Include(g => g.Role);
                 
@@ -48,6 +51,25 @@ namespace DAL.App.EF.Repositories
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(g => g.Id == id));
 
             return res;
+        }
+
+        public async Task<IEnumerable<GameTeamList>> GetAllWithLeagueTeamIdAsync(Guid gameTeamId)
+        {
+            var query = InitializeQuery();
+
+            var resQuery = query
+                
+                .Include(g => g.TeamPerson)
+                .ThenInclude(x => x!.Person)
+                .Include(g => g.Person)
+                .Include(g => g.GameTeam)
+                .Include(g => g.Role)
+                .Where(g => g.GameTeamId == gameTeamId)
+                .Select(g => Mapper.Map(g));
+
+            var res = await resQuery.ToListAsync();
+
+            return res!;
         }
     }
 }

@@ -42,6 +42,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Game
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             
@@ -63,18 +64,14 @@ namespace WebApp.Controllers
             {
                 return NotFound();
             }
-            // var teams = await _bll.GameTeams.GetAllTeamGamesWithGameIdAsync(id.Value);
-            // var vm = new GameDetailsViewModel
-            // // {
-            // //     Game = _league
-            // // };
-            
-            
-            
+
+            game.Game!.GameEvents = game.Game.GameEvents!.ToList();
+
             return View(_leagueGameMapper.Map(game));
         }
 
         // GET: Game/Create
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(Guid leagueId)
         {
             var leagueTeams = (await _bll.LeagueTeams.GetAllWithLeagueIdAsync(leagueId)).ToList();
@@ -105,6 +102,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(GameCreateEditViewModel vm)
         {
             
@@ -146,6 +144,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Game/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
@@ -184,6 +183,7 @@ namespace WebApp.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(Guid id, GameCreateEditViewModel vm)
         {
             if (id != vm.Game.Id)
@@ -213,6 +213,7 @@ namespace WebApp.Controllers
         }
 
         // GET: Game/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
@@ -231,6 +232,7 @@ namespace WebApp.Controllers
         // POST: Game/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             await _bll.GameTeams.RemoveGamesWithGameIdAsync(id);
@@ -238,6 +240,8 @@ namespace WebApp.Controllers
             var game = await _bll.Games.FirstOrDefaultAsync(id);
 
             _bll.Games.Remove(game, User.GetUserId()!.Value);
+            _bll.GameTeams.Remove(await _bll.GameTeams.FirstOrDefaultWithGameIdAsync(id, true));
+            _bll.GameTeams.Remove(await _bll.GameTeams.FirstOrDefaultWithGameIdAsync(id, false));
             await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

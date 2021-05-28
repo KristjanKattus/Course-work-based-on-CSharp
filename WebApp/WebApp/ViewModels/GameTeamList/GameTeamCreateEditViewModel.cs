@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace WebApp.ViewModels.GameTeamList
 {
     public class GameTeamListCreateEditViewModel
     {
-        public PublicApi.DTO.v1.GameTeamList GameTeamList { get; set; } = default!;
-        public SelectList? PersonSelectList { get; set; }
-        public SelectList? RoleSelectList { get; set; }
-        public SelectList? GameTeamSelectList { get; set; }
-        
+        public Guid GameTeamId { get; set; }
+        public string? GameTeamName { get; set; }
+
+        public List<PublicApi.DTO.v1.AddGameMember>? PlayerList { get; set; }
+        public List<PublicApi.DTO.v1.AddGameMember>? StaffList { get; set; }
     }
 }

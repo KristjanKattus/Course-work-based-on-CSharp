@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DAL.App.EF.Migrations
 {
-    public partial class Db : Migration
+    public partial class OneToOne : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -549,9 +549,10 @@ namespace DAL.App.EF.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TeamPersonId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     GameTeamId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     InStartingLineup = table.Column<bool>(type: "bit", nullable: false),
                     Staff = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -576,6 +577,12 @@ namespace DAL.App.EF.Migrations
                         principalTable: "Persons",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_GameTeamLists_TeamPersons_TeamPersonId",
+                        column: x => x.TeamPersonId,
+                        principalTable: "TeamPersons",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -585,7 +592,6 @@ namespace DAL.App.EF.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameTeamListId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    GamePartId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     EventTypeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     GameTime = table.Column<int>(type: "int", nullable: false),
                     NumberInOrder = table.Column<int>(type: "int", nullable: false),
@@ -598,12 +604,6 @@ namespace DAL.App.EF.Migrations
                         name: "FK_GameEvents_EventTypes_EventTypeId",
                         column: x => x.EventTypeId,
                         principalTable: "EventTypes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_GameEvents_GameParts_GamePartId",
-                        column: x => x.GamePartId,
-                        principalTable: "GameParts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -690,11 +690,6 @@ namespace DAL.App.EF.Migrations
                 column: "GameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameEvents_GamePartId",
-                table: "GameEvents",
-                column: "GamePartId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GameEvents_GameTeamListId",
                 table: "GameEvents",
                 column: "GameTeamListId");
@@ -743,6 +738,11 @@ namespace DAL.App.EF.Migrations
                 name: "IX_GameTeamLists_RoleId",
                 table: "GameTeamLists",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameTeamLists_TeamPersonId",
+                table: "GameTeamLists",
+                column: "TeamPersonId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_GameTeams_GameId",
@@ -819,13 +819,13 @@ namespace DAL.App.EF.Migrations
                 name: "GameEvents");
 
             migrationBuilder.DropTable(
+                name: "GameParts");
+
+            migrationBuilder.DropTable(
                 name: "GamePersonnels");
 
             migrationBuilder.DropTable(
                 name: "LeagueTeams");
-
-            migrationBuilder.DropTable(
-                name: "TeamPersons");
 
             migrationBuilder.DropTable(
                 name: "Translations");
@@ -840,40 +840,40 @@ namespace DAL.App.EF.Migrations
                 name: "EventTypes");
 
             migrationBuilder.DropTable(
-                name: "GameParts");
-
-            migrationBuilder.DropTable(
                 name: "GameTeamLists");
-
-            migrationBuilder.DropTable(
-                name: "Leagues");
 
             migrationBuilder.DropTable(
                 name: "GamePartTypes");
 
             migrationBuilder.DropTable(
-                name: "FRoles");
+                name: "Leagues");
 
             migrationBuilder.DropTable(
                 name: "GameTeams");
 
             migrationBuilder.DropTable(
-                name: "Persons");
-
-            migrationBuilder.DropTable(
-                name: "LangStrings");
+                name: "TeamPersons");
 
             migrationBuilder.DropTable(
                 name: "Games");
 
             migrationBuilder.DropTable(
+                name: "FRoles");
+
+            migrationBuilder.DropTable(
+                name: "Persons");
+
+            migrationBuilder.DropTable(
                 name: "Teams");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Stadiums");
 
             migrationBuilder.DropTable(
-                name: "Stadiums");
+                name: "LangStrings");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "StadiumAreas");

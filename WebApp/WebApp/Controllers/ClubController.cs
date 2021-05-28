@@ -14,7 +14,7 @@ using WebApp.ViewModels.Club;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class ClubController : Controller
     {
         

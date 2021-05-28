@@ -17,7 +17,7 @@ using WebApp.ViewModels.EventType;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class EventTypeController : Controller
     {
         private readonly IAppBLL _bll;

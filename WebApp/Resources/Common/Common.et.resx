@@ -59,4 +59,16 @@
     <data name="LeagueTable" xml:space="preserve">
         <value>Liigatabel</value>
     </data>
+    <data name="Games" xml:space="preserve">
+        <value>Mängud</value>
+    </data>
+    <data name="StaffList" xml:space="preserve">
+        <value>Ametnikud</value>
+    </data>
+    <data name="Player" xml:space="preserve">
+        <value>Mängija</value>
+    </data>
+    <data name="AddGameTeamList" xml:space="preserve">
+        <value>Lisa koosseis</value>
+    </data>
 </root>

@@ -18,7 +18,7 @@ namespace DAL.App.DTO
 
         public Char Sex { get; set; } = default!;
 
-        
+        public string FullName => FirstName + " " + LastName;
         public Guid AppUserId { get; set; }
         public AppUser? AppUser { get; set; }
 

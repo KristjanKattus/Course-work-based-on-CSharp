@@ -23,5 +23,7 @@ namespace PublicApi.DTO.v1
         
         [Display(ResourceType = typeof(Resources.PublicApi.DTO.v1.Game), Name = nameof(MatchRound))]
         public int MatchRound { get; set; }
+        
+        public ICollection<GameTeam>? GameTeams { get; set; }
     }
 }

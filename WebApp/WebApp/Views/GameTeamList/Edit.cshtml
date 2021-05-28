@@ -7,26 +7,107 @@
 <h1>@Resources.Common.Edit</h1>
 
 <h4>@Resources.PublicApi.DTO.v1.GameEvent.GameTeamList</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
-            <partial name="_CreateEdit" model="Model"/>
-            
-            <input type="hidden" asp-for="GameTeamList.Id" />
-            <div class="form-group">
-                <input type="submit" value="@Resources.Common.Save" class="btn btn-primary" />
+<hr/>
+<form asp-action="Edit">
+    <div class="d-sm-flex align-items-center justify-content-center">
+        <div class="card shadow mb-4" style="width: 70%;">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">@Model.GameTeamName</h6>
             </div>
-        </form>
+            <div class="card-body">
+                <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                <thead>
+                                <tr role="row">
+                                    <th rowspan="1" colspan="1">
+                                        <label asp-for="PlayerList![0].Person!.Person!.FirstName"></label>
+                                    </th>
+                                    <th rowspan="1" colspan="1">
+                                        <label asp-for="PlayerList![0].Person!.Person!.LastName"></label>
+                                    </th>
+                                    <th rowspan="1" colspan="1">
+                                        <label asp-for="PlayerList![0].PartOfGame"></label>
+                                    </th>
+                                    <th rowspan="1" colspan="1">
+                                        <label asp-for="PlayerList![0].InStartingLineup"></label>
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @for (var i = 0; i < Model.PlayerList!.Count; i++)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(model => model.PlayerList![i].Person!.Person!.FirstName)</td>
+                                        <td>@Html.DisplayFor(model => model.PlayerList![i].Person!.Person!.LastName)</td>
+                                        <td>
+                                            <input type="checkbox" asp-for="PlayerList![i].PartOfGame"/>
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" asp-for="PlayerList![i].InStartingLineup"/>
+                                            <input type="hidden" asp-for="PlayerList![i].PersonId"/>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">@Resources.Common.BackToList</a>
-</div>
+    <div class="row">
+    </div>
+    @if (Model.StaffList != null)
+    {
+        <div class="d-sm-flex align-items-center justify-content-center">
+            <div class="card shadow mb-4" style="width: 70%;">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">@Resources.Common.StaffList</h6>
+                </div>
+                <div class="card-body">
+                    <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                    <thead class="text-center">
+                                    <tr role="row">
+                                        <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.PlayerList![0].Person!.Person!.FirstName)</th>
+                                        <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.PlayerList![0].Person!.Person!.LastName)</th>
+                                        <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.PlayerList![0].PartOfGame)</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody class="text-center ">
+                                    @for (var i = 0; i < Model.StaffList!.Count; i++)
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(model => model.PlayerList![i].Person!.Person!.FirstName)</td>
+                                            <td>@Html.DisplayFor(model => model.PlayerList![i].Person!.Person!.LastName)</td>
+                                            <td>
+                                                <input type="checkbox" asp-for="StaffList![i].PartOfGame"/>
+                                                <input type="hidden" asp-for="StaffList![i].PersonId"/>
+                                            </td>
+                                        </tr>
+                                    }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <input type="hidden" asp-for="GameTeamId"/>
+    <div class="form-group">
+        <input type="submit" value="@Resources.Common.Create" class="btn btn-primary"/>
+    </div>
+</form>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }

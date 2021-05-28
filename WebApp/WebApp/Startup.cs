@@ -6,8 +6,10 @@ using System.Text;
 using BLL.App;
 using Contracts.BLL.App;
 using Contracts.DAL.App;
+using Contracts.DAL.App.Repositories;
 using DAL.App.EF;
 using DAL.App.EF.AppDataInit;
+using DAL.App.EF.Repositories;
 using Domain.App.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -42,12 +44,17 @@ namespace WebApp
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("DefaultConnection"))
+                    .EnableDetailedErrors()
+                    .EnableSensitiveDataLogging())
+                
+                ;
             services.AddDatabaseDeveloperPageExceptionFilter();
-            
+      
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
             services.AddScoped<IAppBLL, AppBLL>();
-            
+            services.AddScoped<IGameTeamRepository, GameTeamRepository>();
+            services.AddScoped<IGameEventRepository, GameEventRepository>();
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services
                 .AddAuthentication()
@@ -183,12 +190,15 @@ namespace WebApp
 
         private static void SetupAppData(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration configuration)
         {
-            
-            
-            
             using var serviceScope =
-                app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+                app.ApplicationServices
+                    .GetRequiredService<IServiceScopeFactory>().
+                    CreateScope();
+            
             using var ctx = serviceScope.ServiceProvider.GetService<AppDbContext>();
+            
+            if (ctx!.Database.ProviderName == "Microsoft.EntityFrameworkCore.InMemory")
+                return;
             
             var logger = serviceScope.ServiceProvider.GetService<ILogger<Startup>>();
             if (logger == null)

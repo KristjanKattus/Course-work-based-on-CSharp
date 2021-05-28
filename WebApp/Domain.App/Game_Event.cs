@@ -13,10 +13,7 @@ namespace Domain.App
 
         public Guid GameTeamListId { get; set; }
         public Game_Team_List? GameTeamList { get; set; }
-        
-        
-        public Guid GamePartId { get; set; }
-        public Game_Part? GamePart { get; set; }
+
         
 
         public Guid EventTypeId { get; set; }

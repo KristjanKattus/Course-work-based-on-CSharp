@@ -46,6 +46,7 @@ namespace DAL.App.EF
             foreach (var relationship in builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.Restrict;
+                
             }
         }
     }

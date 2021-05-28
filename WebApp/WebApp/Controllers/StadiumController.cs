@@ -17,7 +17,7 @@ using WebApp.ViewModels.Stadium;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class StadiumController : Controller
     {
         private readonly IAppBLL _bll;

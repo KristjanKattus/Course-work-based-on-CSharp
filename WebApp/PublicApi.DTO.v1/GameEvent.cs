@@ -18,10 +18,6 @@ namespace PublicApi.DTO.v1
         [Display(ResourceType = typeof(Resources.PublicApi.DTO.v1.GameEvent), Name = nameof(GameTeamList))]
         public GameTeamList? GameTeamList { get; set; }
 
-        public Guid GamePartId { get; set; }
-        [Display(ResourceType = typeof(Resources.PublicApi.DTO.v1.GameEvent), Name = nameof(GamePart))]
-        public GamePart? GamePart { get; set; }
-
         public Guid EventTypeId { get; set; }
         [Display(ResourceType = typeof(Resources.PublicApi.DTO.v1.GameEvent), Name = nameof(EventType))]
         public EventType? EventType { get; set; }

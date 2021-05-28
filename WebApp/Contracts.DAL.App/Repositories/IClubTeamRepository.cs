@@ -13,5 +13,7 @@ namespace Contracts.DAL.App.Repositories
 
     public interface IClubTeamRepositoryCustom<TEntity>
     {
+        
+        public Task<TEntity> GetClubWithTeamIdAsync(Guid teamId);
     }
 }

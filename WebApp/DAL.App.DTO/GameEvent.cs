@@ -14,13 +14,11 @@ namespace DAL.App.DTO
         public Guid GameTeamListId { get; set; }
         public GameTeamList? GameTeamList { get; set; }
 
-        public Guid GamePartId { get; set; }
-        public GamePart? GamePart { get; set; }
 
         public Guid EventTypeId { get; set; }
         public EventType? EventType { get; set; }
 
-        public DateTime GameTime { get; set; }
+        public int GameTime { get; set; }
 
         public int NumberInOrder { get; set; }
 

@@ -26,4 +26,7 @@
     <data name="Staff" xml:space="preserve">
         <value>Võistkonna isikud</value>
     </data>
+    <data name="Subsitutions" xml:space="preserve">
+        <value>Vahetused</value>
+    </data>
 </root>

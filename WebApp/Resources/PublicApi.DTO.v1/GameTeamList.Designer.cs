@@ -104,5 +104,14 @@ namespace Resources.PublicApi.DTO.v1 {
                 return ResourceManager.GetString("Staff", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Subsitutions.
+        /// </summary>
+        public static string Subsitutions {
+            get {
+                return ResourceManager.GetString("Subsitutions", resourceCulture);
+            }
+        }
     }
 }

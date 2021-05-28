@@ -16,14 +16,16 @@ using WebApp.ViewModels.Team;
 
 namespace WebApp.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class TeamController : Controller
     {
         private readonly IAppBLL _bll;
+        private readonly IMapper _mapper;
         private readonly PublicApi.DTO.v1.Mappers.TeamMapper _teamMapper;
 
         public TeamController(IMapper mapper, IAppBLL bll)
         {
+            _mapper = mapper;
             _bll = bll;
             _teamMapper = new TeamMapper(mapper);
         }
@@ -43,13 +45,20 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            var team = await _bll.Teams.FirstOrDefaultAsync(id.Value, User.GetUserId()!.Value);
+            var team = await _bll.Teams.GetClientTeamAsync(id.Value, _mapper);
             if (team == null)
             {
                 return NotFound();
             }
 
-            return View(_teamMapper.Map(team));
+            var clientTeamMapper = new ClientTeamMapper(_mapper);
+            
+            var vm = new TeamClientViewModel
+            {
+                Team = clientTeamMapper.Map(team)!
+            };
+
+            return View(vm);
         }
 
         // GET: Team/Create

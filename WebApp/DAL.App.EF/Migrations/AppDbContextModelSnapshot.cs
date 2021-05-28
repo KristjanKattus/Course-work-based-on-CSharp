@@ -137,9 +137,6 @@ namespace DAL.App.EF.Migrations
                     b.Property<Guid>("GameId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("GamePartId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<Guid>("GameTeamListId")
                         .HasColumnType("uniqueidentifier");
 
@@ -154,8 +151,6 @@ namespace DAL.App.EF.Migrations
                     b.HasIndex("EventTypeId");
 
                     b.HasIndex("GameId");
-
-                    b.HasIndex("GamePartId");
 
                     b.HasIndex("GameTeamListId");
 
@@ -292,14 +287,17 @@ namespace DAL.App.EF.Migrations
                     b.Property<bool>("InStartingLineup")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("PersonId")
+                    b.Property<Guid?>("PersonId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("RoleId")
+                    b.Property<Guid?>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("Staff")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("TeamPersonId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -308,6 +306,8 @@ namespace DAL.App.EF.Migrations
                     b.HasIndex("PersonId");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("TeamPersonId");
 
                     b.ToTable("GameTeamLists");
                 });
@@ -836,12 +836,6 @@ namespace DAL.App.EF.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.App.Game_Part", "GamePart")
-                        .WithMany()
-                        .HasForeignKey("GamePartId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Domain.App.Game_Team_List", "GameTeamList")
                         .WithMany()
                         .HasForeignKey("GameTeamListId")
@@ -851,8 +845,6 @@ namespace DAL.App.EF.Migrations
                     b.Navigation("EventType");
 
                     b.Navigation("Game");
-
-                    b.Navigation("GamePart");
 
                     b.Navigation("GameTeamList");
                 });
@@ -905,7 +897,7 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("Domain.App.Game_Team", b =>
                 {
                     b.HasOne("Domain.App.Game", "Game")
-                        .WithMany()
+                        .WithMany("GameTeams")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -932,20 +924,25 @@ namespace DAL.App.EF.Migrations
                     b.HasOne("Domain.App.Person", "Person")
                         .WithMany()
                         .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Domain.App.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Domain.App.Team_Person", "TeamPerson")
+                        .WithMany()
+                        .HasForeignKey("TeamPersonId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("GameTeam");
 
                     b.Navigation("Person");
 
                     b.Navigation("Role");
+
+                    b.Navigation("TeamPerson");
                 });
 
             modelBuilder.Entity("Domain.App.League_Team", b =>
@@ -1092,6 +1089,8 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("Domain.App.Game", b =>
                 {
                     b.Navigation("GameEvents");
+
+                    b.Navigation("GameTeams");
                 });
 
             modelBuilder.Entity("Domain.App.Identity.AppUser", b =>

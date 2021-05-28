@@ -21,6 +21,9 @@ namespace PublicApi.DTO.v1
 
         [Display(ResourceType = typeof(Resources.PublicApi.DTO.v1.Person), Name = nameof(Sex))]
         public Char Sex { get; set; } = default!;
+
+
+        public string? FullName { get; set; }
         
         public Guid AppUserId { get; set; }
         [Display(ResourceType = typeof(Resources.PublicApi.DTO.v1.Person), Name = nameof(AppUser))]

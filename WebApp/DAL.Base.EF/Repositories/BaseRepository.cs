@@ -16,7 +16,6 @@ namespace DAL.Base.EF.Repositories
         
         where TDalEntity : class, IDomainEntityId
         where TDomainEntity : class, IDomainEntityId
-        
         where TDbContext: DbContext
     {
         public BaseRepository(TDbContext dbContext, IBaseMapper<TDalEntity, TDomainEntity> mapper) : base(dbContext, mapper)
@@ -46,6 +45,7 @@ namespace DAL.Base.EF.Repositories
 
         protected IQueryable<TDomainEntity> InitializeQuery(TKey? userId = default, bool noTracking = true)
         {
+            
             var query = RepoDbSet.AsQueryable();
             
             // TODO: Validate the input entity also

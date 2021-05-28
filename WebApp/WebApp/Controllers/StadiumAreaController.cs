@@ -23,7 +23,7 @@ namespace WebApp.Controllers
     /// <summary>
     /// Controller for StadiumAreas
     /// </summary>
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class StadiumAreaController : Controller
     {
         private readonly IAppBLL _bll;

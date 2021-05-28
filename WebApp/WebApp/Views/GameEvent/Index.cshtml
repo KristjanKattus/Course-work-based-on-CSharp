@@ -19,9 +19,7 @@
             <th>
                 @Html.DisplayNameFor(model => model.GameTeamList)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GamePart)
-            </th>
+
             <th>
                 @Html.DisplayNameFor(model => model.EventType)
             </th>
@@ -46,9 +44,6 @@
 
             <td>
                 @Html.DisplayFor(modelItem => item!.GameTeamList!.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GamePart!.Id)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.EventType!.Name)
