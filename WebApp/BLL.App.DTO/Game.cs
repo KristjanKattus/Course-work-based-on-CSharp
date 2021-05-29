@@ -17,8 +17,6 @@ namespace BLL.App.DTO
 
         public ICollection<GameEvent>? HomeTeamEvents { get; set; }
         public ICollection<GameEvent>? AwayTeamEvents { get; set; }
-        
-        public ICollection<GameTeam>? GameTeams { get; set; }
         public int MatchRound { get; set; }
     }
 }

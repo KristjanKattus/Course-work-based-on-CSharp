@@ -21,11 +21,13 @@ namespace WebApp.ApiControllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public class GameController : ControllerBase
     {
         private readonly IAppBLL _bll;
         private readonly PublicApi.DTO.v1.Mappers.GameMapper _gameMapper;
+        private readonly PublicApi.DTO.v1.Mappers.LeagueGameMapper _leagueGameMapper;
+        private readonly IMapper _mapper;
         
         /// <summary>
         /// Constructor. Takes in IAppBll and automapper variant of GameMapper
@@ -34,7 +36,9 @@ namespace WebApp.ApiControllers
         /// <param name="bll"> Business layer </param>
         public GameController(IMapper mapper, IAppBLL bll)
         {
+            _mapper = mapper;
             _bll = bll;
+            _leagueGameMapper = new LeagueGameMapper(mapper);
             _gameMapper = new GameMapper(mapper);
         }
 
@@ -60,21 +64,22 @@ namespace WebApp.ApiControllers
         /// <param name="id"> Game unique Id </param>
         /// <returns>Game entity of PublicApi.DTO.v1</returns>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(PublicApi.DTO.v1.Game), StatusCodes.Status200OK)]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.LeagueGame), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PublicApi.DTO.v1.Game>> GetGame(Guid id)
+        public async Task<ActionResult<PublicApi.DTO.v1.LeagueGame>> GetGame(Guid id)
         {
-            var game = await _bll.Games.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
+            var game = await _bll.Games.GetLeagueGameAsync(id, _mapper);
 
             if (game == null)
             {
                 return NotFound();
             }
 
-            return _gameMapper.Map(game)!;
+            return _leagueGameMapper.Map(game)!;
         }
 
         // PUT: api/Game/5
@@ -114,26 +119,38 @@ namespace WebApp.ApiControllers
         /// <summary>
         /// Add PublicApi.DTO.v1 Game entity into Db
         /// </summary>
-        /// <param name="game"> PublicApiVersion1.0 Game entity to be added </param>
+        /// <param name="gameAdd">  PublicApiVersion1.0 GameAdd entity to be added</param>
         /// <returns> Created Action with details of added entity </returns>
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(PublicApi.DTO.v1.Game), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.AddGame), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(typeof(PublicApi.DTO.v1.Game), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<PublicApi.DTO.v1.Game>> PostGame(PublicApi.DTO.v1.Game game)
+        public async Task<ActionResult<PublicApi.DTO.v1.Game>> PostGame(PublicApi.DTO.v1.AddGame gameAdd)
         {
-            var bllEntity = _gameMapper.Map(game)!;
-            _bll.Games.Add(bllEntity);
+            var bllEntity = _gameMapper.Map(gameAdd.Game)!;
+            var returnEntity = _bll.Games.Add(bllEntity);
+
+            var homeTeam = new BLL.App.DTO.GameTeam
+            {
+                GameId = returnEntity!.Id,
+                TeamId = (Guid) gameAdd.HomeTeamId!,
+                Hometeam = true
+            };
+            var awayTeam = new BLL.App.DTO.GameTeam
+            {
+                GameId = gameAdd.Game.Id,
+                TeamId = (Guid) gameAdd.AwayTeamId!,
+                Hometeam = false
+            };
+            _bll.GameTeams.Add(homeTeam);
+            _bll.GameTeams.Add(awayTeam);
+            
             await _bll.SaveChangesAsync();
-
-            var updatedEntity = _bll.Games.GetUpdatedEntityAfterSaveChanges(bllEntity);
-
-            var returnEntity = _gameMapper.Map(updatedEntity);
 
             return CreatedAtAction("GetGame", new { id = returnEntity!.Id }, returnEntity);
         }
@@ -151,12 +168,11 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> DeleteGame(Guid id)
         {
-            if (!await _bll.Games.ExistsAsync(id, User.GetUserId()!.Value))
-            {
-                return NotFound();
-            }
+            await _bll.GameTeams.RemoveWithGameIdAsync(id);
+            await _bll.SaveChangesAsync();
 
-            await _bll.Games.RemoveAsync(id, User.GetUserId()!.Value);
+            var game = await _bll.Games.FirstOrDefaultAsync(id);
+            _bll.Games.Remove(game, User.GetUserId()!.Value);
             await _bll.SaveChangesAsync();
 
             return NoContent();

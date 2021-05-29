@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using PublicApi.DTO.v1;
 using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
@@ -65,7 +66,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PublicApi.DTO.v1.GameTeamList>> GetGame_Team_List(Guid id)
+        public async Task<ActionResult<PublicApi.DTO.v1.GameTeamList>> GetGameTeamList(Guid id)
         {
             var gameTeamList = await _bll.GameTeamLists.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
 
@@ -83,7 +84,7 @@ namespace WebApp.ApiControllers
         /// Update GameTeamList entity
         /// </summary>
         /// <param name="id"> GameTeamList to be changed Id </param>
-        /// <param name="gameTeamList"> GameTeamList entity to be updated </param>
+        /// <param name="addGameTeamList"> GameTeamList entities to be added </param>
         /// <returns></returns>
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(PublicApi.DTO.v1.GameTeamList), StatusCodes.Status200OK)]
@@ -91,22 +92,37 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> PutGame_Team_List(Guid id, PublicApi.DTO.v1.GameTeamList gameTeamList)
+        public async Task<IActionResult> PutGameTeamList( PublicApi.DTO.v1.AddGameTeamList addGameTeamList)
         {
-            if (id != gameTeamList.Id)
+            foreach (var player in addGameTeamList.PlayerList!.Where(x => x.PartOfGame))
             {
-                return BadRequest();
+                var GTLEntity = new GameTeamList
+                {
+                    GameTeamId = addGameTeamList.GameTeamId,
+                    TeamPersonId = player.PersonId,
+                    InStartingLineup = player.InStartingLineup
+                };
+                _bll.GameTeamLists.Add(_gameTeamListMapper.Map(GTLEntity)!);
+                await _bll.SaveChangesAsync();
             }
 
-            if (!await _bll.GameTeamLists.ExistsAsync(id, User.GetUserId()!.Value))
+            if (addGameTeamList.StaffList != null)
             {
-                return BadRequest();
+                foreach (var staff in addGameTeamList.StaffList!.Where(x => x.PartOfGame))
+                {
+                    var GTLEntity = new GameTeamList
+                    {
+                        GameTeamId = addGameTeamList.GameTeamId,
+                        TeamPersonId = staff.PersonId,
+                    };
+
+                    _bll.GameTeamLists.Add(_gameTeamListMapper.Map(GTLEntity)!);
+                    await _bll.SaveChangesAsync();
+                }
             }
 
-            _bll.GameTeamLists.Update(_gameTeamListMapper.Map(gameTeamList)!);
-            await _bll.SaveChangesAsync();
-
-            return NoContent();
+            return CreatedAtAction("Details", "Game"
+                , new{id = (await _bll.GameTeams.FirstOrDefaultAsync(addGameTeamList.GameTeamId))!.GameId});
         }
 
         // POST: api/GameTeamList
@@ -114,25 +130,29 @@ namespace WebApp.ApiControllers
         /// <summary>
         /// Add PublicApi.DTO.v1 GameTeamList entity into Db
         /// </summary>
-        /// <param name="gameTeamList">PublicApiVersion1.0 GameTeamList entity to be added</param>
+        /// <param name="gameTeamListMember">PublicApiVersion1.0 AddGameTeamListMember entity to be added</param>
         /// <returns>Created Action with details of added entity</returns>
         [HttpPost]
-        [ProducesResponseType(typeof(PublicApi.DTO.v1.GameTeamList), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.AddGameTeamListMember), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<PublicApi.DTO.v1.GameTeamList>> PostGame_Team_List(PublicApi.DTO.v1.GameTeamList gameTeamList)
+        public async Task<ActionResult<PublicApi.DTO.v1.GameTeamList>> PostGameTeam_List(PublicApi.DTO.v1.AddGameTeamListMember gameTeamListMember)
         {
-            var bllEntity = _gameTeamListMapper.Map(gameTeamList)!;
-            _bll.GameTeamLists.Add(bllEntity);
+            gameTeamListMember.Person.AppUserId = User.GetUserId()!.Value;
+            var GTL = new GameTeamList()
+            {
+                GameTeamId = gameTeamListMember.GameTeamId,
+                Person = gameTeamListMember.Person,
+                RoleId = gameTeamListMember.RoleId,
+                Staff = true,
+            };
+            var returnEntity = _bll.GameTeamLists.Add(_gameTeamListMapper.Map(GTL)!);
             await _bll.SaveChangesAsync();
 
-            var updatedEntity = _bll.GameTeamLists.GetUpdatedEntityAfterSaveChanges(bllEntity);
-
-            var returnEntity = _gameTeamListMapper.Map(updatedEntity);
-
-            return CreatedAtAction("GetGame_Team_List", new { id = returnEntity!.Id }, returnEntity);
+            return CreatedAtAction("Details", "Game", 
+                new {id = (await _bll.GameTeams.FirstOrDefaultAsync(gameTeamListMember.GameTeamId))!.GameId }, returnEntity);
         }
 
         // DELETE: api/GameTeamList/5

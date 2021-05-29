@@ -21,6 +21,7 @@ namespace WebApp.ApiControllers
     {
         private readonly IAppBLL _bll;
         private readonly PublicApi.DTO.v1.Mappers.TeamMapper _teamMapper;
+        private readonly IMapper _mapper;
         
         /// <summary>
         /// Constructor. Takes in IAppBll and automapper variant of teamMapper
@@ -30,6 +31,7 @@ namespace WebApp.ApiControllers
 
         public TeamController(IMapper mapper, IAppBLL bll)
         {
+            _mapper = mapper;
             _bll = bll;
             _teamMapper = new TeamMapper(mapper);
         }
@@ -57,21 +59,23 @@ namespace WebApp.ApiControllers
         /// <param name="id">Team unique Id</param>
         /// <returns>Team entity of PublicApi.DTO.v1</returns>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(PublicApi.DTO.v1.Team), StatusCodes.Status200OK)]
+        
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.ClientTeam), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PublicApi.DTO.v1.Team>> GetTeam(Guid id)
+        public async Task<ActionResult<PublicApi.DTO.v1.ClientTeam>> GetTeam(Guid id)
         {
-            var team = await _bll.Teams.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
-
+            var team = await _bll.Teams.GetClientTeamAsync(id, _mapper);
             if (team == null)
             {
                 return NotFound();
             }
 
-            return _teamMapper.Map(team)!;
+            var clientTeamMapper = new ClientTeamMapper(_mapper);
+
+            return clientTeamMapper.Map(team)!;
         }
 
         // PUT: api/Team/5

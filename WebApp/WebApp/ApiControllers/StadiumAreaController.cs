@@ -22,7 +22,7 @@ namespace WebApp.ApiControllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public class StadiumAreaController : ControllerBase
     {
         private readonly IAppBLL _bll;
@@ -67,7 +67,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PublicApi.DTO.v1.StadiumArea>> GetStadium_Area(Guid id)
+        public async Task<ActionResult<PublicApi.DTO.v1.StadiumArea>> GetStadiumArea(Guid id)
         {
             var stadiumArea = await _bll.StadiumAreas.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
 
@@ -93,7 +93,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> PutStadium_Area(Guid id, PublicApi.DTO.v1.StadiumArea stadiumArea)
+        public async Task<IActionResult> PutStadiumArea(Guid id, PublicApi.DTO.v1.StadiumArea stadiumArea)
         {
             if (id != stadiumArea.Id)
             {
@@ -125,7 +125,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<PublicApi.DTO.v1.StadiumArea>> PostStadium_Area(PublicApi.DTO.v1.StadiumArea stadiumArea)
+        public async Task<ActionResult<PublicApi.DTO.v1.StadiumArea>> PostStadiumArea(PublicApi.DTO.v1.StadiumArea stadiumArea)
         {
             var bllEntity = _stadiumAreaMapper.Map(stadiumArea)!;
             _bll.StadiumAreas.Add(bllEntity);
@@ -135,7 +135,7 @@ namespace WebApp.ApiControllers
 
             var returnEntity = _stadiumAreaMapper.Map(updatedEntity);
 
-            return CreatedAtAction("GetStadium_Area", new { id = returnEntity!.Id }, returnEntity);
+            return CreatedAtAction("GetStadiumArea", new { id = returnEntity!.Id }, returnEntity);
         }
 
         // DELETE: api/StadiumArea/5
@@ -149,7 +149,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> DeleteStadium_Area(Guid id)
+        public async Task<IActionResult> DeleteStadiumArea(Guid id)
         {
             if (!await _bll.StadiumAreas.ExistsAsync(id, User.GetUserId()!.Value))
             {

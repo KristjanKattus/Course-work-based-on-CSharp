@@ -66,7 +66,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PublicApi.DTO.v1.GameTeam>> GetGame_Team(Guid id)
+        public async Task<ActionResult<PublicApi.DTO.v1.GameTeam>> GetGameTeam(Guid id)
         {
             var gameTeam = await _bll.GameTeams.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
 
@@ -92,7 +92,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> PutGame_Team(Guid id, PublicApi.DTO.v1.GameTeam gameTeam)
+        public async Task<IActionResult> PutGameTeam(Guid id, PublicApi.DTO.v1.GameTeam gameTeam)
         {
             if (id != gameTeam.Id)
             {
@@ -123,7 +123,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<PublicApi.DTO.v1.GameTeam>> PostGame_Team(PublicApi.DTO.v1.GameTeam gameTeam)
+        public async Task<ActionResult<PublicApi.DTO.v1.GameTeam>> PostGameTeam(PublicApi.DTO.v1.GameTeam gameTeam)
         {
             
             var bllEntity = _gameTeamMapper.Map(gameTeam)!;
@@ -134,7 +134,7 @@ namespace WebApp.ApiControllers
 
             var returnEntity = _gameTeamMapper.Map(updatedEntity);
 
-            return CreatedAtAction("GetGame_Team", new { id = returnEntity!.Id }, returnEntity);
+            return CreatedAtAction("GetGameTeam", new { id = returnEntity!.Id }, returnEntity);
         }
 
         // DELETE: api/GameTeam/5
@@ -148,7 +148,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> DeleteGame_Team(Guid id)
+        public async Task<IActionResult> DeleteGameTeam(Guid id)
         {
             if (!await _bll.GameTeams.ExistsAsync(id, User.GetUserId()!.Value))
             {

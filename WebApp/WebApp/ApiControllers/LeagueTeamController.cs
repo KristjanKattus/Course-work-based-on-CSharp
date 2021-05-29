@@ -21,7 +21,7 @@ namespace WebApp.ApiControllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public class LeagueTeamController : ControllerBase
     {
         private readonly IAppBLL _bll;
@@ -67,7 +67,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PublicApi.DTO.v1.LeagueTeam>> GetLeague_Team(Guid id)
+        public async Task<ActionResult<PublicApi.DTO.v1.LeagueTeam>> GetLeagueTeam(Guid id)
         {
             var leagueTeam = await _bll.LeagueTeams.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
 
@@ -93,7 +93,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> PutLeague_Team(Guid id, PublicApi.DTO.v1.LeagueTeam leagueTeam)
+        public async Task<IActionResult> PutLeagueTeam(Guid id, PublicApi.DTO.v1.LeagueTeam leagueTeam)
         {
             if (id != leagueTeam.Id)
             {
@@ -124,7 +124,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<PublicApi.DTO.v1.LeagueTeam>> PostLeague_Team(PublicApi.DTO.v1.LeagueTeam leagueTeam)
+        public async Task<ActionResult<PublicApi.DTO.v1.LeagueTeam>> PostLeagueTeam(PublicApi.DTO.v1.LeagueTeam leagueTeam)
         {
             var bllEntity = _leagueTeamMapper.Map(leagueTeam)!;
             _bll.LeagueTeams.Add(bllEntity);
@@ -133,7 +133,7 @@ namespace WebApp.ApiControllers
             var updatedEntity = _bll.LeagueTeams.GetUpdatedEntityAfterSaveChanges(bllEntity);
 
             var returnEntity = _leagueTeamMapper.Map(updatedEntity);
-            return CreatedAtAction("GetLeague_Team", new { id = returnEntity!.Id }, returnEntity);
+            return CreatedAtAction("GetLeagueTeam", new { id = returnEntity!.Id }, returnEntity);
         }
 
         // DELETE: api/LeageTeam/5
@@ -147,7 +147,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<IActionResult> DeleteLeague_Team(Guid id)
+        public async Task<IActionResult> DeleteLeagueTeam(Guid id)
         {
             if (!await _bll.LeagueTeams.ExistsAsync(id, User.GetUserId()!.Value))
             {

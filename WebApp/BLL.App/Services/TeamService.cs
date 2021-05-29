@@ -31,8 +31,7 @@ namespace BLL.App.Services
                 var date = person.Person.Date.ToShortDateString();
 
                 var newDAte = DateTime.Parse(date);
-
-                var xDate = newDAte.Date;
+                
                 if (person.Role.Name == "Player" || person.Role.Name == "Mängija")
                 {
                     playerList.Add(person);
