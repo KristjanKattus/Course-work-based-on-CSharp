@@ -21,10 +21,9 @@ namespace TestProject.IntegrationTestsApi
         private readonly ITestOutputHelper _testOutputHelper;
 
         private const string LogInUri = "account/login";
-        private const string PersonCreateUri = "/api/v1/Persons";
-        private const string PersonSearchUri = "/api/v1/Persons/searchperson";
+        private const string LeagueTableURL = "/leaguetable/";
 
-        private const string BaseAddressUri = "https://localhost:5051/api/v1/";
+        private const string BaseAddressUri = "https://localhost:5051";
 
 
         public PersonApiControllerIntegrationTests(CustomWebApplicationFactory<Startup> factory,
@@ -143,32 +142,13 @@ namespace TestProject.IntegrationTestsApi
             httpResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
         
-        [Fact]
-        public async Task Api_Create_Invalid_Person_Empty_IdentificationCode()
-        {
-            // ARRANGE
-            var person = new DTO.App.Person()
-            {
-                Firstname = "Karmo",
-                Lastname = "Suusk",
-                IdentificationCode = ""
-            };
-
-            // ACT
-            await LogIn();
-            var data = _client.ObjToHttpContent(person);
-            var httpResponse = await _client.PostAsync(PersonCreateUri, data);
-
-            // ASSERT
-            httpResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        }
 
         private async Task<HttpResponseMessage> LogIn()
         {
             // ARRANGE
             var login = new DTO.App.Login()
             {
-                Email = "admin@bloody.ee",
+                Email = "admin@fas.ee",
                 Password = "Foo.bar1"
             };
 

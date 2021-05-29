@@ -10,5 +10,6 @@ namespace Contracts.BLL.App.Services
 {
     public interface IGameTeamListService : IBaseEntityService<BLLAppDTO.GameTeamList, DALAppDTO.GameTeamList>, IGameTeamListRepositoryCustom<BLLAppDTO.GameTeamList>
     {
+        public void AddTeamPersonToList(Guid gameTeamId, Guid personId, bool inStartingLineUp = false);
     }
 }

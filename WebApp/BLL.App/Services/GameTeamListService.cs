@@ -23,5 +23,17 @@ namespace BLL.App.Services
         {
             return (await ServiceRepository.GetAllWithLeagueTeamIdAsync(gameTeamId)).Select(x => Mapper.Map(x))!;
         }
+
+        public void AddTeamPersonToList(Guid gameTeamId, Guid personId, bool inStartingLineUp = false)
+        {
+            var GTLEntity = new BLLAppDTO.GameTeamList
+            {
+                GameTeamId = gameTeamId,
+                TeamPersonId = personId,
+                InStartingLineup = inStartingLineUp
+            };
+            ServiceRepository.Add(Mapper.Map(GTLEntity)!);
+            ServiceUow.SaveChangesAsync();
+        }
     }
 }

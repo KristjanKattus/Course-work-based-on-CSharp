@@ -9,7 +9,7 @@ namespace BLL.App.DTO
     {
         public Guid AreaId { get; set; }
 
-        public StadiumArea StadiumArea { get; set; } = default!;
+        public StadiumArea? StadiumArea { get; set; }
 
         [MaxLength(32)] 
         public string Name { get; set; } = default!;

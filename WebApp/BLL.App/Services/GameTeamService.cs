@@ -69,9 +69,6 @@ namespace BLL.App.Services
             var team1 = await ServiceRepository.FirstOrDefaultWithGameIdAsync(gameEvent!.GameId, true);
             var team2 = await ServiceRepository.FirstOrDefaultWithGameIdAsync(gameEvent!.GameId, false);
             
-
-            
-            
             if (gameEvent!.EventType!.Name == "Goal" || gameEvent.EventType!.Name == "Penalty")
             {
                 if (gameEvent.GameTeamList!.GameTeamId == team1!.Id)

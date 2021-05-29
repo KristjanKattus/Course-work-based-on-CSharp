@@ -29,25 +29,6 @@ namespace BLL.App.Services
 
         public async Task<IEnumerable<BLLAppDTO.LeagueGame>> GetAllLeagueGameAsync(Guid leagueId, IMapper mapper)
         {
-            // if (game!.GameEvents != null)
-            // {
-            //     game.HomeTeamEvents = new List<BLLAppDTO.GameEvent>();
-            //     game.AwayTeamEvents = new List<BLLAppDTO.GameEvent>();
-            //
-            //     // foreach (var gameEvent in game.GameEvents)
-            //     // {
-            //     //     if (gameEvent.GameTeamList!.GameTeamId == homeTeam!.Id)
-            //     //     {
-            //     //         game.HomeTeamEvents.Add(gameEvent);
-            //     //     }
-            //     //     else
-            //     //     {
-            //     //         game.AwayTeamEvents.Add(gameEvent);
-            //     //     }
-            //     // }
-            // }
-            
-
             var games = (await ServiceRepository.GetAllGamesWithLeagueIdAsync(leagueId))
                 .Select(x => Mapper.Map(x));
 

@@ -162,28 +162,14 @@ namespace WebApp.Controllers
             {
                 foreach (var player in vm.PlayerList!.Where(x => x.PartOfGame))
                 {
-                    var GTLEntity = new GameTeamList
-                    {
-                        GameTeamId = vm.GameTeamId,
-                        TeamPersonId = player.PersonId,
-                        InStartingLineup = player.InStartingLineup
-                    };
-                    _bll.GameTeamLists.Add(_gameTeamListMapper.Map(GTLEntity)!);
-                    await _bll.SaveChangesAsync();
+                    _bll.GameTeamLists.AddTeamPersonToList(vm.GameTeamId, player.PersonId, player.InStartingLineup);
                 }
 
                 if (vm.StaffList != null)
                 {
                     foreach (var staff in vm.StaffList!.Where(x => x.PartOfGame))
                     {
-                        var GTLEntity = new GameTeamList
-                        {
-                            GameTeamId = vm.GameTeamId,
-                            TeamPersonId = staff.PersonId,
-                        };
-
-                        _bll.GameTeamLists.Add(_gameTeamListMapper.Map(GTLEntity)!);
-                        await _bll.SaveChangesAsync();
+                        _bll.GameTeamLists.AddTeamPersonToList(vm.GameTeamId, staff.PersonId);
                     }
                 }
                 
