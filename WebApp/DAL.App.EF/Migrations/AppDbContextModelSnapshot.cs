@@ -897,7 +897,7 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("Domain.App.Game_Team", b =>
                 {
                     b.HasOne("Domain.App.Game", "Game")
-                        .WithMany("GameTeams")
+                        .WithMany()
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -1089,8 +1089,6 @@ namespace DAL.App.EF.Migrations
             modelBuilder.Entity("Domain.App.Game", b =>
                 {
                     b.Navigation("GameEvents");
-
-                    b.Navigation("GameTeams");
                 });
 
             modelBuilder.Entity("Domain.App.Identity.AppUser", b =>

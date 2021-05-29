@@ -53,8 +53,7 @@ namespace WebApp
       
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
             services.AddScoped<IAppBLL, AppBLL>();
-            services.AddScoped<IGameTeamRepository, GameTeamRepository>();
-            services.AddScoped<IGameEventRepository, GameEventRepository>();
+            services.AddTransient<IGameTeamRepository, GameTeamRepository>();
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services
                 .AddAuthentication()

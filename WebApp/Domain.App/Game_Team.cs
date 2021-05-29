@@ -6,10 +6,10 @@ namespace Domain.App
     public class Game_Team : DomainEntityId
     {
         public Guid GameId { get; set; } 
-        public Game Game { get; set; } = default!;
+        public Game? Game { get; set; }
 
         public Guid TeamId { get; set; }
-        public Team Team { get; set; } = default!;
+        public Team? Team { get; set; }
 
         public DateTime Since { get; set; } = DateTime.Now;
         public DateTime? Until { get; set; }

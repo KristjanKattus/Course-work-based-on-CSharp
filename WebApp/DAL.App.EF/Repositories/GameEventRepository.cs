@@ -42,7 +42,6 @@ namespace DAL.App.EF.Repositories
             var query = InitializeQuery(userId, noTracking);
 
             var resQuery = query
-                .Include(g => g.Game)
                 .Include(g => g.GameTeamList)
                 .Include(g => g.EventType)
                 .ThenInclude(c => c!.Name)

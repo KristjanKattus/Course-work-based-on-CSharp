@@ -21,36 +21,31 @@ namespace BLL.App.Services
         {
         }
 
+
         public async Task<BLLAppDTO.Game> FirstOrDefaultAsync(Guid gameId)
         {
-            var game = Mapper.Map(await ServiceRepository.FirstOrDefaultAsync(gameId));
-
-            var gameTeams = (await ServiceUow.GameTeams.GetAllTeamGamesWithGameIdAsync(gameId)).ToList();
-
-            var homeTeam = gameTeams.FirstOrDefault(x => x.Hometeam);
-            if (game!.GameEvents != null)
-            {
-                game.HomeTeamEvents = new List<BLLAppDTO.GameEvent>();
-                game.AwayTeamEvents = new List<BLLAppDTO.GameEvent>();
-
-                foreach (var gameEvent in game.GameEvents)
-                {
-                    if (gameEvent.GameTeamList!.GameTeamId == homeTeam!.Id)
-                    {
-                        game.HomeTeamEvents.Add(gameEvent);
-                    }
-                    else
-                    {
-                        game.AwayTeamEvents.Add(gameEvent);
-                    }
-                }
-            }
-            
-            return game;
+            return Mapper.Map(await ServiceRepository.FirstOrDefaultAsync(gameId))!;
         }
 
         public async Task<IEnumerable<BLLAppDTO.LeagueGame>> GetAllLeagueGameAsync(Guid leagueId, IMapper mapper)
         {
+            // if (game!.GameEvents != null)
+            // {
+            //     game.HomeTeamEvents = new List<BLLAppDTO.GameEvent>();
+            //     game.AwayTeamEvents = new List<BLLAppDTO.GameEvent>();
+            //
+            //     // foreach (var gameEvent in game.GameEvents)
+            //     // {
+            //     //     if (gameEvent.GameTeamList!.GameTeamId == homeTeam!.Id)
+            //     //     {
+            //     //         game.HomeTeamEvents.Add(gameEvent);
+            //     //     }
+            //     //     else
+            //     //     {
+            //     //         game.AwayTeamEvents.Add(gameEvent);
+            //     //     }
+            //     // }
+            // }
             
 
             var games = (await ServiceRepository.GetAllGamesWithLeagueIdAsync(leagueId))
@@ -71,14 +66,12 @@ namespace BLL.App.Services
         public async Task<BLLAppDTO.LeagueGame> GetLeagueGameAsync(Guid gameId, IMapper mapper)
         {
             var gameTeamMapper = new GameTeamMapper(mapper);
+
+            var homeTeam = await ServiceUow.GameTeams.FirstOrDefaultWithGameIdAsync(gameId, true);
+            var awayTeam = await ServiceUow.GameTeams.FirstOrDefaultWithGameIdAsync(gameId, false);
             
-            var gameTeams = (await ServiceUow.GameTeams.GetAllTeamGamesWithGameIdAsync(gameId)).ToList();
-
-            var homeTeam = gameTeams.FirstOrDefault(x => x.Hometeam);
-            var awayTeam = gameTeams.FirstOrDefault(x => x.Hometeam == false);
-
             var GTLMapper = new GameTeamListMapper(mapper);
-
+            
             var leagueGame = new BLLAppDTO.LeagueGame
             {
                 Game = Mapper.Map(await ServiceRepository.FirstOrDefaultAsync(gameId)),

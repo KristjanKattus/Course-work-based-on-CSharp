@@ -143,7 +143,7 @@ namespace DAL.App.EF.AppDataInit
                 {
                     Person = person,
                     Team = team1,
-                    RoleId = Guid.Parse("1549CF6E-D133-42B7-B6BA-08D92218295A")
+                    RoleId = Guid.Parse("1FACCC16-38F1-4314-338E-08D922301FC9")
                     
                 };
                 var person2 = person;
@@ -153,7 +153,7 @@ namespace DAL.App.EF.AppDataInit
                 {
                     Person = person2,
                     Team = team2,
-                    RoleId = Guid.Parse("1549CF6E-D133-42B7-B6BA-08D92218295A")
+                    RoleId = Guid.Parse("1FACCC16-38F1-4314-338E-08D922301FC9")
                     
                 };
                 ctx.TeamPersons.Add(teamPerson1);

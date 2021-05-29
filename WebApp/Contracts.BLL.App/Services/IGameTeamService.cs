@@ -10,14 +10,12 @@ namespace Contracts.BLL.App.Services
 {
     public interface IGameTeamService : IBaseEntityService<BLLAppDTO.GameTeam, DALAppDTO.GameTeam>, IGameTeamRepositoryCustom<BLLAppDTO.GameTeam>
     {
-        public Task RemoveGamesWithGameIdAsync(Guid id,  bool noTracking = true);
-
-
         public Task AddGoal(Guid id);
 
         public Task ConcedeGoal(Guid id);
 
+        public Task RemoveWithGameIdAsync(Guid gameId);
 
-        public Task UpdateEntity(Guid gameTeamId, Guid gameEventId);
+        public Task UpdateEntity(Guid gameEventId);
     }
 }

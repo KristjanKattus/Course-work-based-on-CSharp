@@ -8,13 +8,19 @@
 
 <div class="d-sm-flex align-items-center justify-content-center">
     <div class="card shadow mb-4" style="width: 80%;">
-    <div class="card-header py-3">
-        <div class="row d-sm-flex justify-content-between">
-            <h4 class="m-0 font-weight-bold text-primary">@Model.HomeTeam!.Team!.Name</h4>
-            <h4 class="m-0 font-weight-bold text-primary">@Model.AwayTeam!.Team!.Name</h4>
+        <div class="card-header py-3">
+            <div class="row d-sm-flex justify-content-between">
+                <h4 class="m-0 font-weight-bold text-primary">@Model.HomeTeam!.Team!.Name</h4>
+                <div class="d-sm-flex align-items-center justify-content-center">
+                    <h4 class="m-0 font-weight-bold text-primary">@Model.HomeTeam!.Scored</h4>
+                    <h4 class="m-0 font-weight-bold text-primary">:</h4>
+                    <h4 class="m-0 font-weight-bold text-primary">@Model.AwayTeam!.Scored</h4>
+                </div>
+                
+                <h4 class="m-0 font-weight-bold text-primary">@Model.AwayTeam!.Team!.Name</h4>
+            </div>
+            @* <h4 class="m-0 font-weight-bold text-primary text-center "> - </h4> *@
         </div>
-        @* <h4 class="m-0 font-weight-bold text-primary text-center "> - </h4> *@
-    </div>
         <div class="card-body">
             <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4" style="width: 100%;">
 
@@ -33,8 +39,7 @@
                             <i class="fas fa-flag"></i>
                         </span>
                         <span class="text">@Resources.Common.AddGameEvent</span>
-                    </a>
-                }
+                    </a>    }
             </div>
             <div class="row d-sm-flex align-items-center justify-content-center">
                 <div class="h2 text-black-800 text-center">@Resources.PublicApi.DTO.v1.Game.GameEvents</div>
@@ -43,20 +48,29 @@
                     {
                         <thead>
                         <tr role="row">
+                            <th rowspan="1" colspan="1">@Resources.PublicApi.DTO.v1.GameEvent.GameTime</th>
                             <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.Game!.GameEvents)</th>
                             <th rowspan="1" colspan="1">@Resources.Common.Player</th>
+                            <th rowspan="1" colspan="1">@Resources.PublicApi.DTO.v1.GameTeam.Game</th>
                         </tr>
                         </thead>
                         <tbody>
-                        @foreach (var item in Model.Game.GameEvents)
+                        @foreach (var item in Model.Game.GameEvents.OrderBy(x => x.GameTime).ThenBy(x=> x.NumberInOrder))
                         {
                             <tr>
+                                <td>
+                                    @item.GameTime
+                                </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.EventType!.Name)
                                 </td>
                                 <td>
                                     @item.GameTeamList!.TeamPerson!.Person!.FullName
                                 </td>
+                                <td>
+                                    @item.GameTeamList!.TeamPerson!.Team!.Name
+                                </td>
+
                             </tr>
                         }
                         </tbody>
@@ -65,188 +79,189 @@
             </div>
 
 
-                <div class="row d-sm-flex align-items-center justify-content-center">
+            <div class="row d-sm-flex align-items-center justify-content-center">
 
-                    <div class="col-sm-6">
-                        <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
-                            <div class="h2 text-black-800 text-center">
-                                @Resources.PublicApi.DTO.v1.Game.HomeTeam
-                            </div>
-
-                            <div class="h4 text-black-800 text-center">
-                                @Resources.PublicApi.DTO.v1.GameTeamList.InStartingLineup
-                            </div>
-                            <thead>
-                            <tr role="row">
-                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.HomeTeamList![0].Person!.FirstName)</th>
-                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.HomeTeamList![0].Person!.LastName)</th>
-                            </tr>
-                            </thead>
-                            @if (Model.HomeTeamList!.Count != 0)
-                            {
-                                <tbody>
-                                @foreach (var item in Model.HomeTeamList!.Where(x => x.InStartingLineup))
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.FirstName)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.LastName)
-                                        </td>
-                                    </tr>
-                                }
-                                <div class="h4 text-black-800 text-center">@Resources.PublicApi.DTO.v1.GameTeamList.Subsitutions </div>
-                                @foreach (var item in Model.HomeTeamList!.Where(x => !x.InStartingLineup))
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.FirstName)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.LastName)
-                                        </td>
-                                    </tr>
-                                }
-                                <div class="h4 text-black-800 text-center">@Resources.PublicApi.DTO.v1.GameTeamList.Staff </div>
-                                @foreach (var item in Model.HomeTeamList!.Where(x => x.Staff))
-                                {
-                                    <tr>
-                                        <td>
-                                            @if (item.Person != null)
-                                            {
-                                                @Html.DisplayFor(modelItem => item.Person!.FirstName)
-                                            }
-                                            else
-                                            {
-                                                @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.FirstName)
-                                            }
-
-                                        </td>
-                                        <td>
-                                            @if (item.Person != null)
-                                            {
-                                                @Html.DisplayFor(modelItem => item.Person!.FirstName)
-                                            }
-                                            else
-                                            {
-                                                @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.LastName)
-                                            }
-                                        </td>
-                                    </tr>
-                                }
-                                <a asp-controller="GameTeamList" asp-action="Create" asp-route-gameTeamId="@Model.AwayTeam!.Id" class="btn btn-primary">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-flag"></i>
-                                    </span>
-                                    <span class="text">@Resources.Common.AddGameEvent</span>
-                                </a>
-                                
-                                </tbody>
-                            }else if(User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Referee"))
-                             {
-                                 <a asp-controller="GameTeamList" asp-action="Edit" asp-route-gameTeamId="@Model.HomeTeam!.Id" class="btn btn-primary">
-                                     <span class="icon text-white-50">
-                                         <i class="fas fa-flag"></i>
-                                     </span>
-                                     <span class="text">@Resources.Common.AddGameTeamList</span>
-                                 </a> 
-                             }
-
-                        </table>
-                    </div>
-
-
-                    <div class="col-sm-6">
-                        <div class="h2 text-black-800 text-center">
-                            @Resources.PublicApi.DTO.v1.Game.AwayTeam
-                        </div>
-
+                <div class="col-sm-6">
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
                         <div class="h4 text-black-800 text-center">
                             @Resources.PublicApi.DTO.v1.GameTeamList.InStartingLineup
                         </div>
-
-                        <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
-                            <thead>
-                            <tr role="row">
-                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.AwayTeamList![0].Person!.FirstName)</th>
-                                <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.AwayTeamList![0].Person!.LastName)</th>
-                            </tr>
-                            </thead>
-                            @if (Model.AwayTeamList!.Count != 0)
+                        <thead>
+                        <tr role="row">
+                            <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.HomeTeamList![0].Person!.FirstName)</th>
+                            <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.HomeTeamList![0].Person!.LastName)</th>
+                        </tr>
+                        </thead>
+                        
+                        <tbody>
+                        @if (Model.HomeTeamList!.Count != 0)
+                        {
+                            
+                            @foreach (var item in Model.HomeTeamList.Where(item => item.InStartingLineup))
                             {
-                                <tbody>
-                                @foreach (var item in Model.AwayTeamList!.Where(x => x.InStartingLineup))
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.FirstName)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.LastName)
-                                        </td>
-                                    </tr>
-                                }
-                                <div class="h4 text-black-800 text-center">@Resources.PublicApi.DTO.v1.GameTeamList.Subsitutions </div>
-                                @foreach (var item in Model.AwayTeamList!.Where(x => !x.InStartingLineup))
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.FirstName)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.LastName)
-                                        </td>
-                                    </tr>
-                                }
-                                <div class="h4 text-black-800 text-center">@Resources.PublicApi.DTO.v1.GameTeamList.Staff </div>
-                                <tr role="row">@Resources.PublicApi.DTO.v1.GameTeamList.Staff</tr>
-                                @foreach (var item in Model.AwayTeamList!.Where(x => x.Staff))
-                                {
-                                    <tr>
-                                        <td>
-                                            @if (item.Person != null)
-                                            {
-                                                @Html.DisplayFor(modelItem => item.Person!.FirstName)
-                                            }
-                                            else
-                                            {
-                                                @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.FirstName)
-                                            }
-
-                                        </td>
-                                        <td>
-                                            @if (item.Person != null)
-                                            {
-                                                @Html.DisplayFor(modelItem => item.Person!.FirstName)
-                                            }
-                                            else
-                                            {
-                                                @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.LastName)
-                                            }
-                                        </td>
-                                    </tr>
-                                }
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.FirstName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.LastName)
+                                    </td>
+                                </tr>
+                            }
+                            <tr role="row">
+                                
+                                <td rowspan="2" colspan="2">
+                                    <div class="h4 text-black-800 text-center">
+                                        @Resources.PublicApi.DTO.v1.GameTeamList.Subsitutions
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr></tr>
+                            @foreach (var item in Model.HomeTeamList.Where(item => !item.InStartingLineup && !item.Staff))
+                            {
+                                <tr>
+                                    <td>
+                                        @item.TeamPerson!.Person!.FirstName
+                                    </td>
+                                    <td>
+                                        @item.TeamPerson!.Person!.LastName
+                                    </td>
+                                </tr>
+                            }
+                            
+                            
+                            <tr role="row" class="text-center">
+                                <td rowspan="2" colspan="2">
+                                    <div class="h4 text-black-800 text-center">
+                                        @Resources.PublicApi.DTO.v1.GameTeamList.Staff
+                                    </div>
+                                </td>
+                            </tr>
+                            @foreach (var item in Model.HomeTeamList.Where(item => item.Staff))
+                            {
+                                <tr>
+                                    @if (item.Person != null)
+                                    {
+                                        <td>@item.Person!.FirstName</td>
+                                        <td>@item.Person!.LastName</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@item.TeamPerson!.Person!.FirstName</td>
+                                        <td>@item.TeamPerson!.Person!.LastName</td>
+                                    }
+                                </tr>
                                 <a asp-controller="GameTeamList" asp-action="Create" asp-route-gameTeamId="@Model.AwayTeam!.Id" class="btn btn-primary">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-flag"></i>
                                     </span>
                                     <span class="text">@Resources.Common.AddGameEvent</span>
-                                </a>
-                                </tbody>
-                            }
-                            else if(User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Referee"))
+                                </a>                            }
+                            
+                        }
+                        else
+                        {
+                            if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Referee"))
                             {
-                                <a asp-controller="GameTeamList" asp-action="Edit" asp-route-gameTeamId="@Model.AwayTeam!.Id" class="btn btn-primary">
+                                <a asp-controller="GameTeamList" asp-action="Edit" asp-route-gameTeamId="@Model.HomeTeam!.Id" class="btn btn-primary">
                                     <span class="icon text-white-50">
                                         <i class="fas fa-flag"></i>
                                     </span>
                                     <span class="text">@Resources.Common.AddGameTeamList</span>
-                                </a> 
+                                </a>
                             }
-                            </table>
-                    </div>
+                        }
+                        </tbody>
+                    </table>
                 </div>
+
+
+                <div class="col-sm-6">
+
+                    <div class="h4 text-black-800 text-center">@Resources.PublicApi.DTO.v1.GameTeamList.InStartingLineup</div>
+
+                    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                        <thead>
+                        <tr role="row">
+                            <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.AwayTeamList![0].Person!.FirstName)</th>
+                            <th rowspan="1" colspan="1">@Html.DisplayNameFor(model => model.AwayTeamList![0].Person!.LastName)</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if (Model.AwayTeamList!.Count != 0)
+                        {
+                            
+                            @foreach (var item in Model.AwayTeamList!.Where(x => x.InStartingLineup))
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.FirstName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TeamPerson!.Person!.LastName)
+                                    </td>
+                                </tr>
+                            }
+                            <tr role="row" class="text-center">
+                                <td rowspan="2" colspan="2">
+                                    <div class="h4 text-black-800 text-center">
+                                        @Resources.PublicApi.DTO.v1.GameTeamList.Subsitutions
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr></tr>
+                            
+                            @foreach (var item in Model.AwayTeamList!.Where(x => !x.InStartingLineup && !x.Staff))
+                            {
+                                <tr>
+                                    <td>
+                                        @item.TeamPerson!.Person!.FirstName
+                                    </td>
+                                    <td>
+                                        @item.TeamPerson!.Person!.LastName
+                                    </td>
+                                </tr>
+                            }
+          
+                            <tr role="row" class="text-center">
+                                <td rowspan="2" colspan="2">
+                                    <div class="h4 text-black-800 text-center">
+                                        @Resources.PublicApi.DTO.v1.GameTeamList.Staff
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            @foreach (var item in Model.AwayTeamList!.Where(x => x.Staff))
+                            {
+                                <tr>
+                                    @if (item.Person != null)
+                                    {
+                                        <td>@item.Person!.FirstName</td>
+                                        <td>@item.Person!.LastName</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@item.TeamPerson!.Person!.FirstName</td>
+                                        <td>@item.TeamPerson!.Person!.LastName</td>
+                                    }
+                                </tr>
+                                
+                            }
+                        }
+                        
+                        else if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Referee"))
+                        {
+                            <a asp-controller="GameTeamList" asp-action="Edit" asp-route-gameTeamId="@Model.AwayTeam!.Id" class="btn btn-primary">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-flag"></i>
+                                </span>
+                                <span class="text">@Resources.Common.AddGameTeamList</span>
+                            </a>                            
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
             </div>
         </div>
     </div>

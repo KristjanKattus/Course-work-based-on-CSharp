@@ -15,7 +15,7 @@ namespace Domain.App
 
         public ICollection<Game_Event>? GameEvents { get; set; }
         
-        public ICollection<Game_Team>? GameTeams { get; set; }
+
         public int MatchRound { get; set; }
     }
 }

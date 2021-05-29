@@ -62,10 +62,11 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Admin, Referee")]
         public async Task<IActionResult> Create(Guid gameTeamId)
         {
+
             var gameTeam = await _bll.GameTeams.FirstOrDefaultAsync(gameTeamId);
             var game = await _bll.Games.FirstOrDefaultAsync(gameTeam!.GameId);
 
-            var gameTeams = (await _bll.GameTeams.GetAllTeamGamesWithGameIdAsync(game.Id)).ToList();
+            var gameTeams = (await _bll.GameTeams.GetAllAsync(game.Id)).ToList();
             var vm = new GameEventCreateEditViewModel
             {
                 HomeTeamId = gameTeamId,
@@ -74,7 +75,7 @@ namespace WebApp.Controllers
                 EventTypeSelectList = new SelectList(await _bll.EventTypes.GetAllAsync(User.GetUserId()!.Value)
                 , nameof(EventType.Id), nameof(EventType.Name)),
                 GameTeamListSelectList = new SelectList(await _bll.GameTeamLists.GetAllWithLeagueTeamIdAsync(gameTeamId)
-                    , nameof(GameTeamList.Id), nameof(GameTeamList.Id))
+                    , nameof(GameTeamList.Id), nameof(GameTeamList.TeamPerson))
             };
             return View(vm);
         }
@@ -89,20 +90,12 @@ namespace WebApp.Controllers
         {
             if (ModelState.IsValid)
             {
+                
                 vm.GameEvent.GameId = vm.GameId;
                 var gameEvent = _bll.GameEvents.Add(_gameEventMapper.Map(vm.GameEvent)!);
-                await _bll.SaveChangesAsync();
-                await _bll.GameEvents.GetUpdateTeams(gameEvent.Id, _mapper);
-
-                var gameTeams = await _bll.GameTeams.GetAllTeamGamesWithGameIdAsync(gameEvent.GameId);
-
-                foreach (var gameTeam in gameTeams)
-                {
-                    await _bll.GameTeams.UpdateEntity(gameTeam.Id, gameEvent.Id);
-                }
-
-                await _bll.SaveChangesAsync();
                 
+                await _bll.SaveChangesAsync();
+                await _bll.GameTeams.UpdateEntity(gameEvent.Id);
                 return RedirectToAction("Details", "Game", new{id = gameEvent.GameId});
             }
 
@@ -133,7 +126,7 @@ namespace WebApp.Controllers
             var game = await _bll.Games.FirstOrDefaultAsync(gameEvent.GameId);
             var gameTeam = await _bll.GameTeams.FirstOrDefaultAsync(game.Id);
 
-            var gameTeams = (await _bll.GameTeams.GetAllTeamGamesWithGameIdAsync(game.Id)).ToList();
+            var gameTeams = (await _bll.GameTeams.GetAllAsync(game.Id)).ToList();
             var vm = new GameEventCreateEditViewModel
             {
                 AwayTeamId = (gameTeams.FirstOrDefault(x=> x.Id != gameTeam!.Id)!).Id,
@@ -171,7 +164,7 @@ namespace WebApp.Controllers
             var game = await _bll.Games.FirstOrDefaultAsync(vm.GameId);
             var gameTeam = await _bll.GameTeams.FirstOrDefaultAsync(vm.HomeTeamId);
 
-            var gameTeams = (await _bll.GameTeams.GetAllTeamGamesWithGameIdAsync(game.Id)).ToList();
+            var gameTeams = (await _bll.GameTeams.GetAllAsync(game.Id)).ToList();
             vm.AwayTeamId = (gameTeams.FirstOrDefault(x => x.Id != gameTeam!.Id)!).Id;
             vm.HomeTeamId = vm.HomeTeamId;
             vm.GameId = vm.GameId;

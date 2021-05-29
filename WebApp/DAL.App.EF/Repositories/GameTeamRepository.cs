@@ -34,10 +34,9 @@ namespace DAL.App.EF.Repositories
 
         public override async Task<GameTeam?> FirstOrDefaultAsync(Guid id, Guid userId = default, bool noTracking = true)
         {
-            var query = InitializeQuery(userId, noTracking);
+            var query = InitializeQuery();
 
             var resQuery = query
-                .Include(g => g.Game)
                 .Include(g => g.Team);
                 
 
@@ -74,10 +73,9 @@ namespace DAL.App.EF.Repositories
 
         public async Task<GameTeam> FirstOrDefaultWithGameIdAsync(Guid id, bool homeTeam)
         {
-            var query = InitializeQuery(default, false);
+            var query = InitializeQuery();
             var resQuery = query
-                .Include(g => g.Game)
-                .Include(g => g.Team)
+                .Include(x => x.Team)
                 .Where(g => g.Hometeam == homeTeam);
                 
 

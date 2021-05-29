@@ -65,8 +65,6 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            game.Game!.GameEvents = game.Game.GameEvents!.ToList();
-
             return View(_leagueGameMapper.Map(game));
         }
 
@@ -92,8 +90,6 @@ namespace WebApp.Controllers
                     , nameof(Team.Id), nameof(Team.Name))
             };
             
-            Console.Write(vm.HomeTeamSelectList.Items);
-            Console.Write(vm.AwayTeamSelectList.Items);
             return View(vm);
         }
 
@@ -235,13 +231,11 @@ namespace WebApp.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _bll.GameTeams.RemoveGamesWithGameIdAsync(id);
-
+            await _bll.GameTeams.RemoveWithGameIdAsync(id);
+            await _bll.SaveChangesAsync();
+            
             var game = await _bll.Games.FirstOrDefaultAsync(id);
-
             _bll.Games.Remove(game, User.GetUserId()!.Value);
-            _bll.GameTeams.Remove(await _bll.GameTeams.FirstOrDefaultWithGameIdAsync(id, true));
-            _bll.GameTeams.Remove(await _bll.GameTeams.FirstOrDefaultWithGameIdAsync(id, false));
             await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

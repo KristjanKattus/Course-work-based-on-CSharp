@@ -28,7 +28,7 @@ namespace BLL.App.Services
         {
             var gameEvent = await ServiceUow.GameEvents.FirstOrDefaultAsync(gameEventId);
 
-            var gameTeams = (await ServiceUow.GameTeams.GetAllTeamGamesWithGameIdAsync(gameEvent!.GameId))
+            var gameTeams = (await ServiceUow.GameTeams.GetAllAsync(gameEvent!.GameId))
                 .ToList();
 
             var eventTeam = gameTeams.First(x => x.Id == gameEvent.GameTeamList!.GameTeamId);
@@ -53,7 +53,7 @@ namespace BLL.App.Services
         {
             var gameEvent = await ServiceRepository.FirstOrDefaultAsync(gameEventId);
 
-            var gameTeams = (await ServiceUow.GameTeams.GetAllTeamGamesWithGameIdAsync(gameEvent!.GameId))
+            var gameTeams = (await ServiceUow.GameTeams.GetAllAsync(gameEvent!.GameId))
                 .ToList();
 
             var eventTeam = gameTeams.First(x => x.Id == gameEvent.GameTeamList!.GameTeamId);
@@ -79,7 +79,7 @@ namespace BLL.App.Services
         {
             var gameEvent = await ServiceRepository.FirstOrDefaultAsync(gameEventId);
 
-            var gameTeams = (await ServiceUow.GameTeams.GetAllTeamGamesWithGameIdAsync(gameEvent!.GameId))
+            var gameTeams = (await ServiceUow.GameTeams.GetAllAsync(gameEvent!.GameId))
                 .ToList();
 
             var eventTeam = gameTeams.First(x => x.Id == gameEvent.GameTeamList!.GameTeamId);

@@ -17,5 +17,10 @@ namespace BLL.App.DTO
         public Guid RoleId { get; set; }
 
         public Role Role { get; set; } = default!;
+
+        public override string ToString()
+        {
+            return Person.FullName;
+        }
     }
 }

@@ -24,35 +24,12 @@ namespace BLL.App.Services
             return (await ServiceRepository.GetAllTeamGamesAsync(teamId)).Select(x => Mapper.Map(x))!;
         }
 
-        public async Task<IEnumerable<BLLAppDTO.GameTeam>> GetAllTeamGamesWithGameIdAsync(Guid gameId,  bool noTracking = false)
-        {
-            var games = (await ServiceRepository.GetAllTeamGamesWithGameIdAsync(gameId, noTracking)).ToList();
-            var gameTeams = games;
-            foreach (var game in gameTeams)
-            {
-                game.TeamName = game.Team!.Name;
-            }
-            return gameTeams.Select(x => Mapper.Map(x))!;
-        }
-        
 
         public async Task<BLLAppDTO.GameTeam> FirstOrDefaultWithGameIdAsync(Guid id, bool homeTeam)
         {
             return Mapper.Map(await ServiceRepository.FirstOrDefaultWithGameIdAsync(id, homeTeam))!;
         }
-
-        public async Task RemoveGamesWithGameIdAsync(Guid id,  bool noTracking = true)
-        {
-            var teamsToBeRemoved = (await ServiceRepository.GetAllTeamGamesWithGameIdAsync(id, noTracking));
-            
-            var removeGamesWithGameId = teamsToBeRemoved.ToList();
-            foreach (var team in removeGamesWithGameId)
-            {
-                ServiceUow.GameTeams.Remove(team);
-                await ServiceUow.SaveChangesAsync();
-            }
-            
-        }
+        
         
 
         public async Task AddGoal(Guid id)
@@ -76,35 +53,57 @@ namespace BLL.App.Services
             await ServiceUow.SaveChangesAsync();
         }
 
-        public async Task UpdateEntity(Guid gameTeamId, Guid gameEventId)
+        public async Task RemoveWithGameIdAsync(Guid gameId)
         {
-            var gameTeam = await ServiceRepository.FirstOrDefaultAsync(gameTeamId);
+            ServiceRepository.Remove(await ServiceRepository.FirstOrDefaultWithGameIdAsync(gameId, true));
+            await ServiceUow.SaveChangesAsync();
+            ServiceRepository.Remove(await ServiceRepository.FirstOrDefaultWithGameIdAsync(gameId, false));
+            await ServiceUow.SaveChangesAsync();
+
+        }
+
+        public async Task UpdateEntity(Guid gameEventId)
+        {
+            
             var gameEvent = await ServiceUow.GameEvents.FirstOrDefaultAsync(gameEventId);
+            var team1 = await ServiceRepository.FirstOrDefaultWithGameIdAsync(gameEvent!.GameId, true);
+            var team2 = await ServiceRepository.FirstOrDefaultWithGameIdAsync(gameEvent!.GameId, false);
+            
+
+            
             
             if (gameEvent!.EventType!.Name == "Goal" || gameEvent.EventType!.Name == "Penalty")
             {
-                if (gameEvent.GameTeamList!.GameTeamId == gameTeam!.Id)
+                if (gameEvent.GameTeamList!.GameTeamId == team1!.Id)
                 {
-                    gameTeam!.Scored++;
+                    team1!.Scored++;
+                    team2!.Conceded++;
                 }
                 else
                 {
-                    gameTeam!.Scored--;
+                    team2!.Scored++;
+                    team1!.Conceded++;
                 }
                 
             }else if (gameEvent.EventType!.Name == "Own goal")
             {
-                if (gameEvent.GameTeamList!.GameTeamId == gameTeam!.Id)
+                if (gameEvent.GameTeamList!.GameTeamId == team1!.Id)
                 {
-                    gameTeam!.Scored--;
+                    team2!.Scored++;
+                    team1!.Conceded++;
                 }
                 else
                 {
-                    gameTeam!.Scored++;
+                    team1!.Scored++;
+                    team2!.Conceded++;
                 }
             }
 
-            ServiceRepository.Update(gameTeam!);
+            ServiceRepository.Update(team1);
+            
+            await ServiceUow.SaveChangesAsync();
+            
+            ServiceRepository.Update(team2);
             
             await ServiceUow.SaveChangesAsync();
         }
