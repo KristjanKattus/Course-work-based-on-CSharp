@@ -13,23 +13,24 @@ namespace Extensions.Base
         public static Guid? GetUserId(this ClaimsPrincipal user)
         {
             var userId = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
             if (userId != null)
             {
                 return Guid.Parse(userId);
             }
+
             return null;
         }
 
-        public static string GenerateJwt(IEnumerable<Claim> claims, string key, string issuer, string audience, DateTime expirationDateTime)
+        public static string GenerateJwt(IEnumerable<Claim> claims, string key, string issuer, string audience,
+            DateTime expirationDateTime)
         {
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
             var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
-                issuer, 
+                issuer,
                 audience, 
                 claims, 
-                expires: expirationDateTime,
+                expires: expirationDateTime, 
                 signingCredentials: signingCredentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
         }

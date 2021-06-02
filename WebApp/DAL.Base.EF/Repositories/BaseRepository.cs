@@ -61,13 +61,13 @@ namespace DAL.Base.EF.Repositories
             return query;
         }
         
-        public virtual async Task<IEnumerable<TDalEntity>> GetAllAsync(TKey? userId, bool noTracking = true)
+        public virtual async Task<IEnumerable<TDalEntity>> GetAllAsync(TKey? userId = default, bool noTracking = true)
         {
             var query = InitializeQuery(userId, noTracking);
             var resQuery = query.Select(domainEntity => Mapper.Map(domainEntity));
             var res = await resQuery.ToListAsync();
             
-            return (res);
+            return res!;
         }
 
         public virtual async Task<TDalEntity?> FirstOrDefaultAsync(TKey id, TKey? userId = default, bool noTracking = true)
@@ -102,10 +102,8 @@ namespace DAL.Base.EF.Repositories
             return Mapper.Map(RepoDbSet.Update(Mapper.Map(entity)!).Entity)!;
         }
 
-        public virtual TDalEntity Remove(TDalEntity entity, TKey? userId)
+        public virtual TDalEntity Remove(TDalEntity entity, TKey? userId = default)
         {
-            // var query = InitializeQuery(userId, false);
-
             if (userId != null && !userId.Equals(default) &&
                 typeof(IDomainAppUserId<TKey>).IsAssignableFrom(typeof(TDomainEntity)) &&
                     !((IDomainAppUserId<TKey>) entity).AppUserId.Equals(userId))

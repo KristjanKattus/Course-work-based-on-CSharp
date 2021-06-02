@@ -21,14 +21,11 @@ namespace DAL.App.EF.Repositories
         }
 
 
-        public override async Task<IEnumerable<GameTeamList>> GetAllAsync(Guid userId, bool noTracking = true)
+        public override async Task<IEnumerable<GameTeamList>> GetAllAsync(Guid userId = default, bool noTracking = true)
         {
-            var query = InitializeQuery(userId, noTracking);
+            var query = InitializeQuery();
 
             var resQuery = query
-                .Include(g => g.Person)
-                .Include(g => g.GameTeam)
-                .Include(g => g.Role)
                 .Select(g => Mapper.Map(g));
 
             var res = await resQuery.ToListAsync();
@@ -38,14 +35,9 @@ namespace DAL.App.EF.Repositories
 
         public override async Task<GameTeamList?> FirstOrDefaultAsync(Guid id, Guid userId = default, bool noTracking = true)
         {
-            var query = InitializeQuery(userId, noTracking);
+            var query = InitializeQuery();
 
-            var resQuery = query
-                .Include(g => g.Person)
-                .Include(g => g.TeamPerson)
-                .ThenInclude(x => x!.Person)
-                .Include(g => g.GameTeam)
-                .Include(g => g.Role);
+            var resQuery = query;
                 
 
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(g => g.Id == id));

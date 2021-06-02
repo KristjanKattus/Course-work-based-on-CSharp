@@ -30,6 +30,7 @@ COPY DTO.App/*.csproj ./DTO.App/
 COPY PublicApi.DTO.v1/*.csproj ./PublicApi.DTO.v1/
 COPY Resources/*.csproj ./Resources/
 COPY WebApp/*.csproj ./WebApp/
+COPY TestProject/*.csproj ./TestProject/
 
 # restore all the nuget packages
 RUN dotnet restore
@@ -59,6 +60,8 @@ COPY DTO.App/. ./DTO.App/
 COPY PublicApi.DTO.v1/. ./PublicApi.DTO.v1/
 COPY Resources/. ./Resources/
 COPY WebApp/. ./WebApp/
+COPY TestProject/. ./TestProject/
+
 
 WORKDIR /source/WebApp
 

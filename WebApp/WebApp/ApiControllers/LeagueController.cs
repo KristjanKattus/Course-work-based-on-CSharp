@@ -60,14 +60,13 @@ namespace WebApp.ApiControllers
         /// <param name="id">League unique Id</param>
         /// <returns>League entity of PublicApi.DTO.v1</returns>
         [HttpGet("{id}")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(PublicApi.DTO.v1.League), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PublicApi.DTO.v1.League>> GetLeague(Guid id)
         {
-            var league = await _bll.Leagues.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
+            var league = await _bll.Leagues.FirstOrDefaultAsync(id);
 
             if (league == null)
             {

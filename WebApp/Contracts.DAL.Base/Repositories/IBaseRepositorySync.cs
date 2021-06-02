@@ -11,7 +11,7 @@ namespace Contracts.DAL.Base.Repositories
         // non-async methods
         TEntity FirstOrDefault(TKey id,TKey? userId, bool noTracking = true);
         IEnumerable<TEntity> GetAll(TKey? userId, bool noTracking = true);
-        bool Exists(TKey id, TKey? userId);
-        TEntity Remove(TKey id, TKey? userId);
+        bool Exists(TKey id, TKey? userId = default);
+        TEntity Remove(TKey id, TKey? userId = default);
     }
 }

@@ -20,11 +20,13 @@ namespace WebApp.ApiControllers
     /// </summary>
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
+    
     [ApiController]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
     public class LeagueTeamController : ControllerBase
     {
         private readonly IAppBLL _bll;
+        private readonly IMapper _mapper;
         private readonly PublicApi.DTO.v1.Mappers.LeagueTeamMapper _leagueTeamMapper;
 
         /// <summary>
@@ -34,6 +36,7 @@ namespace WebApp.ApiControllers
         /// <param name="bll">Business layer</param>
         public LeagueTeamController(IMapper mapper, IAppBLL bll)
         {
+            _mapper = mapper;
             _bll = bll;
             _leagueTeamMapper = new LeagueTeamMapper(mapper);
         }
@@ -43,15 +46,17 @@ namespace WebApp.ApiControllers
         /// Get all LeagueTeam entities in PublicApiVersion1.0.
         /// </summary>
         /// <returns>PublicApiVersion1.0 all LeagueTeam entities</returns>
-        [HttpGet]
+        [HttpGet("leagueId={leagueId}")]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(IEnumerable<PublicApi.DTO.v1.LeagueTeam?>), StatusCodes.Status200OK)]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(IEnumerable<PublicApi.DTO.v1.LeagueTableTeam?>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<IEnumerable<PublicApi.DTO.v1.LeagueTeam>>> GetLeagueTeams()
+        public async Task<ActionResult<IEnumerable<PublicApi.DTO.v1.LeagueTableTeam>>> GetLeagueTeams(Guid leagueId)
         {
-            return Ok((await _bll.LeagueTeams.GetAllAsync(User.GetUserId()!.Value))
-                .Select(x => _leagueTeamMapper.Map(x)));
+            var leagueTableMapper = new LeagueTableMapper(_mapper);
+            return Ok((await _bll.LeagueTeams.GetAllLeagueTeamsDataAsync(leagueId)).Select(x => leagueTableMapper.Map(x))
+                .ToList()!);
         }
 
         // GET: api/LeageTeam/5
@@ -62,21 +67,18 @@ namespace WebApp.ApiControllers
         /// <param name="id">LeagueTeam unique Id</param>
         /// <returns>LeagueTeam entity of PublicApi.DTO.v1</returns>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(PublicApi.DTO.v1.LeagueTeam), StatusCodes.Status200OK)]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.LeagueGame), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PublicApi.DTO.v1.LeagueTeam>> GetLeagueTeam(Guid id)
+        public async Task<ActionResult<PublicApi.DTO.v1.LeagueGame>> GetLeagueTeam(Guid id)
         {
-            var leagueTeam = await _bll.LeagueTeams.FirstOrDefaultAsync(id, User.GetUserId()!.Value);
 
-            if (leagueTeam == null)
-            {
-                return NotFound();
-            }
+            var leagueGameMapper = new LeagueGameMapper(_mapper);
 
-            return _leagueTeamMapper.Map(leagueTeam)!;
+            return Ok(leagueGameMapper.Map(await _bll.Games.GetLeagueGameAsync(id, _mapper)));
         }
 
         // PUT: api/LeageTeam/5

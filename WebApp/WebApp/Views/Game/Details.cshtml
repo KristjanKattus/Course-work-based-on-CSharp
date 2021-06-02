@@ -25,7 +25,6 @@
             <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4" style="width: 100%;">
 
             <div class="row d-sm-flex align-items-center justify-content-between">
-                @Html.Display(User.Identity!.Name)
                 @if (User.IsInRole("Admin") || User.IsInRole("Referee"))
                 {
                     <a asp-controller="GameEvent" asp-action="Create" asp-route-gameTeamId="@Model.HomeTeam!.Id" class="btn btn-primary">
@@ -39,7 +38,8 @@
                             <i class="fas fa-flag"></i>
                         </span>
                         <span class="text">@Resources.Common.AddGameEvent</span>
-                    </a>    }
+                    </a>    
+                }
             </div>
             <div class="row d-sm-flex align-items-center justify-content-center">
                 <div class="h2 text-black-800 text-center">@Resources.PublicApi.DTO.v1.Game.GameEvents</div>
@@ -137,6 +137,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr></tr>
                             @foreach (var item in Model.HomeTeamList.Where(item => item.Staff))
                             {
                                 <tr>
@@ -151,12 +152,8 @@
                                         <td>@item.TeamPerson!.Person!.LastName</td>
                                     }
                                 </tr>
-                                <a asp-controller="GameTeamList" asp-action="Create" asp-route-gameTeamId="@Model.AwayTeam!.Id" class="btn btn-primary">
-                                    <span class="icon text-white-50">
-                                        <i class="fas fa-flag"></i>
-                                    </span>
-                                    <span class="text">@Resources.Common.AddGameEvent</span>
-                                </a>                            }
+                                
+                            }
                             
                         }
                         else
@@ -230,7 +227,7 @@
                                     </div>
                                 </td>
                             </tr>
-                            
+                            <tr></tr>
                             @foreach (var item in Model.AwayTeamList!.Where(x => x.Staff))
                             {
                                 <tr>

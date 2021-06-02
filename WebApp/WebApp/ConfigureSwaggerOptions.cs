@@ -12,7 +12,7 @@ namespace WebApp
 {
     public class ConfigureSwaggerOptions: IConfigureOptions<SwaggerGenOptions>
     {
-        private readonly IApiVersionDescriptionProvider _provider;
+       private readonly IApiVersionDescriptionProvider _provider;
 
         public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
         {
@@ -25,24 +25,24 @@ namespace WebApp
             {
                 options.SwaggerDoc(
                     apiVersionDescription.GroupName,
-                    new OpenApiInfo
+                    new OpenApiInfo()
                     {
                         Title = $"API {apiVersionDescription.ApiVersion}",
-                        Version = apiVersionDescription.ApiVersion.ToString()
+                        Version = apiVersionDescription.ApiVersion.ToString(),
                     }
                 );
             }
 
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            options.IncludeXmlComments(xmlPath);
-            
-            // Use Fullname for schemaId - avoids conflicts between classes using the same name(which are in different namespaces)
-            
+            var xmlPathAndFile = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            options.IncludeXmlComments(xmlPathAndFile);
+
+
+            // use FullName for schemaId - avoids conflicts between classes using the same name (which are in different namespaces)
             options.CustomSchemaIds(i => i.FullName);
-            
-            
-            // Add support for authentication
+
+
+            // add support for authentication
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
             {
                 Description = 
@@ -55,7 +55,7 @@ namespace WebApp
                 Type = SecuritySchemeType.ApiKey,
                 Scheme = "Bearer"
             });
-            
+
             options.AddSecurityRequirement(new OpenApiSecurityRequirement()
             {
                 {
@@ -73,10 +73,6 @@ namespace WebApp
                     new List<string>()
                 }
             });
-            
-            
         }
-        
-        
     }
 }

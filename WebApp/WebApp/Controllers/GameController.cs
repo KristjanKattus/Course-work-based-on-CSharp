@@ -111,13 +111,15 @@ namespace WebApp.Controllers
                 {
                     GameId = game.Id,
                     TeamId = (Guid) vm.HomeTeamId!,
-                    Hometeam = true
+                    Hometeam = true,
+                    Points = 1
                 };
                 var awayTeam = new BLL.App.DTO.GameTeam
                 {
                     GameId = game.Id,
                     TeamId = (Guid) vm.AwayTeamId!,
-                    Hometeam = false
+                    Hometeam = false,
+                    Points = 1
                 };
                 _bll.GameTeams.Add(homeTeam);
                 _bll.GameTeams.Add(awayTeam);

@@ -143,7 +143,8 @@ namespace WebApp.Controllers
                 vm.StaffList.Add(new AddGameMember
                 {
                     Person = teamPersonMapper.Map(player)!,
-                    PersonId = player.Id
+                    PersonId = player.Id,
+                    Staff = true
                 });
             }
             
@@ -162,16 +163,13 @@ namespace WebApp.Controllers
             {
                 foreach (var player in vm.PlayerList!.Where(x => x.PartOfGame))
                 {
-                    _bll.GameTeamLists.AddTeamPersonToList(vm.GameTeamId, player.PersonId, player.InStartingLineup);
+                    await _bll.GameTeamLists.AddTeamPersonToList(vm.GameTeamId, player.PersonId, player.InStartingLineup);
                 }
-
-                if (vm.StaffList != null)
+                foreach (var staff in vm.StaffList!.Where(x => x.PartOfGame))
                 {
-                    foreach (var staff in vm.StaffList!.Where(x => x.PartOfGame))
-                    {
-                        _bll.GameTeamLists.AddTeamPersonToList(vm.GameTeamId, staff.PersonId);
-                    }
+                    await _bll.GameTeamLists.AddTeamPersonToList(vm.GameTeamId, staff.PersonId, false, true);
                 }
+                
                 
                 return RedirectToAction("Details", "Game", new{id = (await _bll.GameTeams.FirstOrDefaultAsync(vm.GameTeamId))!.GameId});
             }

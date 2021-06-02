@@ -9,6 +9,7 @@ using DAL.App.EF.Mappers;
 using DAL.Base.EF.Repositories;
 using Domain.App;
 using Microsoft.EntityFrameworkCore;
+using Role = Domain.App.Role;
 
 namespace DAL.App.EF.Repositories
 {
@@ -33,7 +34,7 @@ namespace DAL.App.EF.Repositories
             return res!;
         }
 
-        public override async Task<TeamPerson?> FirstOrDefaultAsync(Guid id, Guid userId = default, bool noTracking = true)
+        public new async Task<TeamPerson?> FirstOrDefaultAsync(Guid id, Guid userId = default, bool noTracking = true)
         {
             var query = InitializeQuery(userId, noTracking);
 
@@ -45,6 +46,21 @@ namespace DAL.App.EF.Repositories
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(s => s.Id == id));
 
             return res;
+        }
+
+        public async Task<IEnumerable<TeamPerson>> GetAllWithTeamIdAsync(Guid teamId)
+        {
+            var query = InitializeQuery();
+
+            var resQuery = query
+                .Include(x => x.Role)
+                .ThenInclude(x => x!.Name)
+                .ThenInclude(x => x.Translations)
+                .Include(x => x.Person)
+                .Where(x => x.TeamId == teamId)
+                .Select(x => Mapper.Map(x));
+            
+            return (await resQuery.ToListAsync())!;
         }
     }
 }

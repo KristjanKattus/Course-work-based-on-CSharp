@@ -15,5 +15,7 @@ namespace Contracts.DAL.App.Repositories
     public interface IGameRepositoryCustom<TEntity>
     {
         public Task<IEnumerable<DALAppDTO.Game>> GetAllGamesWithLeagueIdAsync(Guid leagueId);
+        
+        public Task<TEntity> FirstOrDefaultAsyncCustom(Guid gameId);
     }
 }

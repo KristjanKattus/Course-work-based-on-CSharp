@@ -37,20 +37,20 @@ namespace DAL.App.EF.Repositories
         {
             var query = InitializeQuery(userId, noTracking);
 
-            var resQuery = query
-                .Include(g => g.Stadium)
-                .Include(x => x.GameEvents)
-                .ThenInclude(x => x.EventType)
-                        .ThenInclude(c => c!.Name)
-                            .ThenInclude(t => t!.Translations)
-                .Include(x => x.GameEvents)
-                    .ThenInclude(x => x.GameTeamList)
-                        .ThenInclude(x=> x!.TeamPerson)
-                            .ThenInclude(x => x!.Person)
-                .Include(x => x.GameEvents)
-                     .ThenInclude(x => x.GameTeamList)
-                        .ThenInclude(x=> x!.TeamPerson)
-                            .ThenInclude(x => x!.Team);
+            var resQuery = query;
+                // .Include(g => g.Stadium)
+                // .Include(x => x.GameEvents)
+                // .ThenInclude(x => x.EventType)
+                //         .ThenInclude(c => c!.Name)
+                //             .ThenInclude(t => t!.Translations)
+                // .Include(x => x.GameEvents)
+                //     .ThenInclude(x => x.GameTeamList)
+                //         .ThenInclude(x=> x!.TeamPerson)
+                //             .ThenInclude(x => x!.Person)
+                // .Include(x => x.GameEvents)
+                //      .ThenInclude(x => x.GameTeamList)
+                //         .ThenInclude(x=> x!.TeamPerson)
+                //             .ThenInclude(x => x!.Team);
 
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(m => m.Id == id));
             return res!;
@@ -61,12 +61,34 @@ namespace DAL.App.EF.Repositories
             var query = InitializeQuery();
 
             var resQuery = query
-                .Include(g => g.Stadium)
-                .Include(g => g.GameEvents)
+                // .Include(g => g.Stadium)
                 .Where(g => g.LeagueId == leagueId)
                 .Select(g => Mapper.Map(g));
 
             var res = await resQuery.ToListAsync();
+            return res!;
+        }
+
+        public async Task<DTO.Game> FirstOrDefaultAsyncCustom(Guid gameId)
+        {
+            var query = InitializeQuery();
+
+            var resQuery = query
+            .Include(g => g.Stadium)
+            .Include(x => x.GameEvents)
+            .ThenInclude(x => x.EventType)
+                    .ThenInclude(c => c!.Name)
+                        .ThenInclude(t => t!.Translations)
+            .Include(x => x.GameEvents)
+                .ThenInclude(x => x.GameTeamList)
+                    .ThenInclude(x=> x!.TeamPerson)
+                        .ThenInclude(x => x!.Person)
+            .Include(x => x.GameEvents)
+                 .ThenInclude(x => x.GameTeamList)
+                    .ThenInclude(x=> x!.TeamPerson)
+                        .ThenInclude(x => x!.Team);
+
+            var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(m => m.Id == gameId));
             return res!;
         }
     }

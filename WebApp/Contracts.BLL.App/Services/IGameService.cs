@@ -17,9 +17,10 @@ namespace Contracts.BLL.App.Services
     public interface IGameRepositoryCustom<TEntity>
     {
         public Task<BLLAppDTO.Game> FirstOrDefaultAsync(Guid gameId);
+        
 
         public Task<IEnumerable<BLLAppDTO.LeagueGame>> GetAllLeagueGameAsync(Guid leagueId, IMapper mapper);
         
-        public Task<BLLAppDTO.LeagueGame> GetLeagueGameAsync(Guid leagueId, IMapper mapper);
+        public Task<BLLAppDTO.LeagueGame> GetLeagueGameAsync(Guid gameId, IMapper mapper);
     }
 }

@@ -4,11 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Contracts.BLL.App;
-using Extensions.Base;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PublicApi.DTO.v1;
 using PublicApi.DTO.v1.Mappers;
 
 namespace WebApp.ApiControllers
@@ -20,7 +18,6 @@ namespace WebApp.ApiControllers
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class LeagueTableController : ControllerBase
     {
         private readonly IAppBLL _bll;
@@ -42,17 +39,16 @@ namespace WebApp.ApiControllers
         /// GetLeagueTableClient entity in PublicApiVersion1.0.
         /// </summary>
         /// <returns>PublicApiVersion1.0 all LeagueTableClient entities</returns>
-        [HttpGet]
-        [AllowAnonymous]
-        [ProducesResponseType(typeof(IEnumerable<PublicApi.DTO.v1.LeagueTableClient?>), StatusCodes.Status200OK)]
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(PublicApi.DTO.v1.LeagueTableClient), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<PublicApi.DTO.v1.League>>> GetLeagues(Guid id)
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<PublicApi.DTO.v1.LeagueTableClient>> GetLeagueTable(Guid id)
         {
-            var leagueTableMapper = new LeagueTableMapper(_mapper);
             var leagueGameMapper = new LeagueGameMapper(_mapper);
-            var leagueTableClient = new PublicApi.DTO.v1.LeagueTableClient()
+            var leagueTableMapper = new LeagueTableMapper(_mapper);
+            var leagueTableClient = new LeagueTableClient
             {
-
                 LeagueName = (await _bll.Leagues.FirstOrDefaultAsync(id))!.Name,
                 LeagueTableTeams =
                     (await _bll.LeagueTeams.GetAllLeagueTeamsDataAsync(id)).Select(x => leagueTableMapper.Map(x))

@@ -53,27 +53,27 @@ namespace WebApp
       
             services.AddScoped<IAppUnitOfWork, AppUnitOfWork>();
             services.AddScoped<IAppBLL, AppBLL>();
-            services.AddTransient<IGameTeamRepository, GameTeamRepository>();
+            
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
             services
                 .AddAuthentication()
-                .AddCookie(options =>
-                    {
-                        options.SlidingExpiration = true;
-                    }
-                    )
+                .AddCookie(options => { options.SlidingExpiration = true; }
+                )
                 .AddJwtBearer(options =>
-                {
-                    options.RequireHttpsMetadata = false;
-                    options.SaveToken = true;
-                    options.TokenValidationParameters = new TokenValidationParameters()
                     {
-                        ValidIssuer = Configuration["JWT:Issuer"],
-                        ValidAudience = Configuration["JWT:Issuer"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"])),
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
+                        options.RequireHttpsMetadata = false;
+                        options.SaveToken = true;
+                        options.TokenValidationParameters = new TokenValidationParameters()
+                        {
+                            ValidIssuer = Configuration["JWT:Issuer"],
+                            ValidAudience = Configuration["JWT:Issuer"],
+
+                            IssuerSigningKey =
+                                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JWT:Key"])),
+                            ClockSkew = TimeSpan.Zero
+                        };
+                    }
+                );
 
             services
                 .AddIdentity<AppUser, AppRole>(options => options.SignIn.RequireConfirmedAccount = false)
@@ -83,7 +83,18 @@ namespace WebApp
             services.AddControllersWithViews();
 
             
-
+            services.AddCors(options =>
+                {
+                    options.AddPolicy("CorsAllowAll", builder =>
+                    {
+                        builder.AllowAnyHeader();
+                        builder.AllowAnyMethod();
+                        builder.AllowAnyOrigin();
+                    });
+                }
+            );
+            
+            services.AddMvc();
             // Add support for API versioning
             services.AddApiVersioning(options => options.ReportApiVersions = true);
 
@@ -103,7 +114,6 @@ namespace WebApp
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                //TODO should be in appsettings.json
                 var appSupportedCultures = new[]
                 {
                     new CultureInfo("et"),
@@ -119,11 +129,8 @@ namespace WebApp
                     new CookieRequestCultureProvider()
                 };
             });
-
-
+            
             services.AddSingleton<IConfigureOptions<MvcOptions>, ConfigureModelBindingLocalization>();
-
-
         }
         
         
@@ -154,15 +161,14 @@ namespace WebApp
                     options.SwaggerEndpoint(
                         $"/swagger/{apiVersionDescription.GroupName}/swagger.json",
                         apiVersionDescription.GroupName.ToUpperInvariant()
-                        );
+                    );
                 }
-            }
-            );
-            
-            
+            });
             
             app.UseStaticFiles();
-
+            
+            app.UseCors("CorsAllowAll");
+            
             app.UseRouting();
 
             app.UseRequestLocalization(
@@ -171,9 +177,6 @@ namespace WebApp
             app.UseAuthentication();
             app.UseAuthorization();
             
-            
-
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

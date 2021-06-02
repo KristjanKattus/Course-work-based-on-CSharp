@@ -14,4 +14,7 @@
     <data name="TeamPersons" xml:space="preserve">
         <value>Isikud võistkonnas</value>
     </data>
+    <data name="TeamPerson" xml:space="preserve">
+        <value>Isik võistkonnas</value>
+    </data>
 </root>

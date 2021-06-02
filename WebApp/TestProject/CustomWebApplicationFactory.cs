@@ -1,6 +1,8 @@
+using System;
 using System.Linq;
 using DAL.App.EF;
 using DAL.App.EF.AppDataInit;
+using Domain.App;
 using Domain.App.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -47,9 +49,54 @@ namespace TestProject
                 using var userManager = scopedServices.GetService<UserManager<AppUser>>();
                 using var roleManager = scopedServices.GetService<RoleManager<AppRole>>();
 
-                DataInit.SeedAppData(db, logger, userManager!, roleManager!);
-                DataInit.SeedIdentity(userManager!, roleManager!, logger);
                 
+                DataInit.SeedIdentity(userManager!, roleManager!, logger);
+                DataInit.SeedAppData(db, logger, userManager!, roleManager!);
+
+                var leagueId = Guid.Parse("1AF2336C-8A54-4A4C-0CEA-08D922301FB4");
+
+                var league = new League()
+                {
+                    Id = leagueId,
+                    Name = "leagu1"
+                };
+                var game = new Game()
+                {
+                    LeagueId = leagueId,
+                    GameLength = 90,
+                    MatchRound = 1,
+                };
+                var team1 = new Team{Name = "team1"};
+                var team2 = new Team{Name = "team2"};
+
+                var gameteam1 = new Game_Team()
+                {
+                    Game = game,
+                    Team = team1,
+                    Hometeam = true
+                };
+                var gameteam2 = new Game_Team()
+                {
+                    Game = game,
+                    Team = team2,
+                };
+                var leagueTeam1 = new League_Team()
+                {
+                    League = league,
+                    Team = team1
+                };
+                
+                var leagueTeam2 = new League_Team()
+                {
+                    League = league,
+                    Team = team2
+                };
+                db.LeagueTeams.Add(leagueTeam1);
+                db.LeagueTeams.Add(leagueTeam2);
+                db.GameTeams.Add(gameteam1);
+                db.GameTeams.Add(gameteam2);
+
+                db.SaveChangesAsync();
             });
         }
     }

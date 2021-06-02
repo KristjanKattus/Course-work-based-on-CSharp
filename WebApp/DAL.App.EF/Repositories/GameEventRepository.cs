@@ -24,7 +24,7 @@ namespace DAL.App.EF.Repositories
             var query = InitializeQuery(userId, noTracking);
 
             var resQuery = query
-                .Include(g => g.Game)
+                // .Include(g => g.Game)
                 .Include(g => g.GameTeamList)
                 .Include(g => g.EventType)
                 .ThenInclude(c => c!.Name)
@@ -57,14 +57,16 @@ namespace DAL.App.EF.Repositories
             var query = InitializeQuery();
 
             var resQuery = query
-                .Include(g => g.Game)
                 .Include(g => g.GameTeamList)
-                .ThenInclude(x=> x!.TeamPerson!)
-                .ThenInclude(x => x.Person)
+                    .ThenInclude(x=> x!.TeamPerson!)
+                        
+                        .ThenInclude(x => x.Person)
                 .Include(g => g.EventType)
                 .ThenInclude(c => c!.Name)
                 .ThenInclude(t => t!.Translations)
                 .Where(g => g.GameId == gameId)
+                .OrderBy(x => x.GameTime)
+                .ThenBy(x => x.NumberInOrder)
                 .Select(g => Mapper.Map(g));
 
 

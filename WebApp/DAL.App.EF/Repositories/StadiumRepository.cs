@@ -32,19 +32,5 @@ namespace DAL.App.EF.Repositories
 
             return res!;
         }
-
-        public override async Task<Stadium?> FirstOrDefaultAsync(Guid id, Guid userId = default, bool noTracking = true)
-        {
-            var query = InitializeQuery(userId, noTracking);
-
-            var resQuery = query
-                .Include(s => s.StadiumArea)
-                .Include(s => s.Games);
-
-
-            var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(s => s.Id == id));
-
-            return res;
-        }
     }
 }

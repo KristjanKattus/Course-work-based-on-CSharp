@@ -66,7 +66,7 @@ namespace BLL.App.Services
                 leagueTableTeams.Add(leagueTableTeam);
             }
 
-            return leagueTableTeams;
+            return leagueTableTeams.OrderByDescending(x => x.Points);
         }
         
     }

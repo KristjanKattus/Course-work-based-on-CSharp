@@ -47,13 +47,14 @@ namespace WebApp.ApiControllers
         /// Get all Game entities in PublicApiVersion1.0.
         /// </summary>
         /// <returns> PublicApiVersion1.0 all Game entities </returns>
-        [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<PublicApi.DTO.v1.Game?>), StatusCodes.Status200OK)]
+        [HttpGet("leagueId={leagueId}")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(IEnumerable<PublicApi.DTO.v1.LeagueGame?>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<IEnumerable<PublicApi.DTO.v1.Game>>> GetGames()
+        public async Task<ActionResult<IEnumerable<PublicApi.DTO.v1.LeagueGame>>> GetAllGames(Guid leagueId)
         {
-            return Ok((await _bll.Games.GetAllAsync(User.GetUserId()!.Value)).Select(x => _gameMapper.Map(x)));
+            return Ok((await _bll.Games.GetAllLeagueGameAsync(leagueId, _mapper)).Select(x => _leagueGameMapper.Map(x)));
         }
 
         // GET: api/Game/5
@@ -72,14 +73,7 @@ namespace WebApp.ApiControllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PublicApi.DTO.v1.LeagueGame>> GetGame(Guid id)
         {
-            var game = await _bll.Games.GetLeagueGameAsync(id, _mapper);
-
-            if (game == null)
-            {
-                return NotFound();
-            }
-
-            return _leagueGameMapper.Map(game)!;
+            return Ok(_leagueGameMapper.Map(await _bll.Games.GetLeagueGameAsync(id, _mapper)));
         }
 
         // PUT: api/Game/5

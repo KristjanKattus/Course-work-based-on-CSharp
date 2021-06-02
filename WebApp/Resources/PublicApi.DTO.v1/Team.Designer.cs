@@ -61,6 +61,15 @@ namespace Resources.PublicApi.DTO.v1 {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Person in team.
+        /// </summary>
+        public static string TeamPerson {
+            get {
+                return ResourceManager.GetString("TeamPerson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Persons in team.
         /// </summary>
         public static string TeamPersons {

@@ -38,20 +38,31 @@ namespace DAL.App.EF.Repositories
 
         public override async Task<Team?> FirstOrDefaultAsync(Guid id, Guid userId = default, bool noTracking = true)
         {
-            var query = InitializeQuery(userId, noTracking);
+            var query = InitializeQuery();
+
+            var resQuery = query;
+                
+
+            var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(s => s.Id == id));
+            return res!;
+        }
+
+        public async Task<Team> FirstWithData(Guid id)
+        {
+            var query = InitializeQuery();
 
             var resQuery = query
                 .Include(t => t.TeamPersons)
-                    .ThenInclude(t => t.Role)
-                        .ThenInclude(c => c!.Name)
-                            .ThenInclude(t => t!.Translations)
+                .ThenInclude(t => t.Role)
+                .ThenInclude(c => c!.Name)
+                .ThenInclude(t => t!.Translations)
                 .Include(t => t.TeamPersons)
-                    .ThenInclude(t => t.Person);
+                .ThenInclude(t => t.Person);
                 
 
             var res = Mapper.Map(await resQuery.FirstOrDefaultAsync(s => s.Id == id));
 
-            return res;
+            return res!;
         }
     }
 }

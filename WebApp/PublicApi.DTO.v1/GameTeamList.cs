@@ -12,8 +12,9 @@ namespace PublicApi.DTO.v1
         [Display(ResourceType = typeof(Resources.PublicApi.DTO.v1.GameTeamList), Name = nameof(Person))]
         public Person? Person { get; set; }
         
-        //TODO translate
+        
         public Guid? TeamPersonId { get; set; }
+        [Display(ResourceType = typeof(Resources.PublicApi.DTO.v1.Team), Name = nameof(TeamPerson))]
         public TeamPerson? TeamPerson { get; set; }
         
 

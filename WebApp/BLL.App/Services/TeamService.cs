@@ -24,21 +24,17 @@ namespace BLL.App.Services
 
             var staffList = new List<BLLAppDTO.TeamPerson>();
             var playerList = new List<BLLAppDTO.TeamPerson>();
-
-            foreach (var person in team!.TeamPersons!)
+            var teamPersons = await ServiceUow.TeamPersons.GetAllWithTeamIdAsync(teamId);
+            var teamPersonMapper = new TeamPersonMapper(mapper);
+            foreach (var person in teamPersons!)
             {
-
-                var date = person.Person.Date.ToShortDateString();
-
-                var newDAte = DateTime.Parse(date);
-                
-                if (person.Role.Name == "Player" || person.Role.Name == "Mängija")
+                if (person.Role!.Name == "Player" || person.Role.Name == "Mängija")
                 {
-                    playerList.Add(person);
+                    playerList.Add(teamPersonMapper.Map(person)!);
                 }
                 else
                 {
-                    staffList.Add(person);
+                    staffList.Add(teamPersonMapper.Map(person)!);
                 }
             }
 
@@ -56,6 +52,11 @@ namespace BLL.App.Services
             };
 
             return clientTeam;
+        }
+
+        public async Task<BLLAppDTO.Team> FirstWithData(Guid id)
+        {
+            return Mapper.Map(await ServiceRepository.FirstWithData(id))!;
         }
     }
 }

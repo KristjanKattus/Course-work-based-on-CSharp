@@ -21,4 +21,7 @@
     <data name="TeamPersons" xml:space="preserve">
         <value>Persons in team</value>
     </data>
+    <data name="TeamPerson" xml:space="preserve">
+        <value>Person in team</value>
+    </data>
 </root>

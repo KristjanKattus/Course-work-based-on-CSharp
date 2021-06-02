@@ -27,17 +27,32 @@ namespace BLL.App.Services
             return Mapper.Map(await ServiceRepository.FirstOrDefaultAsync(gameId))!;
         }
 
+        public async Task<IEnumerable<BLLAppDTO.Game>> GetAllWithLeagueId(Guid leagueId)
+        {
+            return (await ServiceRepository.GetAllGamesWithLeagueIdAsync(leagueId))
+                .Select(x => Mapper.Map(x))!;
+        }
+
         public async Task<IEnumerable<BLLAppDTO.LeagueGame>> GetAllLeagueGameAsync(Guid leagueId, IMapper mapper)
         {
             var games = (await ServiceRepository.GetAllGamesWithLeagueIdAsync(leagueId))
                 .Select(x => Mapper.Map(x));
 
             var leagueGames = new List<BLLAppDTO.LeagueGame>();
-
+    
             foreach (var game in games)
             {
-                var leagueGame = await GetLeagueGameAsync(game!.Id, mapper);
-                
+                var gameTeamMapper = new GameTeamMapper(mapper);
+
+                var homeTeam = await ServiceUow.GameTeams.FirstOrDefaultWithGameIdAsync(game!.Id, true);
+                var awayTeam = await ServiceUow.GameTeams.FirstOrDefaultWithGameIdAsync(game.Id, false);
+
+                var leagueGame = new BLLAppDTO.LeagueGame
+                {
+                    Game = game,
+                    HomeTeam = gameTeamMapper.Map(homeTeam),
+                    AwayTeam = gameTeamMapper.Map(awayTeam),
+                };
                 leagueGames.Add(leagueGame);
             }
             

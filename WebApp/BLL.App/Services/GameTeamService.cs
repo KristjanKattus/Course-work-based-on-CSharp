@@ -81,7 +81,7 @@ namespace BLL.App.Services
                     team2!.Scored++;
                     team1!.Conceded++;
                 }
-                
+
             }else if (gameEvent.EventType!.Name == "Own goal")
             {
                 if (gameEvent.GameTeamList!.GameTeamId == team1!.Id)
@@ -94,6 +94,23 @@ namespace BLL.App.Services
                     team1!.Scored++;
                     team2!.Conceded++;
                 }
+            }
+            
+            if (team1.Scored > team2.Scored)
+            {
+                team1.Points = 3;
+                team2.Points = 0;
+            }
+
+            if (team1.Scored == team2.Scored)
+            {
+                team1.Points = 1;
+                team2.Points = 1;
+            }
+            else
+            {
+                team1.Points = 0;
+                team2.Points = 3;
             }
 
             ServiceRepository.Update(team1);
